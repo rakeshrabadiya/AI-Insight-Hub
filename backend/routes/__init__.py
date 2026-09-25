@@ -10,4 +10,5 @@ from . import health
 from . import r_engine
 from . import datasets
 from . import regression
+from . import decision_tree
 

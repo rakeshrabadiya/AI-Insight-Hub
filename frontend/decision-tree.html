@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Risk Classifier — AI Insight Hub</title>
+    <meta name="description" content="Decision Tree financial risk classification powered by a real model trained in R. Educational ML implementation.">
+    <!-- Google Fonts: Inter & JetBrains Mono (shared with the dashboard) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Shared design system + page-specific styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/decision-tree.css">
+</head>
+<body>
+    <!-- Background Glow Elements (shared with dashboard) -->
+    <div class="bg-glow bg-glow-top"></div>
+    <div class="bg-glow bg-glow-bottom"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="app-container">
+
+        <!-- Header / Navigation -->
+        <header class="app-header">
+            <div class="header-left">
+                <a class="logo-wrapper logo-link" href="index.html" title="Back to dashboard">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <div class="brand-title">AI Insight Hub</div>
+                        <div class="brand-subtitle">Multi-Model Machine Learning Analytics Platform</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="header-center">
+                <div class="academic-badge">
+                    <span class="badge-dot"></span>
+                    <span class="badge-text">GCF Training &bull; Ethnotech &bull; Parul University</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <a class="btn btn-secondary btn-sm" href="index.html" title="Return to the platform dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+        </header>
+
+        <main class="main-content">
+
+            <!-- Model Hero Banner -->
+            <section class="hero-section dtree-hero">
+                <div class="hero-content">
+                    <div class="hero-tag">
+                        <span class="tag-pill tag-pill-active">Phase 4 &bull; Active Model</span>
+                        <span class="tag-text">CART classification tree trained in R</span>
+                    </div>
+                    <h1 class="hero-title">Financial Risk Classifier</h1>
+                    <p class="hero-description">
+                        Decision Tree Machine Learning Model. Enter an applicant's financial profile and the model
+                        classifies the risk tier as <strong>LOW</strong>, <strong>MEDIUM</strong> or <strong>HIGH</strong>.
+                        Every value on this page comes from a real classification tree fitted with
+                        <code>rpart::rpart()</code> &mdash; nothing is pre-written or hard-coded.
+                    </p>
+                </div>
+                <div class="hero-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Algorithm</span>
+                        <span class="meta-value">Decision Tree (CART &bull; Gini)</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Target Variable</span>
+                        <span class="meta-value text-cyan">risk (LOW / MEDIUM / HIGH)</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Model State</span>
+                        <span class="meta-value" id="modelStateDisplay">Checking model...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error banner (shown when the model is unavailable) -->
+            <div class="api-alert-banner" id="modelAlertBanner" style="display: none;">
+                <div class="alert-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title" id="modelAlertTitle">Model Unavailable</div>
+                    <div class="alert-message" id="modelAlertMessage">
+                        Start the Flask backend by running <code class="code-pill">python backend/app.py</code>.
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-sm" id="btnRetryModel">Retry</button>
+            </div>
+
+            <!-- Prediction & Metrics -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Assess &amp; Classify</h2>
+                    <span class="section-subtitle">Submit an applicant profile to generate a risk classification and inspect real test-set performance</span>
+                </div>
+
+                <div class="predict-grid">
+
+                    <!-- Input Form -->
+                    <div class="panel predict-form-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Applicant Profile</h3>
+                            <span class="panel-badge" id="datasetRangeNote">Ranges loaded from training data</span>
+                        </div>
+
+                        <form id="predictionForm" novalidate>
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label class="form-label" for="inputAge">Age</label>
+                                    <input class="form-input" type="number" id="inputAge" name="age"
+                                           step="1" inputmode="numeric" placeholder="e.g. 32" required>
+                                    <span class="form-hint" id="hintAge">Applicant age in years</span>
+                                    <span class="form-error" id="errorAge"></span>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-label" for="inputEmploymentYears">Employment Years</label>
+                                    <input class="form-input" type="number" id="inputEmploymentYears" name="employment_years"
+                                           step="any" inputmode="decimal" placeholder="e.g. 5" required>
+                                    <span class="form-hint" id="hintEmploymentYears">Years with current employer</span>
+                                    <span class="form-error" id="errorEmploymentYears"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="form-label" for="inputIncome">Annual Income (INR)</label>
+                                <input class="form-input" type="number" id="inputIncome" name="income"
+                                       step="any" inputmode="decimal" placeholder="e.g. 95000" required>
+                                <span class="form-hint" id="hintIncome">Gross annual income in Indian Rupees</span>
+                                <span class="form-error" id="errorIncome"></span>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="form-label" for="inputCreditScore">Credit Score</label>
+                                <input class="form-input" type="number" id="inputCreditScore" name="credit_score"
+                                       step="1" inputmode="numeric" placeholder="e.g. 735" required>
+                                <span class="form-hint" id="hintCreditScore">Higher score means a stronger credit history</span>
+                                <span class="form-error" id="errorCreditScore"></span>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="form-label" for="inputExistingLoans">Existing Loans</label>
+                                <input class="form-input" type="number" id="inputExistingLoans" name="existing_loans"
+                                       step="1" inputmode="numeric" placeholder="e.g. 1" required>
+                                <span class="form-hint" id="hintExistingLoans">Number of active loans or EMIs</span>
+                                <span class="form-error" id="errorExistingLoans"></span>
+                            </div>
+
+                            <button class="btn btn-primary btn-block" type="submit" id="btnPredict">
+                                <svg class="icon-flask" id="predictIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 3h6"></path>
+                                    <path d="M10 9V3h4v6l5 9a2 2 0 0 1-1.8 3H6.8A2 2 0 0 1 5 18l5-9z"></path>
+                                </svg>
+                                <span id="btnPredictLabel">ANALYZE FINANCIAL RISK</span>
+                            </button>
+
+                            <button class="btn btn-outline btn-block btn-sample" type="button" id="btnSample">
+                                Fill with a sample applicant
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Result + Performance -->
+                    <div class="result-column">
+
+                        <!-- Result Card -->
+                        <div class="panel result-panel" id="resultPanel" data-state="empty">
+                            <div class="result-empty" id="resultEmpty">
+                                <div class="result-empty-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                        <path d="M9 12l2 2 4-4"></path>
+                                    </svg>
+                                </div>
+                                <p class="result-empty-title">No assessment yet</p>
+                                <p class="result-empty-text">Enter the applicant profile and run the model to see a risk classification.</p>
+                            </div>
+
+                            <div class="result-body" id="resultBody" style="display: none;">
+                                <div class="result-heading">FINANCIAL RISK ASSESSMENT</div>
+                                <div class="result-risk" id="resultRiskBadge">&mdash;</div>
+
+                                <div class="confidence-block" id="confidenceBlock" style="display: none;">
+                                    <div class="confidence-row">
+                                        <span class="confidence-label">Prediction Confidence</span>
+                                        <span class="confidence-value font-mono" id="resultConfidence">&mdash;</span>
+                                    </div>
+                                    <div class="confidence-track">
+                                        <div class="confidence-fill" id="confidenceFill"></div>
+                                    </div>
+                                    <p class="confidence-note">Probability of the predicted class, reported by the model.</p>
+                                </div>
+
+                                <div class="result-divider"></div>
+
+                                <div class="result-section-label">Class Distribution</div>
+                                <div class="prob-list" id="probList"></div>
+
+                                <div class="result-section-label">Input Summary</div>
+                                <div class="input-summary" id="inputSummary"></div>
+
+                                <div class="result-warnings" id="resultWarnings"></div>
+
+                                <div class="result-meta">
+                                    <div class="result-meta-row">
+                                        <span>Model</span>
+                                        <span class="font-mono" id="resultModelName">&mdash;</span>
+                                    </div>
+                                    <div class="result-meta-row">
+                                        <span>Algorithm</span>
+                                        <span class="font-mono" id="resultAlgorithm">&mdash;</span>
+                                    </div>
+                                    <div class="result-meta-row">
+                                        <span>Trained at</span>
+                                        <span class="font-mono" id="resultTrainedAt">&mdash;</span>
+                                    </div>
+                                    <div class="result-meta-row">
+                                        <span>R engine time</span>
+                                        <span class="font-mono" id="resultExecTime">&mdash;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="result-error" id="resultError" style="display: none;">
+                                <div class="result-error-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                    </svg>
+                                </div>
+                                <p class="result-error-title" id="resultErrorTitle">Assessment failed</p>
+                                <ul class="result-error-list" id="resultErrorList"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Model Performance -->
+                        <div class="panel performance-panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Model Performance</h3>
+                                <span class="panel-badge">Held-out test set</span>
+                            </div>
+
+                            <div class="metric-cards">
+                                <div class="metric-card metric-card-accuracy">
+                                    <div class="metric-label">ACCURACY</div>
+                                    <div class="metric-value" id="metricAccuracy">&mdash;</div>
+                                    <div class="metric-caption">Correct classifications</div>
+                                </div>
+                                <div class="metric-card metric-card-precision">
+                                    <div class="metric-label">PRECISION</div>
+                                    <div class="metric-value" id="metricPrecision">&mdash;</div>
+                                    <div class="metric-caption">Macro average</div>
+                                </div>
+                                <div class="metric-card metric-card-recall">
+                                    <div class="metric-label">RECALL</div>
+                                    <div class="metric-value" id="metricRecall">&mdash;</div>
+                                    <div class="metric-caption">Macro average</div>
+                                </div>
+                                <div class="metric-card metric-card-f1">
+                                    <div class="metric-label">F1 SCORE</div>
+                                    <div class="metric-value" id="metricF1">&mdash;</div>
+                                    <div class="metric-caption">Macro average</div>
+                                </div>
+                            </div>
+
+                            <div class="performance-footer">
+                                <div class="performance-stat">
+                                    <span class="performance-stat-label">Balanced Accuracy</span>
+                                    <span class="performance-stat-value font-mono" id="metricBalanced">&mdash;</span>
+                                </div>
+                                <div class="performance-stat">
+                                    <span class="performance-stat-label">Test records</span>
+                                    <span class="performance-stat-value font-mono" id="metricTestRows">&mdash;</span>
+                                </div>
+                                <div class="performance-stat">
+                                    <span class="performance-stat-label">Training records</span>
+                                    <span class="performance-stat-value font-mono" id="metricTrainRows">&mdash;</span>
+                                </div>
+                            </div>
+
+                            <p class="performance-note" id="performanceNote"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Decision Path Trace -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Decision Path</h2>
+                    <span class="section-subtitle">The exact sequence of rules this request travelled through the fitted tree</span>
+                </div>
+
+                <div class="panel path-panel" id="pathPanel" data-state="empty">
+                    <div class="path-empty" id="pathEmpty">
+                        <p class="chart-placeholder">Run an assessment to trace the model's decision path.</p>
+                    </div>
+                    <div class="path-body" id="pathBody" style="display: none;">
+                        <ol class="path-list" id="pathList"></ol>
+                        <p class="path-note">
+                            Each step above is a node the applicant record actually reached in the fitted
+                            <code>rpart</code> tree. The thresholds and branch values are the model's own.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Decision Tree Structure -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Decision Tree Model</h2>
+                    <span class="section-subtitle">The actual trained rpart tree &mdash; every node, split rule and leaf distribution</span>
+                </div>
+
+                <div class="panel tree-panel">
+                    <div class="tree-header">
+                        <div class="tree-legend">
+                            <span class="legend-item">
+                                <span class="legend-swatch legend-swatch-decision"></span>
+                                Decision node (split rule)
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-swatch legend-swatch-leaf"></span>
+                                Terminal class
+                            </span>
+                        </div>
+                        <span class="panel-badge" id="treeNodeCount">&mdash;</span>
+                    </div>
+
+                    <div class="tree-wrapper" id="treeWrapper">
+                        <p class="chart-placeholder" id="treePlaceholder">Loading tree structure...</p>
+                        <div class="tree-canvas" id="treeCanvas"></div>
+                    </div>
+                </div>
+
+                <div class="panel importance-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Variable Importance</h3>
+                        <span class="panel-badge">Gini gain</span>
+                    </div>
+                    <div class="importance-grid" id="importanceGrid">
+                        <p class="chart-placeholder">Loading variable importance...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Confusion Matrix -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Confusion Matrix</h2>
+                    <span class="section-subtitle">Held-out test records: rows are the actual risk tier, columns are the predicted tier</span>
+                </div>
+
+                <div class="panel matrix-panel">
+                    <div class="matrix-wrap" id="matrixWrap">
+                        <p class="chart-placeholder">Loading confusion matrix...</p>
+                    </div>
+                    <p class="matrix-note" id="matrixNote"></p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-brand">AI Insight Hub</div>
+                    <div class="footer-tagline">Phase 4 &bull; Decision Tree</div>
+                </div>
+                <div class="footer-center">
+                    <div class="footer-academic">
+                        Developed for <strong>GCF Training by Ethnotech</strong> &bull; <strong>Parul University</strong>
+                    </div>
+                </div>
+                <div class="footer-right">
+                    <div class="footer-version">Educational ML Implementation</div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="js/decision-tree.js"></script>
+</body>
+</html>

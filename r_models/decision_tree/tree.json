@@ -1,0 +1,286 @@
+{
+  "success": true,
+  "model": "Decision Tree",
+  "algorithm": "rpart::rpart (CART, Gini impurity)",
+  "target": "risk",
+  "classes": ["LOW", "MEDIUM", "HIGH"],
+  "features": ["age", "income", "credit_score", "existing_loans", "employment_years"],
+  "feature_labels": {
+    "age": "Age",
+    "income": "Annual Income (INR)",
+    "credit_score": "Credit Score",
+    "existing_loans": "Existing Loans",
+    "employment_years": "Employment Years"
+  },
+  "trained_at": "2026-09-25T15:01:46Z",
+  "total_nodes": 11,
+  "internal_nodes": 5,
+  "leaf_nodes": 6,
+  "control": {
+    "maxdepth": 3,
+    "minsplit": 5,
+    "cp": 0.0001
+  },
+  "variable_importance": [
+    {
+      "feature": "existing_loans",
+      "importance": 21.6679
+    },
+    {
+      "feature": "employment_years",
+      "importance": 5.0135
+    },
+    {
+      "feature": "credit_score",
+      "importance": 4.812
+    },
+    {
+      "feature": "income",
+      "importance": 4.691
+    },
+    {
+      "feature": "age",
+      "importance": 2.9738
+    }
+  ],
+  "root": {
+    "id": 1,
+    "is_leaf": false,
+    "samples": 97,
+    "weighted_samples": 97,
+    "deviance": 32,
+    "node_probability": 1,
+    "predicted_class": "HIGH",
+    "left_is_below": true,
+    "class_counts": {
+      "LOW": 6,
+      "MEDIUM": 26,
+      "HIGH": 65
+    },
+    "class_probabilities": {
+      "LOW": 0.0619,
+      "MEDIUM": 0.268,
+      "HIGH": 0.6701
+    },
+    "variable": "existing_loans",
+    "cut": 1.5,
+    "left_condition": "existing_loans < 1.5",
+    "right_condition": "existing_loans >= 1.5",
+    "left": {
+      "id": 2,
+      "is_leaf": false,
+      "samples": 28,
+      "weighted_samples": 28,
+      "deviance": 11,
+      "node_probability": 0.2887,
+      "predicted_class": "MEDIUM",
+      "left_is_below": false,
+      "class_counts": {
+        "LOW": 6,
+        "MEDIUM": 17,
+        "HIGH": 5
+      },
+      "class_probabilities": {
+        "LOW": 0.2143,
+        "MEDIUM": 0.6071,
+        "HIGH": 0.1786
+      },
+      "variable": "credit_score",
+      "cut": 540.5,
+      "left_condition": "credit_score >= 540.5",
+      "right_condition": "credit_score < 540.5",
+      "left": {
+        "id": 4,
+        "is_leaf": false,
+        "samples": 23,
+        "weighted_samples": 23,
+        "deviance": 7,
+        "node_probability": 0.2371,
+        "predicted_class": "MEDIUM",
+        "left_is_below": false,
+        "class_counts": {
+          "LOW": 6,
+          "MEDIUM": 16,
+          "HIGH": 1
+        },
+        "class_probabilities": {
+          "LOW": 0.2609,
+          "MEDIUM": 0.6957,
+          "HIGH": 0.0435
+        },
+        "variable": "employment_years",
+        "cut": 20,
+        "left_condition": "employment_years >= 20",
+        "right_condition": "employment_years < 20",
+        "left": {
+          "id": 8,
+          "is_leaf": true,
+          "samples": 3,
+          "weighted_samples": 3,
+          "deviance": 0,
+          "node_probability": 0.0309,
+          "predicted_class": "LOW",
+          "left_is_below": null,
+          "class_counts": {
+            "LOW": 3,
+            "MEDIUM": 0,
+            "HIGH": 0
+          },
+          "class_probabilities": {
+            "LOW": 1,
+            "MEDIUM": 0,
+            "HIGH": 0
+          }
+        },
+        "right": {
+          "id": 9,
+          "is_leaf": true,
+          "samples": 20,
+          "weighted_samples": 20,
+          "deviance": 4,
+          "node_probability": 0.2062,
+          "predicted_class": "MEDIUM",
+          "left_is_below": null,
+          "class_counts": {
+            "LOW": 3,
+            "MEDIUM": 16,
+            "HIGH": 1
+          },
+          "class_probabilities": {
+            "LOW": 0.15,
+            "MEDIUM": 0.8,
+            "HIGH": 0.05
+          }
+        }
+      },
+      "right": {
+        "id": 5,
+        "is_leaf": true,
+        "samples": 5,
+        "weighted_samples": 5,
+        "deviance": 1,
+        "node_probability": 0.0515,
+        "predicted_class": "HIGH",
+        "left_is_below": null,
+        "class_counts": {
+          "LOW": 0,
+          "MEDIUM": 1,
+          "HIGH": 4
+        },
+        "class_probabilities": {
+          "LOW": 0,
+          "MEDIUM": 0.2,
+          "HIGH": 0.8
+        }
+      }
+    },
+    "right": {
+      "id": 3,
+      "is_leaf": false,
+      "samples": 69,
+      "weighted_samples": 69,
+      "deviance": 9,
+      "node_probability": 0.7113,
+      "predicted_class": "HIGH",
+      "left_is_below": false,
+      "class_counts": {
+        "LOW": 0,
+        "MEDIUM": 9,
+        "HIGH": 60
+      },
+      "class_probabilities": {
+        "LOW": 0,
+        "MEDIUM": 0.1304,
+        "HIGH": 0.8696
+      },
+      "variable": "income",
+      "cut": 87068.445,
+      "left_condition": "income >= 87068.45",
+      "right_condition": "income < 87068.45",
+      "left": {
+        "id": 6,
+        "is_leaf": false,
+        "samples": 31,
+        "weighted_samples": 31,
+        "deviance": 9,
+        "node_probability": 0.3196,
+        "predicted_class": "HIGH",
+        "left_is_below": true,
+        "class_counts": {
+          "LOW": 0,
+          "MEDIUM": 9,
+          "HIGH": 22
+        },
+        "class_probabilities": {
+          "LOW": 0,
+          "MEDIUM": 0.2903,
+          "HIGH": 0.7097
+        },
+        "variable": "existing_loans",
+        "cut": 3.5,
+        "left_condition": "existing_loans < 3.5",
+        "right_condition": "existing_loans >= 3.5",
+        "left": {
+          "id": 12,
+          "is_leaf": true,
+          "samples": 14,
+          "weighted_samples": 14,
+          "deviance": 5,
+          "node_probability": 0.1443,
+          "predicted_class": "MEDIUM",
+          "left_is_below": null,
+          "class_counts": {
+            "LOW": 0,
+            "MEDIUM": 9,
+            "HIGH": 5
+          },
+          "class_probabilities": {
+            "LOW": 0,
+            "MEDIUM": 0.6429,
+            "HIGH": 0.3571
+          }
+        },
+        "right": {
+          "id": 13,
+          "is_leaf": true,
+          "samples": 17,
+          "weighted_samples": 17,
+          "deviance": 0,
+          "node_probability": 0.1753,
+          "predicted_class": "HIGH",
+          "left_is_below": null,
+          "class_counts": {
+            "LOW": 0,
+            "MEDIUM": 0,
+            "HIGH": 17
+          },
+          "class_probabilities": {
+            "LOW": 0,
+            "MEDIUM": 0,
+            "HIGH": 1
+          }
+        }
+      },
+      "right": {
+        "id": 7,
+        "is_leaf": true,
+        "samples": 38,
+        "weighted_samples": 38,
+        "deviance": 0,
+        "node_probability": 0.3918,
+        "predicted_class": "HIGH",
+        "left_is_below": null,
+        "class_counts": {
+          "LOW": 0,
+          "MEDIUM": 0,
+          "HIGH": 38
+        },
+        "class_probabilities": {
+          "LOW": 0,
+          "MEDIUM": 0,
+          "HIGH": 1
+        }
+      }
+    }
+  }
+}

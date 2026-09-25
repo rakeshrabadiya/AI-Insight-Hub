@@ -1,7 +1,7 @@
 # AI Insight Hub — Multi-Model Machine Learning Analytics Platform
 
 [![Platform](https://img.shields.io/badge/Platform-AI%20Insight%20Hub-00f0ff.svg)](#)
-[![Phase](https://img.shields.io/badge/Status-Phase%203%20Linear%20Regression%20Active-10b981.svg)](#)
+[![Phase](https://img.shields.io/badge/Status-Phase%204%20Decision%20Tree%20Active-10b981.svg)](#)
 [![Backend](https://img.shields.io/badge/Backend-Python%20Flask-3b82f6.svg)](#)
 [![Frontend](https://img.shields.io/badge/Frontend-Vanilla%20HTML%20%2F%20CSS%20%2F%20JS-f59e0b.svg)](#)
 [![ML-Engine](https://img.shields.io/badge/ML%20Engine-R%204.6.1%20Connected-6366f1.svg)](#)
@@ -42,6 +42,234 @@ Built as part of the **GCF Training by Ethnotech at Parul University**, the plat
 ---
 
 ## 🚀 Current Project Phase
+
+### **Phase 4: Decision Tree — Financial Risk Classification (ACTIVE / COMPLETED)**
+
+Phase 4 delivers the platform's **first classification model**. A real CART Decision Tree is
+grown in R with `rpart`, persisted to disk, and served through the same Flask → `Rscript`
+bridge Phase 2 built and Phase 3 proved, this time classifying a financial applicant into a
+risk tier.
+
+- ✅ **Real `rpart` Model:** `rpart::rpart(..., method = "class")` — CART, Gini impurity.
+- ✅ **No Retraining at Inference:** `predict.R` does `readRDS()` and calls `predict()`.
+- ✅ **Real Metrics:** accuracy, precision, recall, F1 and the confusion matrix are all
+  computed from held-out test-set predictions, never hard-coded.
+- ✅ **Real Tree Exposed:** `tree.json` holds the node-by-node structure of the *fitted*
+  model, self-checked to route records identically to `predict()`.
+- ✅ **Full Stack:** API endpoints, an interactive Financial Risk Analyzer page, and a
+  decision-tree visualisation — all driven by live model output.
+
+#### What a Decision Tree Is, and Why One Here
+
+A decision tree learns a chain of `if/then` rules by repeatedly picking the feature split
+that best separates the classes. For this problem that means it answers questions like:
+
+```text
+Is existing_loans < 1.5 ?
+├── yes → Is credit_score >= 540.5 ?
+│         ├── yes → Is employment_years < 20 ? → MEDIUM
+│         └── no  → MEDIUM
+└── no  → HIGH
+```
+
+That matters here because the model is a **classifier**, not a regressor. Linear Regression
+(Phase 3) predicts a continuous price; `rpart` with `method = "class"` predicts one of three
+discrete classes, and returns the class probability for each — which is where the
+confidence shown in the UI comes from.
+
+#### Dataset Features & Risk Classes
+
+Dataset: **`datasets/risk.csv`** (120 rows, 0 rows dropped as invalid)
+
+| Feature | Type | Description | Trained range |
+| :--- | :--- | :--- | :--- |
+| `age` | numeric | Applicant age in years | 21 – 65 |
+| `income` | numeric | Annual income (INR) | 23,887.75 – 144,947.41 |
+| `credit_score` | numeric | Credit score | 401 – 845 |
+| `existing_loans` | numeric | Number of existing loans | 0 – 5 |
+| `employment_years` | numeric | Years employed | 0 – 30 |
+| **`risk`** | **factor (target)** | **The predicted class** | — |
+
+**Target classes:** `LOW`, `MEDIUM`, `HIGH` — held in a factor with that fixed level order
+so the class-probability columns always mean the same thing.
+
+The dataset is **heavily imbalanced** (`HIGH` = 81, `MEDIUM` = 32, `LOW` = 7). That single
+fact drives most of the design decisions below, so it is worth stating plainly: on an
+imbalanced dataset a model that ignores its inputs and always answers "HIGH" already scores
+about 70% accuracy. Accuracy alone is therefore not a useful headline here, which is why the
+page also shows balanced accuracy and the full confusion matrix.
+
+#### Training Process
+
+`r_models/decision_tree/train.R` performs these steps, in order:
+
+1. **Load** `datasets/risk.csv`; **validate** that all six required columns exist.
+2. **Clean**: coerce every feature to numeric, drop incomplete rows, drop rows violating the
+   domain rules, drop rows whose target is outside the three known classes — each count is
+   reported, never silently discarded.
+3. **Factor** the target with the fixed `LOW`/`MEDIUM`/`HIGH` level order.
+4. **Stratified 80/20 split** with a fixed seed (`set.seed(42)`). The split is done *inside
+   each class*, so every risk tier appears on both sides — a naive random split can leave
+   `LOW` out of the test set entirely, and then its precision and recall cannot be computed
+   at all.
+5. **Cross-validate** 30 `(maxdepth, minsplit)` combinations — 10 repeats of 5 stratified
+   folds — **on the training data only**, and select by the one-standard-error rule
+   (simplest tree within 1 SE of the best mean macro-F1). This keeps the test set an honest
+   estimate rather than something the hyperparameters were tuned against.
+6. **Train** the final model on the full training set with the selected settings.
+7. **Predict** on the held-out test set and compute the real metrics.
+8. **Extract** the fitted tree node by node, then **self-check** it two ways before writing
+   anything: the hand-extracted routing must agree with `predict()` on 100% of test
+   records, and the extracted leaf probabilities must match `predict(type = "prob")` on
+   100% of them. If either check fails the script refuses to write `tree.json`, because a
+   decorative tree would misrepresent the model.
+9. **Save** `model.rds`, `metrics.json` and `tree.json`.
+
+#### Evaluation Metrics (Real, From the Trained Model)
+
+Seed 42, 97 training rows / 23 test rows, confusion matrix read as rows = actual,
+columns = predicted:
+
+| | LOW | MEDIUM | HIGH | Total |
+| :--- | ---: | ---: | ---: | ---: |
+| **LOW** | 0 | 1 | 0 | 1 |
+| **MEDIUM** | 1 | 5 | 0 | 6 |
+| **HIGH** | 0 | 6 | 10 | 16 |
+
+| Metric | Value | Notes |
+| :--- | :---: | :--- |
+| **Accuracy** | **0.6522** | 15 of 23 correct |
+| **Precision** (macro) | **0.4722** | |
+| **Recall** (macro) | **0.4861** | |
+| **F1 Score** (macro) | **0.4416** | |
+| Balanced accuracy | 0.4861 | mean of the per-class recalls |
+| Majority-class baseline | 0.6957 | "always predict HIGH" |
+
+> **Reading these honestly.** The model is *below* the majority-class baseline on accuracy.
+> That is the real result, not a bug: with 7 `LOW` rows in 120, the test set contains a
+> single `LOW` example, and the tree misclassifies it. The numbers are reported exactly as
+> computed so the limitation is visible — this is an educational demonstration on a small,
+> imbalanced dataset, not a production credit-scoring system, and it is not financial advice.
+
+#### Phase 4 API Endpoints
+
+| Method | Endpoint | Purpose |
+| :--- | :--- | :--- |
+| `POST` | `/api/decision-tree/predict` | Validate input, run `predict.R` against the saved model, return the risk class. |
+| `GET` | `/api/decision-tree/metrics` | Real accuracy, precision, recall, F1, per-class metrics, confusion matrix and the full CV grid. |
+| `GET` | `/api/decision-tree/tree` | The real fitted tree: every node, split rule, branch condition and class probability. |
+| `GET` | `/api/decision-tree/schema` | Each input feature with the valid range recorded at training time. |
+
+**Prediction example — request:**
+```json
+{
+  "age": 32,
+  "income": 750000,
+  "credit_score": 735,
+  "existing_loans": 1,
+  "employment_years": 5
+}
+```
+
+**Prediction example — response (abridged):**
+```json
+{
+  "success": true,
+  "model": "Decision Tree",
+  "prediction": "MEDIUM",
+  "confidence": 0.8,
+  "class_probabilities": { "LOW": 0.15, "MEDIUM": 0.8, "HIGH": 0.05 },
+  "decision_path": [
+    { "node": 1, "condition": "existing_loans < 1.5" },
+    { "node": 2, "condition": "credit_score >= 540.5" },
+    { "node": 4, "condition": "employment_years < 20" },
+    { "node": 9, "condition": "Reached leaf node 9 -> MEDIUM RISK" }
+  ]
+}
+```
+
+`confidence` is the model's own probability for the class it predicted, read from
+`predict(type = "prob")`. It is reported only when R actually calculated one.
+
+**Status codes for `/api/decision-tree/predict`:**
+
+| Code | Meaning |
+| :---: | :--- |
+| `200` | Prediction produced successfully. |
+| `400` | Invalid or missing input (with a per-field `errors` list). |
+| `415` | Request was not sent as JSON. |
+| `502` | The R engine failed to execute or returned an unreadable result. |
+| `503` | The model has not been trained yet (`model.rds` missing). |
+
+#### Input Validation Rules
+
+Validation is enforced in **both** Python and R, so a request cannot bypass it by calling the
+R script directly:
+
+| Field | Rule |
+| :--- | :--- |
+| `age` | `> 0` |
+| `income` | `> 0` |
+| `credit_score` | within `300` – `900` |
+| `existing_loans` | `>= 0` |
+| `employment_years` | `>= 0` |
+
+Missing fields, empty strings, non-numeric values and unknown field names are all rejected;
+booleans are refused rather than being coerced to 1 or 0.
+
+**Out-of-range values are a warning, not an error.** A value outside the range the model was
+trained on (`income` above 144,947, for instance) is still classified — a CART tree always
+routes a record down *some* branch — and the response carries a `warnings` array naming the
+field and its trained range:
+
+```json
+"warnings": [
+  {
+    "field": "income",
+    "value": 750000.0,
+    "trained_min": 23887.75,
+    "trained_max": 144947.41,
+    "message": "Annual Income (750000) is outside the 23887.8 – 144947 range the model was trained on, so this prediction is extrapolated."
+  }
+]
+```
+
+This keeps the documented example payload working while still telling the user the answer
+is an extrapolation rather than an interpolation.
+
+#### How the Tree Structure Is Exposed
+
+`GET /api/decision-tree/tree` returns the fitted tree as a nested structure — each node
+carries its `id`, `variable`, `cut` (the threshold), the `left_condition` and
+`right_condition` in human-readable form, its `class_counts`, `class_probabilities` and
+`samples`, and its two children (`2n` and `2n+1`, rpart's binary layout).
+
+The frontend renders this as a real decision diagram — one card per node, connected by
+labelled branches — plus the variable-importance ranking. Because the payload is the fitted
+model rather than a hand-drawn illustration, the diagram changes whenever the model is
+retrained.
+
+The **decision path** returned with every prediction is the same structure walked for one
+specific applicant: the chain of rules that record actually satisfied, ending at the leaf
+that produced its class. It is a trace of the model, not a description of it.
+
+#### How to Retrain the Model
+
+```bash
+Rscript r_models/decision_tree/train.R
+```
+
+This regenerates `model.rds`, `metrics.json` and `tree.json` in place. The run is
+deterministic (`set.seed(42)`), so an unchanged dataset reproduces the same tree and the
+same metrics exactly — retraining is only needed after editing `datasets/risk.csv` or
+changing the training logic.
+
+To use different data or a different target, edit the `TARGET`, `FEATURES` and
+`CLASS_LEVELS` constants at the top of `train.R`; the API's validation rules, the saved
+feature ranges and the frontend schema all follow from those constants rather than being
+duplicated by hand.
+
+---
 
 ### **Phase 3: Linear Regression — Property Price Prediction (ACTIVE / COMPLETED)**
 
@@ -280,13 +508,16 @@ AI-Insight-Hub/
 ├── frontend/                     # Pure client-side application
 │   ├── index.html                # Main dashboard UI with R test trigger & model registry
 │   ├── regression.html           # Phase 3: Property Price Predictor page
+│   ├── decision-tree.html        # Phase 4: Financial Risk Analyzer page
 │   ├── css/
 │   │   ├── style.css             # Main styling, design tokens & glassmorphism
 │   │   ├── responsive.css        # Adaptive mobile & tablet breakpoints
-│   │   └── regression.css        # Phase 3: predictor form, result card, chart
+│   │   ├── regression.css        # Phase 3: predictor form, result card, chart
+│   │   └── decision-tree.css     # Phase 4: risk form, result card, tree diagram
 │   └── js/
 │       ├── app.js                # Dynamic API communication, R engine tests & tabs
-│       └── regression.js         # Phase 3: prediction flow, validation & SVG chart
+│       ├── regression.js         # Phase 3: prediction flow, validation & SVG chart
+│       └── decision-tree.js      # Phase 4: risk form, prediction & tree rendering
 │
 ├── backend/                      # Python Flask REST API
 │   ├── app.py                    # Flask server entrypoint & CORS config
@@ -296,12 +527,14 @@ AI-Insight-Hub/
 │   │   ├── health.py             # Health check endpoint (/api/health)
 │   │   ├── r_engine.py           # R engine execution endpoint (/api/r-engine/test)
 │   │   ├── datasets.py           # Dataset validation endpoint (/api/datasets/validate)
-│   │   └── regression.py         # Phase 3: predict / metrics / evaluation / schema
+│   │   ├── regression.py         # Phase 3: predict / metrics / evaluation / schema
+│   │   └── decision_tree.py      # Phase 4: predict / metrics / tree / schema
 │   ├── services/                 # Business logic and ML orchestration services
 │   │   ├── __init__.py           # Service package initializer
 │   │   ├── r_runner.py           # R execution engine subprocess runner
 │   │   ├── dataset_validator.py  # Dataset schema and data integrity validator
-│   │   └── regression_service.py # Phase 3: input validation & model orchestration
+│   │   ├── regression_service.py # Phase 3: input validation & model orchestration
+│   │   └── decision_tree_service.py # Phase 4: risk input validation & R orchestration
 │   └── database/                 # SQLite database storage directory (future)
 │       └── .gitkeep
 │
@@ -314,9 +547,14 @@ AI-Insight-Hub/
 │   │   ├── model.rds             # Serialised fitted model + training metadata
 │   │   ├── metrics.json          # Real R2 / RMSE / MAE + coefficients
 │   │   └── evaluation.json       # Held-out test actual vs predicted pairs
-│   ├── decision_tree/            # Decision tree classification scripts (Phase 4)
-│   ├── knn/                      # K-Nearest Neighbors scripts (Phase 5)
-│   └── kmeans/                   # K-Means clustering scripts (Phase 6)
+│   ├── decision_tree/            # Decision tree classification (Phase 4)
+│   │   ├── train.R               # Trains rpart CART tree, evaluates & writes artifacts
+│   │   ├── predict.R             # Loads model.rds and returns a JSON risk prediction
+│   │   ├── model.rds             # Serialised fitted rpart model + metadata + tree
+│   │   ├── metrics.json          # Real accuracy / precision / recall / F1 + confusion matrix
+│   │   └── tree.json             # Node-by-node structure of the fitted tree
+│   ├── knn/                      # K-Nearest Neighbors scripts (Phase 5 - not implemented)
+│   └── kmeans/                   # K-Means clustering scripts (Phase 6 - not implemented)
 │
 ├── datasets/                     # Training and testing datasets (4 CSV files)
 │   ├── housing.csv               # Property price regression dataset (120 rows)
@@ -327,7 +565,9 @@ AI-Insight-Hub/
 ├── tests/                        # Automated test suites
 │   ├── test_backend.py           # 19 tests: health, R engine, dataset validation
 │   ├── test_regression.py        # 40 tests: Phase 3 model, API, validation, failures
-│   └── frontend_logic_test.js    # 50 tests: page logic, validation & chart rendering
+│   ├── test_decision_tree.py     # 55 tests: Phase 4 model, API, validation, tree, failures
+│   ├── frontend_logic_test.js    # 50 tests: Phase 3 page logic, validation & chart
+│   └── decision_tree_frontend_test.js  # 69 tests: Phase 4 form, result, metrics & tree UI
 │
 ├── .gitignore                    # Git pattern exclusion rules
 └── README.md                     # Comprehensive platform documentation
@@ -412,28 +652,52 @@ PHASE 3 LINEAR REGRESSION TRAINING COMPLETE
 
 ---
 
-### Step 5: Run the Automated Test Suite
+### Step 4b: Train the Decision Tree Model (Phase 4)
 
-Verify that all endpoints, services, dataset validators, R execution bridges, and the
-Linear Regression model pass:
+Train the classifier and generate its artifacts (`model.rds`, `metrics.json`, `tree.json`):
 ```bash
-python -m unittest discover -s tests -p "test_*.py" -v
+Rscript r_models/decision_tree/train.R
 ```
 
 Expected output:
 ```text
-Ran 59 tests in 2.7s
-OK
+[4/11] Stratified split: 97 training rows / 23 test rows (80% / 20%)
+[5/11] Cross-validated 30 (maxdepth, minsplit) combinations over 10 repeats of 5 stratified folds
+      Selected by 1-SE rule: maxdepth = 3, minsplit = 5 (CV F1 = 0.6599 +/- 0.0248)
+[8/11] Test metrics -> Accuracy = 0.6522 | Precision = 0.4722 | Recall = 0.4861 | F1 = 0.4416
+[10/11] Tree routing self-check passed: extracted tree matches predict() on 23/23 test records
+PHASE 4 DECISION TREE TRAINING COMPLETE
 ```
 
-With the Flask backend running, also run the frontend logic suite:
+> The Phase 4 model artifacts are committed too, and the run is deterministic
+> (`set.seed(42)`), so this only needs repeating after editing `datasets/risk.csv` or the
+> training logic.
+
+---
+
+### Step 5: Run the Automated Test Suite
+
+Verify that all endpoints, services, dataset validators, R execution bridges, the Linear
+Regression model and the Decision Tree model pass:
+```bash
+python -m pytest tests/ -q
+```
+
+Expected output:
+```text
+114 passed
+```
+
+With the Flask backend running, also run the frontend logic suites:
 ```bash
 node tests/frontend_logic_test.js
+node tests/decision_tree_frontend_test.js
 ```
 
 Expected output:
 ```text
 === Results: 50 passed, 0 failed ===
+=== Results: 69 passed, 0 failed ===
 ```
 
 ---
@@ -528,6 +792,34 @@ curl http://127.0.0.1:5000/api/regression/metrics
 curl http://127.0.0.1:5000/api/regression/evaluation
 ```
 
+#### 7. Financial Risk Prediction (Phase 4):
+```bash
+curl -X POST http://127.0.0.1:5000/api/decision-tree/predict \
+  -H "Content-Type: application/json" \
+  -d '{"age":32,"income":95000,"credit_score":735,"existing_loans":1,"employment_years":5}'
+```
+
+Expected response:
+```json
+{
+  "success": true,
+  "model": "Decision Tree",
+  "prediction": "MEDIUM",
+  "confidence": 0.8,
+  "class_probabilities": { "LOW": 0.15, "MEDIUM": 0.8, "HIGH": 0.05 }
+}
+```
+
+#### 8. Decision Tree Model Metrics (Phase 4):
+```bash
+curl http://127.0.0.1:5000/api/decision-tree/metrics
+```
+
+#### 9. Fitted Decision Tree Structure (Phase 4):
+```bash
+curl http://127.0.0.1:5000/api/decision-tree/tree
+```
+
 ---
 
 ### Step 8: Launch the Frontend
@@ -542,11 +834,18 @@ Then navigate to: `http://127.0.0.1:8000/frontend/`
 - Click **"TEST R ENGINE"** in the R Machine Learning Engine panel to trigger `POST /api/r-engine/test` and view real-time execution metrics.
 - Toggle between console tabs (**GET /api/health**, **POST /api/r-engine/test**, and **GET /api/datasets/validate**) to inspect formatted JSON payloads.
 - Click **"OPEN MODEL"** on the Linear Regression card to open the **Property Price Predictor** page at `frontend/regression.html`.
+- Click **"OPEN MODEL"** on the Decision Tree card to open the **Financial Risk Analyzer** page at `frontend/decision-tree.html`.
 
 **Property Price Predictor Actions:**
 - Enter property attributes and click **"PREDICT PROPERTY PRICE"** to run the real R model.
 - View the live R², RMSE and MAE tiles (loaded from the trained model).
 - Hover the Actual vs Predicted scatter plot to inspect individual test records.
+
+**Financial Risk Analyzer Actions:**
+- Enter the applicant profile and click **"ANALYZE FINANCIAL RISK"** to run the real `rpart` classifier.
+- View the live accuracy, precision, recall and F1 tiles plus the confusion matrix (all loaded from the trained model).
+- Inspect the decision diagram — every node, threshold and branch comes from the fitted tree.
+- Read the per-applicant decision path showing the exact rules that record satisfied.
 
 ---
 
@@ -557,7 +856,7 @@ Then navigate to: `http://127.0.0.1:8000/frontend/`
 | **Phase 1** | **Foundation & API Integration** | ✅ Complete | Directory layout, Flask REST server, health telemetry, glassmorphism dashboard, dynamic status monitoring. |
 | **Phase 2** | **R Execution Bridge & Datasets** | ✅ Complete | Subprocess RRunner, package verification, test R script, test endpoint (`/api/r-engine/test`), 4 datasets (480 records), dataset validator, test suite. |
 | **Phase 3** | **Linear Regression** | ✅ Complete | Property price model in R (`lm`), training pipeline with real R²/RMSE/MAE, persisted `model.rds`, prediction/metrics/evaluation API, interactive predictor page with scatter chart. |
-| **Phase 4** | **Decision Tree** | ⏳ Planned | Financial risk classification model in R (`rpart`), tree visualization, risk scoring matrix. |
+| **Phase 4** | **Decision Tree** | ✅ Complete | Financial risk classification model in R (`rpart::rpart`, CART), stratified split + cross-validated depth selection, real accuracy/precision/recall/F1 + confusion matrix, persisted `model.rds`, prediction/metrics/tree API, decision-tree visualisation, Financial Risk Analyzer page. |
 | **Phase 5** | **KNN Classification** | ⏳ Planned | Student performance model in R (`class::knn`), distance-weighted inference, dynamic K-tuning. |
 | **Phase 6** | **K-Means Clustering** | ⏳ Planned | Customer segmentation model in R (`kmeans`), elbow method optimization, 2D centroid scatter visualizer. |
 

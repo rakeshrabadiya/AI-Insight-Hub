@@ -42,7 +42,10 @@ def create_app():
             "platform": "AI Insight Hub",
             "description": "Multi-Model Machine Learning Analytics Platform",
             "version": "1.0.0",
-            "phase": "Phase 3 - Linear Regression Property Price Prediction",
+            "phase": (
+                "Phase 4 - Decision Tree Financial Risk Classification "
+                "(Phase 3 Linear Regression Property Price Prediction also active)"
+            ),
             "status": "online",
             "endpoints": {
                 "health": "/api/health",
@@ -51,7 +54,11 @@ def create_app():
                 "regression_predict": "/api/regression/predict",
                 "regression_metrics": "/api/regression/metrics",
                 "regression_evaluation": "/api/regression/evaluation",
-                "regression_schema": "/api/regression/schema"
+                "regression_schema": "/api/regression/schema",
+                "decision_tree_predict": "/api/decision-tree/predict",
+                "decision_tree_metrics": "/api/decision-tree/metrics",
+                "decision_tree_tree": "/api/decision-tree/tree",
+                "decision_tree_schema": "/api/decision-tree/schema"
             }
         }), 200
 

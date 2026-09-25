@@ -1,0 +1,368 @@
+{
+  "success": true,
+  "model": "Decision Tree",
+  "algorithm": "rpart::rpart (CART, Gini impurity)",
+  "task": "Financial Risk Classification",
+  "target": "risk",
+  "classes": ["LOW", "MEDIUM", "HIGH"],
+  "trained_at": "2026-09-25T15:01:46Z",
+  "r_version": "4.6.1",
+  "rpart_version": "4.1.27",
+  "random_seed": 42,
+  "metrics": {
+    "accuracy": 0.6522,
+    "precision": 0.4722,
+    "recall": 0.4861,
+    "f1_score": 0.4416,
+    "balanced_accuracy": 0.4861,
+    "error_rate": 0.3478,
+    "correct_predictions": 15,
+    "total_predictions": 23,
+    "majority_class_baseline": {
+      "class": "HIGH",
+      "accuracy": 0.6957
+    },
+    "averaging": "macro"
+  },
+  "per_class_metrics": {
+    "LOW": {
+      "precision": 0,
+      "recall": 0,
+      "f1_score": 0,
+      "support": 1,
+      "predicted": 1,
+      "true_positives": 0,
+      "false_positives": 1,
+      "false_negatives": 1
+    },
+    "MEDIUM": {
+      "precision": 0.4167,
+      "recall": 0.8333,
+      "f1_score": 0.5556,
+      "support": 6,
+      "predicted": 12,
+      "true_positives": 5,
+      "false_positives": 7,
+      "false_negatives": 1
+    },
+    "HIGH": {
+      "precision": 1,
+      "recall": 0.625,
+      "f1_score": 0.7692,
+      "support": 16,
+      "predicted": 10,
+      "true_positives": 10,
+      "false_positives": 0,
+      "false_negatives": 6
+    }
+  },
+  "confusion_matrix": {
+    "labels": ["LOW", "MEDIUM", "HIGH"],
+    "rows": "actual",
+    "columns": "predicted",
+    "matrix": [
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        1,
+        5,
+        0
+      ],
+      [
+        0,
+        6,
+        10
+      ]
+    ]
+  },
+  "dataset": {
+    "file": "datasets/risk.csv",
+    "rows_loaded": 120,
+    "rows_clean": 120,
+    "rows_dropped": 0,
+    "rows_incomplete": 0,
+    "rows_domain_invalid": 0,
+    "rows_unknown_class": 0,
+    "rows_train": 97,
+    "rows_test": 23,
+    "target": "risk",
+    "features": ["age", "income", "credit_score", "existing_loans", "employment_years"],
+    "feature_ranges": {
+      "age": {
+        "min": 21,
+        "max": 65
+      },
+      "income": {
+        "min": 23887.75,
+        "max": 144947.41
+      },
+      "credit_score": {
+        "min": 401,
+        "max": 845
+      },
+      "existing_loans": {
+        "min": 0,
+        "max": 5
+      },
+      "employment_years": {
+        "min": 0,
+        "max": 30
+      }
+    },
+    "class_distribution": {
+      "LOW": 7,
+      "MEDIUM": 32,
+      "HIGH": 81
+    }
+  },
+  "model_info": {
+    "control": {
+      "maxdepth": 3,
+      "minsplit": 5,
+      "cp": 0.0001,
+      "cv_folds": 5,
+      "cv_selected_on": "training data only (macro F1)"
+    },
+    "total_nodes": 11,
+    "internal_nodes": 5,
+    "leaf_nodes": 6,
+    "variable_importance": [
+      {
+        "feature": "existing_loans",
+        "importance": 21.6679
+      },
+      {
+        "feature": "employment_years",
+        "importance": 5.0135
+      },
+      {
+        "feature": "credit_score",
+        "importance": 4.812
+      },
+      {
+        "feature": "income",
+        "importance": 4.691
+      },
+      {
+        "feature": "age",
+        "importance": 2.9738
+      }
+    ]
+  },
+  "cross_validation": [
+    {
+      "max_depth": 4,
+      "min_split": 3,
+      "cv_f1_mean": 0.6675,
+      "cv_f1_sd": 0.1822,
+      "cv_f1_se": 0.0258
+    },
+    {
+      "max_depth": 4,
+      "min_split": 2,
+      "cv_f1_mean": 0.6675,
+      "cv_f1_sd": 0.1822,
+      "cv_f1_se": 0.0258
+    },
+    {
+      "max_depth": 4,
+      "min_split": 5,
+      "cv_f1_mean": 0.6633,
+      "cv_f1_sd": 0.1843,
+      "cv_f1_se": 0.0261
+    },
+    {
+      "max_depth": 3,
+      "min_split": 3,
+      "cv_f1_mean": 0.6609,
+      "cv_f1_sd": 0.1803,
+      "cv_f1_se": 0.0255
+    },
+    {
+      "max_depth": 3,
+      "min_split": 2,
+      "cv_f1_mean": 0.6609,
+      "cv_f1_sd": 0.1803,
+      "cv_f1_se": 0.0255
+    },
+    {
+      "max_depth": 5,
+      "min_split": 3,
+      "cv_f1_mean": 0.6604,
+      "cv_f1_sd": 0.1733,
+      "cv_f1_se": 0.0245
+    },
+    {
+      "max_depth": 5,
+      "min_split": 2,
+      "cv_f1_mean": 0.6604,
+      "cv_f1_sd": 0.1733,
+      "cv_f1_se": 0.0245
+    },
+    {
+      "max_depth": 3,
+      "min_split": 5,
+      "cv_f1_mean": 0.6599,
+      "cv_f1_sd": 0.1756,
+      "cv_f1_se": 0.0248
+    },
+    {
+      "max_depth": 6,
+      "min_split": 5,
+      "cv_f1_mean": 0.6196,
+      "cv_f1_sd": 0.1509,
+      "cv_f1_se": 0.0213
+    },
+    {
+      "max_depth": 7,
+      "min_split": 5,
+      "cv_f1_mean": 0.6196,
+      "cv_f1_sd": 0.1509,
+      "cv_f1_se": 0.0213
+    },
+    {
+      "max_depth": 5,
+      "min_split": 5,
+      "cv_f1_mean": 0.6164,
+      "cv_f1_sd": 0.1303,
+      "cv_f1_se": 0.0184
+    },
+    {
+      "max_depth": 7,
+      "min_split": 2,
+      "cv_f1_mean": 0.6148,
+      "cv_f1_sd": 0.1631,
+      "cv_f1_se": 0.0231
+    },
+    {
+      "max_depth": 7,
+      "min_split": 3,
+      "cv_f1_mean": 0.6142,
+      "cv_f1_sd": 0.1637,
+      "cv_f1_se": 0.0231
+    },
+    {
+      "max_depth": 6,
+      "min_split": 2,
+      "cv_f1_mean": 0.5997,
+      "cv_f1_sd": 0.143,
+      "cv_f1_se": 0.0202
+    },
+    {
+      "max_depth": 6,
+      "min_split": 3,
+      "cv_f1_mean": 0.5986,
+      "cv_f1_sd": 0.144,
+      "cv_f1_se": 0.0204
+    },
+    {
+      "max_depth": 5,
+      "min_split": 10,
+      "cv_f1_mean": 0.5715,
+      "cv_f1_sd": 0.1072,
+      "cv_f1_se": 0.0152
+    },
+    {
+      "max_depth": 6,
+      "min_split": 10,
+      "cv_f1_mean": 0.5715,
+      "cv_f1_sd": 0.1072,
+      "cv_f1_se": 0.0152
+    },
+    {
+      "max_depth": 7,
+      "min_split": 10,
+      "cv_f1_mean": 0.5715,
+      "cv_f1_sd": 0.1072,
+      "cv_f1_se": 0.0152
+    },
+    {
+      "max_depth": 5,
+      "min_split": 8,
+      "cv_f1_mean": 0.5714,
+      "cv_f1_sd": 0.1106,
+      "cv_f1_se": 0.0156
+    },
+    {
+      "max_depth": 6,
+      "min_split": 8,
+      "cv_f1_mean": 0.5714,
+      "cv_f1_sd": 0.1106,
+      "cv_f1_se": 0.0156
+    },
+    {
+      "max_depth": 7,
+      "min_split": 8,
+      "cv_f1_mean": 0.5714,
+      "cv_f1_sd": 0.1106,
+      "cv_f1_se": 0.0156
+    },
+    {
+      "max_depth": 4,
+      "min_split": 8,
+      "cv_f1_mean": 0.5704,
+      "cv_f1_sd": 0.1202,
+      "cv_f1_se": 0.017
+    },
+    {
+      "max_depth": 4,
+      "min_split": 10,
+      "cv_f1_mean": 0.5694,
+      "cv_f1_sd": 0.1077,
+      "cv_f1_se": 0.0152
+    },
+    {
+      "max_depth": 3,
+      "min_split": 8,
+      "cv_f1_mean": 0.5329,
+      "cv_f1_sd": 0.0958,
+      "cv_f1_se": 0.0135
+    },
+    {
+      "max_depth": 3,
+      "min_split": 10,
+      "cv_f1_mean": 0.5299,
+      "cv_f1_sd": 0.0948,
+      "cv_f1_se": 0.0134
+    },
+    {
+      "max_depth": 4,
+      "min_split": 15,
+      "cv_f1_mean": 0.5247,
+      "cv_f1_sd": 0.0665,
+      "cv_f1_se": 0.0094
+    },
+    {
+      "max_depth": 5,
+      "min_split": 15,
+      "cv_f1_mean": 0.5247,
+      "cv_f1_sd": 0.0665,
+      "cv_f1_se": 0.0094
+    },
+    {
+      "max_depth": 6,
+      "min_split": 15,
+      "cv_f1_mean": 0.5247,
+      "cv_f1_sd": 0.0665,
+      "cv_f1_se": 0.0094
+    },
+    {
+      "max_depth": 7,
+      "min_split": 15,
+      "cv_f1_mean": 0.5247,
+      "cv_f1_sd": 0.0665,
+      "cv_f1_se": 0.0094
+    },
+    {
+      "max_depth": 3,
+      "min_split": 15,
+      "cv_f1_mean": 0.5237,
+      "cv_f1_sd": 0.0659,
+      "cv_f1_se": 0.0093
+    }
+  ],
+  "model_file": "r_models/decision_tree/model.rds"
+}
