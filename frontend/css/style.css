@@ -697,6 +697,22 @@ body {
     box-shadow: 0 0 6px var(--accent-indigo);
 }
 
+.dot-emerald {
+    background-color: var(--status-emerald);
+    box-shadow: 0 0 6px var(--status-emerald);
+}
+
+/* Phase 3: the Linear Regression card is a live, openable model */
+.model-card-active {
+    border-color: var(--border-glass-hover);
+    box-shadow: var(--shadow-card), 0 0 24px rgba(0, 240, 255, 0.10);
+}
+
+.model-card-active .model-phase-badge {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+}
+
 .status-panel-body {
     display: flex;
     flex-direction: column;

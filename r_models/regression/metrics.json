@@ -1,0 +1,91 @@
+{
+  "success": true,
+  "model": "Linear Regression",
+  "algorithm": "stats::lm (Ordinary Least Squares)",
+  "trained_at": "2026-09-25T12:36:57Z",
+  "metrics": {
+    "r2": 0.9967,
+    "rmse": 5646.2992,
+    "mae": 5005.342,
+    "adjusted_r2": 0.9979,
+    "train_r2": 0.998,
+    "train_rmse": 5765.3807,
+    "train_mae": 4902.2395
+  },
+  "dataset": {
+    "file": "datasets/housing.csv",
+    "rows_loaded": 120,
+    "rows_clean": 120,
+    "rows_dropped": 0,
+    "rows_train": 96,
+    "rows_test": 24,
+    "target": "price",
+    "features": ["area", "bedrooms", "bathrooms", "location_score", "property_age"],
+    "feature_ranges": {
+      "area": {
+        "min": 669.7,
+        "max": 4190.5
+      },
+      "bedrooms": {
+        "min": 1,
+        "max": 5
+      },
+      "bathrooms": {
+        "min": 1,
+        "max": 4
+      },
+      "location_score": {
+        "min": 3.1,
+        "max": 9.7
+      },
+      "property_age": {
+        "min": 1,
+        "max": 30
+      }
+    }
+  },
+  "coefficients": [
+    {
+      "term": "(Intercept)",
+      "estimate": -988.3928,
+      "std_error": 2979.1487,
+      "t_value": -0.3318,
+      "p_value": 0.7408
+    },
+    {
+      "term": "area",
+      "estimate": 111.073,
+      "std_error": 0.5854,
+      "t_value": 189.7367,
+      "p_value": 0
+    },
+    {
+      "term": "bedrooms",
+      "estimate": 17821.3617,
+      "std_error": 509.816,
+      "t_value": 34.9565,
+      "p_value": 0
+    },
+    {
+      "term": "bathrooms",
+      "estimate": 11270.0634,
+      "std_error": 711.4076,
+      "t_value": 15.8419,
+      "p_value": 0
+    },
+    {
+      "term": "location_score",
+      "estimate": 14836.6232,
+      "std_error": 345.1614,
+      "t_value": 42.9846,
+      "p_value": 0
+    },
+    {
+      "term": "property_age",
+      "estimate": -1062.5685,
+      "std_error": 67.9022,
+      "t_value": -15.6485,
+      "p_value": 0
+    }
+  ]
+}

@@ -1,0 +1,767 @@
+/* ==========================================================================
+   AI INSIGHT HUB — PHASE 3 LINEAR REGRESSION PAGE STYLES
+   Extends css/style.css (shared design tokens) with the property predictor
+   form, premium result card, model performance tiles, scatter chart, and
+   coefficient table.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Page-specific tokens
+   -------------------------------------------------------------------------- */
+:root {
+    --panel-bg: rgba(17, 26, 46, 0.62);
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --panel-border-hover: rgba(0, 240, 255, 0.28);
+    --chart-grid: rgba(148, 163, 184, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   2. Header link reset (the logo and back button are anchors here)
+   -------------------------------------------------------------------------- */
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition-fast);
+}
+
+.logo-link:hover {
+    opacity: 0.85;
+}
+
+.tag-pill-active {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(0, 240, 255, 0.16));
+    border-color: rgba(16, 185, 129, 0.42);
+    color: #6ee7b7;
+}
+
+/* --------------------------------------------------------------------------
+   3. Shared panel shell
+   -------------------------------------------------------------------------- */
+.panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-card);
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.panel-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+}
+
+.panel-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: rgba(148, 163, 184, 0.08);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    padding: 0.3rem 0.7rem;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   4. Prediction layout
+   -------------------------------------------------------------------------- */
+.predict-grid {
+    display: grid;
+    grid-template-columns: minmax(340px, 1fr) minmax(360px, 1.15fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.result-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   5. Input form
+   -------------------------------------------------------------------------- */
+.predict-form-panel {
+    position: sticky;
+    top: 1.5rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1.1rem;
+    min-width: 0;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.form-input {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.98rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: rgba(6, 9, 19, 0.65);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 0.72rem 0.9rem;
+    transition: var(--transition-fast);
+    appearance: none;
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.12);
+    background: rgba(6, 9, 19, 0.85);
+}
+
+/* Hide the native number spinners; the values are validated in JS anyway */
+.form-input::-webkit-outer-spin-button,
+.form-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.form-input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.form-input.has-error {
+    border-color: var(--status-rose);
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.12);
+}
+
+.form-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.form-error {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--status-rose);
+    min-height: 0;
+}
+
+.form-error:empty {
+    display: none;
+}
+
+.btn-block {
+    width: 100%;
+    padding: 0.95rem 1.5rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    margin-top: 0.5rem;
+}
+
+.btn-sample {
+    margin-top: 0.65rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+}
+
+/* Spinner used while the R engine is working */
+.icon-flask.spinning {
+    animation: reg-spin 1.1s linear infinite;
+}
+
+@keyframes reg-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.btn-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   6. Premium result card
+   -------------------------------------------------------------------------- */
+.result-panel {
+    position: relative;
+    overflow: hidden;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.result-panel[data-state="success"] {
+    border-color: rgba(0, 240, 255, 0.35);
+    box-shadow: var(--shadow-card), 0 0 40px rgba(0, 240, 255, 0.14);
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(0, 240, 255, 0.12) 0%, transparent 62%),
+        var(--panel-bg);
+}
+
+.result-panel[data-state="error"] {
+    border-color: rgba(244, 63, 94, 0.35);
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(244, 63, 94, 0.10) 0%, transparent 62%),
+        var(--panel-bg);
+}
+
+.result-empty {
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.result-empty-icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 1rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.result-empty-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.result-empty-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+}
+
+.result-empty-text {
+    font-size: 0.85rem;
+    max-width: 34ch;
+    margin: 0 auto;
+}
+
+.result-body {
+    text-align: center;
+    animation: reg-fade-up 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes reg-fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.result-heading {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-cyan);
+    margin-bottom: 0.65rem;
+}
+
+.result-price {
+    font-size: clamp(2.4rem, 6vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 65%, var(--accent-indigo) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.result-price-unit {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+}
+
+.result-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-glass-hover), transparent);
+    margin: 1.35rem 0;
+}
+
+.result-raw {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.75rem 1rem;
+    background: rgba(6, 9, 19, 0.5);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+}
+
+.result-raw-label {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.result-raw-value {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.result-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: left;
+}
+
+.result-meta-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dashed rgba(148, 163, 184, 0.1);
+}
+
+.result-meta-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.result-meta-row span:last-child {
+    color: var(--text-secondary);
+    text-align: right;
+    word-break: break-word;
+}
+
+/* Result error state */
+.result-error {
+    text-align: center;
+    animation: reg-fade-up 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.result-error-icon {
+    width: 42px;
+    height: 42px;
+    margin: 0 auto 0.85rem;
+    color: var(--status-rose);
+}
+
+.result-error-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.result-error-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--status-rose);
+    margin-bottom: 0.6rem;
+}
+
+.result-error-list {
+    list-style: none;
+    text-align: left;
+    display: inline-block;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.result-error-list li {
+    padding-left: 1.1rem;
+    position: relative;
+}
+
+.result-error-list li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: var(--status-rose);
+}
+
+/* --------------------------------------------------------------------------
+   7. Model performance tiles
+   -------------------------------------------------------------------------- */
+.performance-panel {
+    border-left: 3px solid var(--accent-indigo);
+}
+
+.metric-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.9rem;
+}
+
+.metric-card {
+    background: rgba(6, 9, 19, 0.55);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1.05rem 0.85rem;
+    text-align: center;
+    transition: var(--transition-base);
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--panel-border-hover);
+}
+
+.metric-card-r2 { border-top: 2px solid var(--accent-cyan); }
+.metric-card-rmse { border-top: 2px solid var(--status-amber); }
+.metric-card-mae { border-top: 2px solid var(--accent-violet); }
+
+.metric-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 0.45rem;
+}
+
+.metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    word-break: break-word;
+}
+
+.metric-caption {
+    font-size: 0.66rem;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+    line-height: 1.4;
+}
+
+.performance-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 1.35rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.performance-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.performance-stat-label {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.performance-stat-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   8. Actual vs Predicted scatter chart
+   -------------------------------------------------------------------------- */
+.chart-panel {
+    position: relative;
+}
+
+.chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+.legend-swatch {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.legend-swatch-point {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+}
+
+.legend-swatch-diagonal {
+    height: 0;
+    border-top: 2px dashed rgba(148, 163, 184, 0.6);
+}
+
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scatter-chart {
+    width: 100%;
+    height: auto;
+    max-height: 520px;
+    overflow: visible;
+}
+
+.chart-placeholder {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+/* Chart element styling (applied via JS-generated SVG) */
+.chart-axis-line {
+    stroke: rgba(148, 163, 184, 0.35);
+    stroke-width: 1.2;
+}
+
+.chart-grid-line {
+    stroke: var(--chart-grid);
+    stroke-width: 1;
+}
+
+.chart-tick-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    fill: var(--text-muted);
+}
+
+.chart-axis-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    fill: var(--text-secondary);
+}
+
+.chart-point {
+    fill: var(--accent-cyan);
+    fill-opacity: 0.72;
+    stroke: rgba(0, 240, 255, 0.9);
+    stroke-width: 1;
+    cursor: pointer;
+    transition: fill-opacity 150ms ease, r 150ms ease;
+}
+
+.chart-point:hover {
+    fill-opacity: 1;
+}
+
+.chart-diagonal {
+    stroke: rgba(148, 163, 184, 0.55);
+    stroke-width: 1.6;
+    stroke-dasharray: 7 6;
+}
+
+.chart-mean-line {
+    stroke: rgba(0, 240, 255, 0.28);
+    stroke-width: 1.2;
+    stroke-dasharray: 4 5;
+}
+
+.chart-tooltip {
+    position: absolute;
+    pointer-events: none;
+    z-index: 20;
+    background: rgba(6, 9, 19, 0.95);
+    border: 1px solid var(--border-glass-hover);
+    border-radius: var(--radius-md);
+    padding: 0.6rem 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.chart-tooltip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.chart-tooltip-row span:last-child {
+    color: var(--accent-cyan);
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   9. Coefficient table
+   -------------------------------------------------------------------------- */
+.coefficients-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 0.9rem;
+}
+
+.coefficient-card {
+    background: rgba(6, 9, 19, 0.55);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.1rem;
+    transition: var(--transition-base);
+}
+
+.coefficient-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--panel-border-hover);
+}
+
+.coefficient-term {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--accent-cyan);
+    margin-bottom: 0.5rem;
+    word-break: break-all;
+}
+
+.coefficient-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+}
+
+.coefficient-stat {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.coefficient-stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-secondary);
+}
+
+.coefficient-significance {
+    display: inline-block;
+    margin-top: 0.55rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-full);
+}
+
+.coefficient-significance.sig {
+    color: #6ee7b7;
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.32);
+}
+
+.coefficient-significance.nonsig {
+    color: #fcd34d;
+    background: rgba(245, 158, 11, 0.14);
+    border: 1px solid rgba(245, 158, 11, 0.32);
+}
+
+/* --------------------------------------------------------------------------
+   10. Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+    .predict-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .predict-form-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .panel {
+        padding: 1.35rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .metric-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .result-price {
+        font-size: 2.35rem;
+    }
+
+    .chart-wrapper {
+        min-height: 300px;
+    }
+
+    .panel-header,
+    .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+    }
+}

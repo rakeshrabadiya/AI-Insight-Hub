@@ -42,10 +42,16 @@ def create_app():
             "platform": "AI Insight Hub",
             "description": "Multi-Model Machine Learning Analytics Platform",
             "version": "1.0.0",
-            "phase": "Phase 1 - Project Foundation & API Integration",
+            "phase": "Phase 3 - Linear Regression Property Price Prediction",
             "status": "online",
             "endpoints": {
-                "health": "/api/health"
+                "health": "/api/health",
+                "r_engine": "/api/r-engine/status",
+                "datasets": "/api/datasets",
+                "regression_predict": "/api/regression/predict",
+                "regression_metrics": "/api/regression/metrics",
+                "regression_evaluation": "/api/regression/evaluation",
+                "regression_schema": "/api/regression/schema"
             }
         }), 200
 

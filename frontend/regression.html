@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Price Predictor — AI Insight Hub</title>
+    <meta name="description" content="Linear Regression property price prediction powered by a real model trained in R. Educational ML implementation.">
+    <!-- Google Fonts: Inter & JetBrains Mono (shared with the dashboard) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Shared design system + page-specific styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/regression.css">
+</head>
+<body>
+    <!-- Background Glow Elements (shared with dashboard) -->
+    <div class="bg-glow bg-glow-top"></div>
+    <div class="bg-glow bg-glow-bottom"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="app-container">
+
+        <!-- Header / Navigation -->
+        <header class="app-header">
+            <div class="header-left">
+                <a class="logo-wrapper logo-link" href="index.html" title="Back to dashboard">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <div class="brand-title">AI Insight Hub</div>
+                        <div class="brand-subtitle">Multi-Model Machine Learning Analytics Platform</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="header-center">
+                <div class="academic-badge">
+                    <span class="badge-dot"></span>
+                    <span class="badge-text">GCF Training &bull; Ethnotech &bull; Parul University</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <a class="btn btn-secondary btn-sm" href="index.html" title="Return to the platform dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+        </header>
+
+        <main class="main-content">
+
+            <!-- Model Hero Banner -->
+            <section class="hero-section regression-hero">
+                <div class="hero-content">
+                    <div class="hero-tag">
+                        <span class="tag-pill tag-pill-active">Phase 3 &bull; Active Model</span>
+                        <span class="tag-text">Ordinary Least Squares trained in R</span>
+                    </div>
+                    <h1 class="hero-title">Property Price Predictor</h1>
+                    <p class="hero-description">
+                        Linear Regression Machine Learning Model. Enter the property attributes below and the model
+                        estimates a market price in Indian Rupees. Every value on this page is computed by a real
+                        regression model fitted with <code>stats::lm()</code> &mdash; nothing is pre-written or hard-coded.
+                    </p>
+                </div>
+                <div class="hero-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Algorithm</span>
+                        <span class="meta-value">Multiple Linear Regression (OLS)</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Target Variable</span>
+                        <span class="meta-value text-cyan">price (INR)</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Model State</span>
+                        <span class="meta-value" id="modelStateDisplay">Checking model...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error banner (shown when the model is unavailable) -->
+            <div class="api-alert-banner" id="modelAlertBanner" style="display: none;">
+                <div class="alert-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title" id="modelAlertTitle">Model Unavailable</div>
+                    <div class="alert-message" id="modelAlertMessage">
+                        Start the Flask backend by running <code class="code-pill">python backend/app.py</code>.
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-sm" id="btnRetryModel">Retry</button>
+            </div>
+
+            <!-- Prediction & Metrics -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Predict &amp; Evaluate</h2>
+                    <span class="section-subtitle">Submit property attributes to generate a model prediction and inspect real test-set performance</span>
+                </div>
+
+                <div class="predict-grid">
+
+                    <!-- Input Form -->
+                    <div class="panel predict-form-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Property Attributes</h3>
+                            <span class="panel-badge" id="datasetRangeNote">Ranges loaded from training data</span>
+                        </div>
+
+                        <form id="predictionForm" novalidate>
+                            <div class="form-field">
+                                <label class="form-label" for="inputArea">Area (sq.ft)</label>
+                                <input class="form-input" type="number" id="inputArea" name="area"
+                                       step="any" inputmode="decimal" placeholder="e.g. 1500" required>
+                                <span class="form-hint" id="hintArea">Built-up area in square feet</span>
+                                <span class="form-error" id="errorArea"></span>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label class="form-label" for="inputBedrooms">Bedrooms</label>
+                                    <input class="form-input" type="number" id="inputBedrooms" name="bedrooms"
+                                           step="1" inputmode="numeric" placeholder="e.g. 3" required>
+                                    <span class="form-hint" id="hintBedrooms">Number of bedrooms</span>
+                                    <span class="form-error" id="errorBedrooms"></span>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-label" for="inputBathrooms">Bathrooms</label>
+                                    <input class="form-input" type="number" id="inputBathrooms" name="bathrooms"
+                                           step="1" inputmode="numeric" placeholder="e.g. 2" required>
+                                    <span class="form-hint" id="hintBathrooms">Number of bathrooms</span>
+                                    <span class="form-error" id="errorBathrooms"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label class="form-label" for="inputLocationScore">Location Score</label>
+                                    <input class="form-input" type="number" id="inputLocationScore" name="location_score"
+                                           step="any" inputmode="decimal" placeholder="e.g. 8" required>
+                                    <span class="form-hint" id="hintLocationScore">Higher score means a more desirable location</span>
+                                    <span class="form-error" id="errorLocationScore"></span>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-label" for="inputPropertyAge">Property Age (years)</label>
+                                    <input class="form-input" type="number" id="inputPropertyAge" name="property_age"
+                                           step="any" inputmode="decimal" placeholder="e.g. 5" required>
+                                    <span class="form-hint" id="hintPropertyAge">Age of the property in years</span>
+                                    <span class="form-error" id="errorPropertyAge"></span>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-block" type="submit" id="btnPredict">
+                                <svg class="icon-flask" id="predictIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 3h6"></path>
+                                    <path d="M10 9V3h4v6l5 9a2 2 0 0 1-1.8 3H6.8A2 2 0 0 1 5 18l5-9z"></path>
+                                </svg>
+                                <span id="btnPredictLabel">PREDICT PROPERTY PRICE</span>
+                            </button>
+
+                            <button class="btn btn-outline btn-block btn-sample" type="button" id="btnSample">
+                                Fill with a sample property
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Result + Performance -->
+                    <div class="result-column">
+
+                        <!-- Result Card -->
+                        <div class="panel result-panel" id="resultPanel" data-state="empty">
+                            <div class="result-empty" id="resultEmpty">
+                                <div class="result-empty-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 21h18"></path>
+                                        <path d="M5 21V8l7-5 7 5v13"></path>
+                                        <path d="M9 21v-6h6v6"></path>
+                                    </svg>
+                                </div>
+                                <p class="result-empty-title">No prediction yet</p>
+                                <p class="result-empty-text">Enter the property attributes and run the model to see an estimated price.</p>
+                            </div>
+
+                            <div class="result-body" id="resultBody" style="display: none;">
+                                <div class="result-heading">PREDICTED PROPERTY PRICE</div>
+                                <div class="result-price" id="resultPriceLakhs">&mdash;</div>
+                                <div class="result-price-unit" id="resultPriceUnit">Lakhs</div>
+
+                                <div class="result-divider"></div>
+
+                                <div class="result-raw">
+                                    <span class="result-raw-label">Raw predicted value</span>
+                                    <span class="result-raw-value font-mono" id="resultRawInr">&mdash;</span>
+                                </div>
+                                <div class="result-meta">
+                                    <div class="result-meta-row">
+                                        <span>Model</span>
+                                        <span class="font-mono" id="resultModelName">&mdash;</span>
+                                    </div>
+                                    <div class="result-meta-row">
+                                        <span>Algorithm</span>
+                                        <span class="font-mono" id="resultAlgorithm">&mdash;</span>
+                                    </div>
+                                    <div class="result-meta-row">
+                                        <span>Trained at</span>
+                                        <span class="font-mono" id="resultTrainedAt">&mdash;</span>
+                                    </div>
+                                    <div class="result-meta-row">
+                                        <span>R engine time</span>
+                                        <span class="font-mono" id="resultExecTime">&mdash;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="result-error" id="resultError" style="display: none;">
+                                <div class="result-error-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                    </svg>
+                                </div>
+                                <p class="result-error-title" id="resultErrorTitle">Prediction failed</p>
+                                <ul class="result-error-list" id="resultErrorList"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Model Performance -->
+                        <div class="panel performance-panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Model Performance</h3>
+                                <span class="panel-badge">Held-out test set</span>
+                            </div>
+
+                            <div class="metric-cards">
+                                <div class="metric-card metric-card-r2">
+                                    <div class="metric-label">R&sup2;</div>
+                                    <div class="metric-value" id="metricR2">&mdash;</div>
+                                    <div class="metric-caption">Coefficient of determination</div>
+                                </div>
+                                <div class="metric-card metric-card-rmse">
+                                    <div class="metric-label">RMSE</div>
+                                    <div class="metric-value" id="metricRmse">&mdash;</div>
+                                    <div class="metric-caption">Root mean squared error</div>
+                                </div>
+                                <div class="metric-card metric-card-mae">
+                                    <div class="metric-label">MAE</div>
+                                    <div class="metric-value" id="metricMae">&mdash;</div>
+                                    <div class="metric-caption">Mean absolute error</div>
+                                </div>
+                            </div>
+
+                            <div class="performance-footer">
+                                <div class="performance-stat">
+                                    <span class="performance-stat-label">Adjusted R&sup2;</span>
+                                    <span class="performance-stat-value font-mono" id="metricAdjR2">&mdash;</span>
+                                </div>
+                                <div class="performance-stat">
+                                    <span class="performance-stat-label">Test records</span>
+                                    <span class="performance-stat-value font-mono" id="metricTestRows">&mdash;</span>
+                                </div>
+                                <div class="performance-stat">
+                                    <span class="performance-stat-label">Training records</span>
+                                    <span class="performance-stat-value font-mono" id="metricTrainRows">&mdash;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Actual vs Predicted Visualization -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Actual vs Predicted Price</h2>
+                    <span class="section-subtitle">Every point is one held-out test record; the dashed line marks a perfect prediction</span>
+                </div>
+
+                <div class="panel chart-panel">
+                    <div class="chart-header">
+                        <div class="chart-legend">
+                            <span class="legend-item">
+                                <span class="legend-swatch legend-swatch-point"></span>
+                                Test record
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-swatch legend-swatch-diagonal"></span>
+                                Perfect prediction
+                            </span>
+                        </div>
+                        <span class="panel-badge" id="chartPointCount">&mdash;</span>
+                    </div>
+
+                    <div class="chart-wrapper" id="chartWrapper">
+                        <p class="chart-placeholder" id="chartPlaceholder">Loading evaluation data...</p>
+                        <svg class="scatter-chart" id="scatterChart" viewBox="0 0 900 520"
+                             preserveAspectRatio="xMidYMid meet" role="img"
+                             aria-label="Scatter plot of actual versus predicted property prices on the test set">
+                        </svg>
+                    </div>
+
+                    <div class="chart-tooltip" id="chartTooltip" style="display: none;"></div>
+                </div>
+            </section>
+
+            <!-- Model Coefficients -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Model Coefficients</h2>
+                    <span class="section-subtitle">Fitted Ordinary Least Squares coefficients and their statistical significance</span>
+                </div>
+
+                <div class="panel coefficients-panel">
+                    <div class="coefficients-grid" id="coefficientsGrid">
+                        <p class="chart-placeholder">Loading model coefficients...</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-brand">AI Insight Hub</div>
+                    <div class="footer-tagline">Phase 3 &bull; Linear Regression</div>
+                </div>
+                <div class="footer-center">
+                    <div class="footer-academic">
+                        Developed for <strong>GCF Training by Ethnotech</strong> &bull; <strong>Parul University</strong>
+                    </div>
+                </div>
+                <div class="footer-right">
+                    <div class="footer-version">Educational ML Implementation</div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="js/regression.js"></script>
+</body>
+</html>
