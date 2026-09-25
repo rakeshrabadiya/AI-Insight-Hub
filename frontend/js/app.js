@@ -1,15 +1,18 @@
 /**
  * AI Insight Hub — Frontend Application Logic
  * Pure Vanilla JavaScript ES6+ implementation
- * Handles API health telemetry, dynamic status updates, and interactive diagnostics.
+ * Handles API health telemetry, dynamic status updates, R engine execution,
+ * and interactive dataset/console diagnostics.
  */
 
 // Configuration Constants
 const CONFIG = {
     API_BASE_URL: 'http://127.0.0.1:5000',
     HEALTH_ENDPOINT: '/api/health',
+    R_TEST_ENDPOINT: '/api/r-engine/test',
+    DATASETS_ENDPOINT: '/api/datasets/validate',
     POLL_INTERVAL_MS: 10000,
-    REQUEST_TIMEOUT_MS: 5000
+    REQUEST_TIMEOUT_MS: 8000
 };
 
 // Application State
@@ -19,8 +22,15 @@ const state = {
     lastChecked: null,
     lastResponseData: null,
     lastHttpStatus: null,
+    currentTab: 'health',
     pollTimer: null,
-    isPollingActive: true
+    isPollingActive: true,
+    rEngineState: {
+        tested: false,
+        status: 'NOT TESTED', // 'ONLINE' | 'ERROR' | 'NOT CONNECTED' | 'NOT TESTED'
+        version: null,
+        data: null
+    }
 };
 
 // DOM Elements Cache
@@ -35,8 +45,9 @@ const elements = {
     statApiStatusValue: document.getElementById('statApiStatusValue'),
     statApiLatency: document.getElementById('statApiLatency'),
     statApiIconBox: document.getElementById('statApiIconBox'),
+    statREngineValue: document.getElementById('statREngineValue'),
 
-    // System Diagnostics Panel
+    // System Diagnostics Panel — Flask
     flaskBadge: document.getElementById('flaskBadge'),
     flaskStatusDot: document.getElementById('flaskStatusDot'),
     flaskBadgeText: document.getElementById('flaskBadgeText'),
@@ -46,13 +57,27 @@ const elements = {
     apiAlertBanner: document.getElementById('apiAlertBanner'),
     btnRetryConnection: document.getElementById('btnRetryConnection'),
 
+    // System Diagnostics Panel — R Engine
+    rEngineBadge: document.getElementById('rEngineBadge'),
+    rEngineStatusDot: document.getElementById('rEngineStatusDot'),
+    rEngineBadgeText: document.getElementById('rEngineBadgeText'),
+    rEngineStateDisplay: document.getElementById('rEngineStateDisplay'),
+    rEngineVersionDisplay: document.getElementById('rEngineVersionDisplay'),
+    btnTestREngine: document.getElementById('btnTestREngine'),
+    rTestIcon: document.getElementById('rTestIcon'),
+
     // Console Diagnostic Viewer
     consoleTargetUrl: document.getElementById('consoleTargetUrl'),
     consoleHttpStatus: document.getElementById('consoleHttpStatus'),
     consoleLatency: document.getElementById('consoleLatency'),
     rawJsonResponse: document.getElementById('rawJsonResponse'),
     chkAutoPoll: document.getElementById('chkAutoPoll'),
-    btnCopyJson: document.getElementById('btnCopyJson')
+    btnCopyJson: document.getElementById('btnCopyJson'),
+
+    // Console Tabs
+    tabHealth: document.getElementById('tabHealth'),
+    tabREngine: document.getElementById('tabREngine'),
+    tabDatasets: document.getElementById('tabDatasets')
 };
 
 /**
@@ -62,19 +87,15 @@ async function checkApiHealth() {
     const fullUrl = `${CONFIG.API_BASE_URL}${CONFIG.HEALTH_ENDPOINT}`;
     const startTime = performance.now();
 
-    // Start UI loading animation
     setLoadingState(true);
 
-    // Abort controller for network timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT_MS);
 
     try {
         const response = await fetch(fullUrl, {
             method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            },
+            headers: { 'Accept': 'application/json' },
             signal: controller.signal
         });
 
@@ -95,7 +116,13 @@ async function checkApiHealth() {
         state.lastResponseData = data;
         state.lastHttpStatus = `${response.status} OK`;
 
-        // Update UI for Success
+        // Update R Engine status from health if present
+        if (data.r_engine === 'online' && !state.rEngineState.tested) {
+            updateREngineUI('ONLINE', 'Ready for Subprocess Invocation');
+        } else if (data.r_engine === 'not_connected' && !state.rEngineState.tested) {
+            updateREngineUI('NOT CONNECTED', 'R Engine Not Detected');
+        }
+
         renderOnlineState(data);
 
     } catch (error) {
@@ -108,7 +135,6 @@ async function checkApiHealth() {
             ? 'Connection timed out after 5 seconds'
             : (error.message || 'Network connection failed');
 
-        // Update State
         state.isOnline = false;
         state.latencyMs = latency;
         state.lastChecked = new Date();
@@ -120,11 +146,171 @@ async function checkApiHealth() {
         };
         state.lastHttpStatus = isAbort ? '408 Timeout' : '0 Offline / Refused';
 
-        // Update UI for Failure
         renderOfflineState(errorMessage);
 
     } finally {
         setLoadingState(false);
+    }
+}
+
+/**
+ * Test R Engine Execution via POST /api/r-engine/test
+ */
+async function testREngine() {
+    const fullUrl = `${CONFIG.API_BASE_URL}${CONFIG.R_TEST_ENDPOINT}`;
+    const startTime = performance.now();
+
+    setRTestLoadingState(true);
+    switchConsoleTab('r-engine');
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+    try {
+        const response = await fetch(fullUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                source: "AI Insight Hub Frontend",
+                timestamp: new Date().toISOString(),
+                action: "verify_r_subsystem"
+            }),
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+        const endTime = performance.now();
+        const latency = Math.round(endTime - startTime);
+        const data = await response.json();
+
+        state.rEngineState.tested = true;
+        state.rEngineState.data = data;
+        state.lastResponseData = data;
+        state.lastHttpStatus = `${response.status} ${response.statusText || (response.ok ? 'OK' : 'Error')}`;
+        state.latencyMs = latency;
+
+        if (response.ok && data.success) {
+            const versionStr = data.data && data.data.r_version ? data.data.r_version : "R Engine Active";
+            updateREngineUI('ONLINE', versionStr);
+            updateConsoleViewer(data, true, fullUrl, 'POST');
+        } else {
+            const errorMsg = data.error || data.message || "R Execution Failed";
+            updateREngineUI('ERROR', errorMsg);
+            updateConsoleViewer(data, false, fullUrl, 'POST');
+        }
+
+    } catch (error) {
+        clearTimeout(timeoutId);
+        const endTime = performance.now();
+        const latency = Math.round(endTime - startTime);
+        const errorData = {
+            success: false,
+            engine: "R",
+            message: "Unable to communicate with R test endpoint",
+            error: error.message || "Network Error / Flask Offline",
+            hint: "Make sure Flask backend is running on http://127.0.0.1:5000"
+        };
+
+        state.rEngineState.tested = true;
+        state.lastResponseData = errorData;
+        state.lastHttpStatus = '503 Connection Error';
+        state.latencyMs = latency;
+
+        updateREngineUI('ERROR', error.message || 'Connection Error');
+        updateConsoleViewer(errorData, false, fullUrl, 'POST');
+
+    } finally {
+        setRTestLoadingState(false);
+    }
+}
+
+/**
+ * Validate All Datasets via GET /api/datasets/validate
+ */
+async function testDatasetsValidation() {
+    const fullUrl = `${CONFIG.API_BASE_URL}${CONFIG.DATASETS_ENDPOINT}`;
+    const startTime = performance.now();
+
+    switchConsoleTab('datasets');
+
+    try {
+        const response = await fetch(fullUrl, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        });
+
+        const endTime = performance.now();
+        const latency = Math.round(endTime - startTime);
+        const data = await response.json();
+
+        state.lastResponseData = data;
+        state.lastHttpStatus = `${response.status} ${response.ok ? 'OK' : 'Error'}`;
+        state.latencyMs = latency;
+
+        updateConsoleViewer(data, response.ok && data.all_valid, fullUrl, 'GET');
+
+    } catch (error) {
+        const errorData = {
+            success: false,
+            error: error.message || "Failed to validate datasets",
+            target: fullUrl
+        };
+        updateConsoleViewer(errorData, false, fullUrl, 'GET');
+    }
+}
+
+/**
+ * Update R Engine UI Elements Across Dashboard
+ */
+function updateREngineUI(status, detail) {
+    state.rEngineState.status = status;
+
+    if (elements.rEngineBadgeText) {
+        elements.rEngineBadgeText.textContent = status;
+    }
+
+    if (status === 'ONLINE') {
+        if (elements.rEngineBadge) elements.rEngineBadge.className = 'status-badge badge-online';
+        if (elements.rEngineStatusDot) elements.rEngineStatusDot.className = 'status-dot dot-emerald';
+        if (elements.statREngineValue) {
+            elements.statREngineValue.textContent = 'ONLINE';
+            elements.statREngineValue.className = 'stat-value text-emerald';
+        }
+        if (elements.rEngineVersionDisplay) {
+            elements.rEngineVersionDisplay.textContent = detail;
+            elements.rEngineVersionDisplay.className = 'metric-value text-emerald font-mono';
+        }
+        if (elements.rEngineStateDisplay) {
+            elements.rEngineStateDisplay.textContent = 'Bridge Verified & Operational';
+        }
+    } else if (status === 'ERROR') {
+        if (elements.rEngineBadge) elements.rEngineBadge.className = 'status-badge badge-offline';
+        if (elements.rEngineStatusDot) elements.rEngineStatusDot.className = 'status-dot dot-rose';
+        if (elements.statREngineValue) {
+            elements.statREngineValue.textContent = 'ERROR';
+            elements.statREngineValue.className = 'stat-value text-rose';
+        }
+        if (elements.rEngineVersionDisplay) {
+            elements.rEngineVersionDisplay.textContent = 'Execution Failure';
+            elements.rEngineVersionDisplay.className = 'metric-value text-rose font-mono';
+        }
+        if (elements.rEngineStateDisplay) {
+            elements.rEngineStateDisplay.textContent = 'R Engine Error Detected';
+        }
+    } else {
+        if (elements.rEngineBadge) elements.rEngineBadge.className = 'status-badge badge-neutral';
+        if (elements.rEngineStatusDot) elements.rEngineStatusDot.className = 'status-dot dot-amber';
+        if (elements.statREngineValue) {
+            elements.statREngineValue.textContent = 'NOT CONNECTED';
+            elements.statREngineValue.className = 'stat-value text-amber';
+        }
+        if (elements.rEngineVersionDisplay) {
+            elements.rEngineVersionDisplay.textContent = detail || 'Pending Connection';
+            elements.rEngineVersionDisplay.className = 'metric-value text-amber font-mono';
+        }
     }
 }
 
@@ -134,16 +320,12 @@ async function checkApiHealth() {
 function renderOnlineState(data) {
     const timestampStr = new Date().toLocaleTimeString();
 
-    // 1. Header Updates
-    if (elements.headerStatusDot) {
-        elements.headerStatusDot.className = 'status-pulse-dot online';
-    }
+    if (elements.headerStatusDot) elements.headerStatusDot.className = 'status-pulse-dot online';
     if (elements.headerApiStatusText) {
         elements.headerApiStatusText.textContent = 'ONLINE';
         elements.headerApiStatusText.className = 'status-pill-value text-emerald';
     }
 
-    // 2. Statistics Card
     if (elements.statApiStatusValue) {
         elements.statApiStatusValue.textContent = 'ONLINE';
         elements.statApiStatusValue.className = 'stat-value text-emerald';
@@ -155,13 +337,8 @@ function renderOnlineState(data) {
         elements.statApiIconBox.className = 'stat-icon-box stat-icon-emerald';
     }
 
-    // 3. System Status Panel
-    if (elements.flaskBadge) {
-        elements.flaskBadge.className = 'status-badge badge-online';
-    }
-    if (elements.flaskBadgeText) {
-        elements.flaskBadgeText.textContent = 'ONLINE';
-    }
+    if (elements.flaskBadge) elements.flaskBadge.className = 'status-badge badge-online';
+    if (elements.flaskBadgeText) elements.flaskBadgeText.textContent = 'ONLINE';
     if (elements.apiLatencyDisplay) {
         elements.apiLatencyDisplay.textContent = `${state.latencyMs} ms`;
         elements.apiLatencyDisplay.className = 'metric-value text-emerald';
@@ -169,12 +346,11 @@ function renderOnlineState(data) {
     if (elements.apiTimestampDisplay) {
         elements.apiTimestampDisplay.textContent = `${timestampStr} (UTC: ${data.timestamp || 'N/A'})`;
     }
-    if (elements.apiAlertBanner) {
-        elements.apiAlertBanner.style.display = 'none';
-    }
+    if (elements.apiAlertBanner) elements.apiAlertBanner.style.display = 'none';
 
-    // 4. Live Console Viewer
-    updateConsoleViewer(data, true);
+    if (state.currentTab === 'health') {
+        updateConsoleViewer(data, true, `${CONFIG.API_BASE_URL}${CONFIG.HEALTH_ENDPOINT}`, 'GET');
+    }
 }
 
 /**
@@ -183,34 +359,21 @@ function renderOnlineState(data) {
 function renderOfflineState(errorMessage) {
     const timestampStr = new Date().toLocaleTimeString();
 
-    // 1. Header Updates
-    if (elements.headerStatusDot) {
-        elements.headerStatusDot.className = 'status-pulse-dot offline';
-    }
+    if (elements.headerStatusDot) elements.headerStatusDot.className = 'status-pulse-dot offline';
     if (elements.headerApiStatusText) {
         elements.headerApiStatusText.textContent = 'OFFLINE';
         elements.headerApiStatusText.className = 'status-pill-value text-rose';
     }
 
-    // 2. Statistics Card
     if (elements.statApiStatusValue) {
         elements.statApiStatusValue.textContent = 'OFFLINE';
         elements.statApiStatusValue.className = 'stat-value text-rose';
     }
-    if (elements.statApiLatency) {
-        elements.statApiLatency.textContent = 'Connection Refused';
-    }
-    if (elements.statApiIconBox) {
-        elements.statApiIconBox.className = 'stat-icon-box stat-icon-rose';
-    }
+    if (elements.statApiLatency) elements.statApiLatency.textContent = 'Connection Refused';
+    if (elements.statApiIconBox) elements.statApiIconBox.className = 'stat-icon-box stat-icon-rose';
 
-    // 3. System Status Panel
-    if (elements.flaskBadge) {
-        elements.flaskBadge.className = 'status-badge badge-offline';
-    }
-    if (elements.flaskBadgeText) {
-        elements.flaskBadgeText.textContent = 'OFFLINE';
-    }
+    if (elements.flaskBadge) elements.flaskBadge.className = 'status-badge badge-offline';
+    if (elements.flaskBadgeText) elements.flaskBadgeText.textContent = 'OFFLINE';
     if (elements.apiLatencyDisplay) {
         elements.apiLatencyDisplay.textContent = 'Unreachable';
         elements.apiLatencyDisplay.className = 'metric-value text-rose';
@@ -218,33 +381,46 @@ function renderOfflineState(errorMessage) {
     if (elements.apiTimestampDisplay) {
         elements.apiTimestampDisplay.textContent = `${timestampStr} (Failed to connect)`;
     }
-    if (elements.apiAlertBanner) {
-        elements.apiAlertBanner.style.display = 'flex';
-    }
+    if (elements.apiAlertBanner) elements.apiAlertBanner.style.display = 'flex';
 
-    // 4. Live Console Viewer
-    updateConsoleViewer(state.lastResponseData, false);
+    if (state.currentTab === 'health') {
+        updateConsoleViewer(state.lastResponseData, false, `${CONFIG.API_BASE_URL}${CONFIG.HEALTH_ENDPOINT}`, 'GET');
+    }
 }
 
 /**
  * Update the Live JSON Diagnostics Console
  */
-function updateConsoleViewer(data, isSuccess) {
+function updateConsoleViewer(data, isSuccess, targetUrl, method) {
     if (elements.consoleTargetUrl) {
-        elements.consoleTargetUrl.textContent = `${CONFIG.API_BASE_URL}${CONFIG.HEALTH_ENDPOINT}`;
+        elements.consoleTargetUrl.textContent = targetUrl || `${CONFIG.API_BASE_URL}${CONFIG.HEALTH_ENDPOINT}`;
     }
     if (elements.consoleHttpStatus) {
-        elements.consoleHttpStatus.textContent = state.lastHttpStatus;
+        elements.consoleHttpStatus.textContent = state.lastHttpStatus || '--';
         elements.consoleHttpStatus.className = isSuccess
             ? 'meta-tag-value font-mono text-emerald'
             : 'meta-tag-value font-mono text-rose';
     }
     if (elements.consoleLatency) {
-        elements.consoleLatency.textContent = isSuccess ? `${state.latencyMs} ms` : 'N/A';
+        elements.consoleLatency.textContent = `${state.latencyMs} ms`;
     }
     if (elements.rawJsonResponse) {
         elements.rawJsonResponse.innerHTML = syntaxHighlightJson(JSON.stringify(data, null, 2));
     }
+}
+
+/**
+ * Tab Switching Helper
+ */
+function switchConsoleTab(tabKey) {
+    state.currentTab = tabKey;
+    [elements.tabHealth, elements.tabREngine, elements.tabDatasets].forEach(tab => {
+        if (tab) tab.classList.remove('active');
+    });
+
+    if (tabKey === 'health' && elements.tabHealth) elements.tabHealth.classList.add('active');
+    if (tabKey === 'r-engine' && elements.tabREngine) elements.tabREngine.classList.add('active');
+    if (tabKey === 'datasets' && elements.tabDatasets) elements.tabDatasets.classList.add('active');
 }
 
 /**
@@ -278,19 +454,25 @@ function syntaxHighlightJson(jsonString) {
 }
 
 /**
- * Toggle UI loading spinner during ping
+ * Toggle UI loading spinner during health ping
  */
 function setLoadingState(isLoading) {
     if (elements.refreshIcon) {
-        if (isLoading) {
-            elements.refreshIcon.classList.add('spinning');
-        } else {
-            elements.refreshIcon.classList.remove('spinning');
-        }
+        if (isLoading) elements.refreshIcon.classList.add('spinning');
+        else elements.refreshIcon.classList.remove('spinning');
     }
-    if (elements.btnRefreshHealth) {
-        elements.btnRefreshHealth.disabled = isLoading;
+    if (elements.btnRefreshHealth) elements.btnRefreshHealth.disabled = isLoading;
+}
+
+/**
+ * Toggle R Engine test button loading spinner
+ */
+function setRTestLoadingState(isLoading) {
+    if (elements.rTestIcon) {
+        if (isLoading) elements.rTestIcon.classList.add('spinning');
+        else elements.rTestIcon.classList.remove('spinning');
     }
+    if (elements.btnTestREngine) elements.btnTestREngine.disabled = isLoading;
 }
 
 /**
@@ -316,12 +498,12 @@ async function copyJsonPayload() {
 }
 
 /**
- * Initialize Auto-polling timer
+ * Auto-polling timer
  */
 function startPolling() {
     if (state.pollTimer) clearInterval(state.pollTimer);
     state.pollTimer = setInterval(() => {
-        if (state.isPollingActive) {
+        if (state.isPollingActive && state.currentTab === 'health') {
             checkApiHealth();
         }
     }, CONFIG.POLL_INTERVAL_MS);
@@ -338,10 +520,18 @@ function stopPolling() {
  * Bind DOM Event Listeners
  */
 function bindEventListeners() {
-    // Manual Refresh Button
+    // Manual Health Ping
     if (elements.btnRefreshHealth) {
         elements.btnRefreshHealth.addEventListener('click', () => {
+            switchConsoleTab('health');
             checkApiHealth();
+        });
+    }
+
+    // Test R Engine Button
+    if (elements.btnTestREngine) {
+        elements.btnTestREngine.addEventListener('click', () => {
+            testREngine();
         });
     }
 
@@ -357,13 +547,31 @@ function bindEventListeners() {
         elements.btnCopyJson.addEventListener('click', copyJsonPayload);
     }
 
+    // Tab Buttons
+    if (elements.tabHealth) {
+        elements.tabHealth.addEventListener('click', () => {
+            switchConsoleTab('health');
+            checkApiHealth();
+        });
+    }
+    if (elements.tabREngine) {
+        elements.tabREngine.addEventListener('click', () => {
+            testREngine();
+        });
+    }
+    if (elements.tabDatasets) {
+        elements.tabDatasets.addEventListener('click', () => {
+            testDatasetsValidation();
+        });
+    }
+
     // Auto-Poll Checkbox
     if (elements.chkAutoPoll) {
         elements.chkAutoPoll.addEventListener('change', (e) => {
             state.isPollingActive = e.target.checked;
             if (state.isPollingActive) {
                 startPolling();
-                checkApiHealth(); // trigger instant check on toggle enable
+                checkApiHealth();
             } else {
                 stopPolling();
             }
@@ -376,6 +584,7 @@ function bindEventListeners() {
  */
 document.addEventListener('DOMContentLoaded', () => {
     bindEventListeners();
-    checkApiHealth(); // Initial Ping on load
-    startPolling();   // Start recurring health checks
+    checkApiHealth();
+    startPolling();
 });
+

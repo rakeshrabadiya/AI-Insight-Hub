@@ -963,19 +963,63 @@ body {
     border-bottom: 1px solid var(--border-subtle);
 }
 
-.console-tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--accent-cyan);
+.status-panel-footer {
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border-subtle);
 }
 
-.console-tab svg {
-    width: 14px;
-    height: 14px;
+.console-tabs-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.console-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.85rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.console-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    border-color: var(--border-glass);
+}
+
+.console-tab-btn.active {
+    background: rgba(0, 240, 255, 0.12);
+    border-color: var(--border-cyan);
+    color: var(--accent-cyan);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+}
+
+.console-tab-btn svg {
+    width: 13px;
+    height: 13px;
+}
+
+.badge-error {
+    background: rgba(244, 63, 94, 0.12);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    color: var(--status-rose);
+}
+
+.dot-rose {
+    background-color: var(--status-rose);
+    box-shadow: 0 0 6px var(--status-rose);
 }
 
 .console-controls {

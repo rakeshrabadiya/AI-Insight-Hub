@@ -245,33 +245,41 @@
                     </div>
 
                     <!-- Layer 3: R Machine Learning Engine -->
-                    <div class="status-panel">
+                    <div class="status-panel" id="rEngineStatusPanel">
                         <div class="status-panel-header">
                             <div class="status-panel-title">
                                 <div class="layer-indicator layer-r">3</div>
                                 <div>
                                     <div class="layer-name">R Machine Learning Engine</div>
-                                    <div class="layer-tech">R Language &bull; rpy2 / Subprocess Bridge</div>
+                                    <div class="layer-tech">R Language &bull; Subprocess / Rscript Bridge</div>
                                 </div>
                             </div>
-                            <span class="status-badge badge-neutral">
-                                <span class="status-dot dot-amber"></span>
-                                NOT CONNECTED YET
+                            <span class="status-badge badge-neutral" id="rEngineBadge">
+                                <span class="status-dot dot-amber" id="rEngineStatusDot"></span>
+                                <span id="rEngineBadgeText">NOT TESTED</span>
                             </span>
                         </div>
                         <div class="status-panel-body">
                             <div class="status-metric-row">
                                 <span class="metric-label">Integration State:</span>
-                                <span class="metric-value text-amber">Phase 2 Architecture Milestone</span>
+                                <span class="metric-value text-cyan" id="rEngineStateDisplay">Phase 2: Bridge Configured</span>
                             </div>
                             <div class="status-metric-row">
-                                <span class="metric-label">Model Runtime:</span>
-                                <span class="metric-value">R Scripts (regression, rpart, class, cluster)</span>
+                                <span class="metric-label">R Version / Executable:</span>
+                                <span class="metric-value font-mono" id="rEngineVersionDisplay">Click 'Test R Engine'</span>
                             </div>
                             <div class="status-metric-row">
                                 <span class="metric-label">Target Datasets:</span>
-                                <span class="metric-value">4 Analytical Benchmarks</span>
+                                <span class="metric-value">4 Datasets Ready (480 Records)</span>
                             </div>
+                        </div>
+                        <div class="status-panel-footer">
+                            <button class="btn btn-primary btn-sm" id="btnTestREngine" title="Run R Test Script via Flask">
+                                <svg class="icon-refresh" id="rTestIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                <span>TEST R ENGINE</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -496,21 +504,36 @@
 
                 <div class="console-panel">
                     <div class="console-header">
-                        <div class="console-title">
-                            <span class="console-tab active">
+                        <div class="console-tabs-group">
+                            <button class="console-tab-btn active" id="tabHealth" data-target="health">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="4 17 10 11 4 5"></polyline>
                                     <line x1="12" y1="19" x2="20" y2="19"></line>
                                 </svg>
-                                GET /api/health
-                            </span>
+                                <span>GET /api/health</span>
+                            </button>
+                            <button class="console-tab-btn" id="tabREngine" data-target="r-engine">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                <span>POST /api/r-engine/test</span>
+                            </button>
+                            <button class="console-tab-btn" id="tabDatasets" data-target="datasets">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                </svg>
+                                <span>GET /api/datasets/validate</span>
+                            </button>
                         </div>
                         <div class="console-controls">
                             <div class="auto-poll-wrapper">
                                 <label class="switch-label">
                                     <input type="checkbox" id="chkAutoPoll" checked>
                                     <span class="switch-slider"></span>
-                                    <span class="switch-text">Auto-Poll (10s)</span>
+                                    <span class="switch-text">Auto-Poll Health (10s)</span>
                                 </label>
                             </div>
                             <button class="btn btn-secondary btn-xs" id="btnCopyJson" title="Copy JSON Output">
