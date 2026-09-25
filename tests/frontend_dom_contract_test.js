@@ -22,7 +22,8 @@ const FRONTEND = path.join(__dirname, '..', 'frontend');
 const PAGES = [
     { name: 'Linear Regression (Phase 3)', html: 'regression.html', js: 'js/regression.js' },
     { name: 'Decision Tree (Phase 4)', html: 'decision-tree.html', js: 'js/decision-tree.js' },
-    { name: 'KNN (Phase 5)', html: 'knn.html', js: 'js/knn.js' }
+    { name: 'KNN (Phase 5)', html: 'knn.html', js: 'js/knn.js' },
+    { name: 'K-Means (Phase 6)', html: 'kmeans.html', js: 'js/kmeans.js' }
 ];
 
 let passed = 0;

@@ -43,8 +43,9 @@ def create_app():
             "description": "Multi-Model Machine Learning Analytics Platform",
             "version": "1.0.0",
             "phase": (
-                "Phase 5 - KNN Student Performance Prediction "
-                "(Phase 3 Linear Regression and Phase 4 Decision Tree also active)"
+                "Phase 6 - K-Means Customer Segmentation "
+                "(Phase 3 Linear Regression, Phase 4 Decision Tree and "
+                "Phase 5 KNN also active)"
             ),
             "status": "online",
             "endpoints": {
@@ -62,7 +63,13 @@ def create_app():
                 "knn_predict": "/api/knn/predict",
                 "knn_metrics": "/api/knn/metrics",
                 "knn_config": "/api/knn/config",
-                "knn_schema": "/api/knn/schema"
+                "knn_schema": "/api/knn/schema",
+                "kmeans_predict": "/api/kmeans/predict",
+                "kmeans_metrics": "/api/kmeans/metrics",
+                "kmeans_clusters": "/api/kmeans/clusters",
+                "kmeans_profiles": "/api/kmeans/profiles",
+                "kmeans_config": "/api/kmeans/config",
+                "kmeans_schema": "/api/kmeans/schema"
             }
         }), 200
 

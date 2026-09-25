@@ -1,7 +1,7 @@
 # AI Insight Hub — Multi-Model Machine Learning Analytics Platform
 
 [![Platform](https://img.shields.io/badge/Platform-AI%20Insight%20Hub-00f0ff.svg)](#)
-[![Phase](https://img.shields.io/badge/Status-Phase%205%20KNN%20Active-10b981.svg)](#)
+[![Phase](https://img.shields.io/badge/Status-All%206%20Phases%20Complete%20%C2%B7%204%20Models-10b981.svg)](#)
 [![Backend](https://img.shields.io/badge/Backend-Python%20Flask-3b82f6.svg)](#)
 [![Frontend](https://img.shields.io/badge/Frontend-Vanilla%20HTML%20%2F%20CSS%20%2F%20JS-f59e0b.svg)](#)
 [![ML-Engine](https://img.shields.io/badge/ML%20Engine-R%204.6.1%20Connected-6366f1.svg)](#)
@@ -344,6 +344,276 @@ To use different data or a different target, edit the `TARGET`, `FEATURES`, `CLA
 and `K_GRID` constants at the top of `train.R`; the API's validation rules, the saved
 feature ranges and the frontend schema all follow from those constants rather than being
 duplicated by hand.
+
+---
+
+### **Phase 6: K-Means — Customer Segmentation (ACTIVE / COMPLETED)**
+
+**This completes the platform: all four planned machine learning models are now implemented.**
+
+```text
+Phase 1 ✅    Phase 2 ✅    Phase 3 ✅    Phase 4 ✅    Phase 5 ✅    Phase 6 ✅
+```
+
+| # | Model | Learning type | Phase | Page |
+| :--: | :--- | :--- | :--: | :--- |
+| 1 | **Linear Regression** | supervised regression | 3 | `regression.html` |
+| 2 | **Decision Tree** | supervised classification | 4 | `decision-tree.html` |
+| 3 | **K-Nearest Neighbors** | supervised classification | 5 | `knn.html` |
+| 4 | **K-Means** | **unsupervised clustering** | **6** | **`kmeans.html`** |
+
+Phase 6 is the platform's **first unsupervised model**, and the only one with no target
+column. The first three models answer *"what is the value / class?"*. K-Means answers a
+different question: *"what groups exist in this data at all?"*
+
+> ⚠️ **Educational Notice:** This is an **educational machine learning implementation**.
+> The model is trained on a synthetic dataset for academic demonstration. The segments it
+> finds are real clusters in that data, not validated commercial customer categories.
+
+#### What Unsupervised Learning Is, and How It Differs Here
+
+A supervised model is given the answer column and learns to reproduce it. Phases 3, 4 and
+5 each had a `target` in their dataset — `price`, `risk`, `performance` — and were scored
+by comparing their answers to it.
+
+**Unsupervised learning starts with no answers at all.** There is no target column, no
+train/test split and no accuracy score, because there is nothing to be right or wrong
+about. Instead of predicting a label, the algorithm looks for structure that is already in
+the data and reports it. For K-Means that structure is *groups of customers that behave
+similarly to each other and differently to everyone else*.
+
+This has a direct consequence for the metrics: **an unsupervised model cannot report
+accuracy**, and this one does not pretend to. The honest quality measures are internal —
+how tightly customers group (WSS) and how far apart the groups are (silhouette) — and
+both are computed from the real fit.
+
+#### Dataset & Features Used
+
+Source: `datasets/customers.csv` — **120 rows, 4 numeric features, 1 identifier, no target.**
+
+| Column | Type | Training range | Role |
+| :--- | :--- | :--- | :--- |
+| `customer_id` | string identifier | — | **Labels rows only — never clustered on** |
+| `age` | numeric | 18 – 68 | Clustering feature |
+| `annual_income` | numeric | 15.6 – 149.3 | Clustering feature |
+| `spending_score` | numeric | 7 – 99 | Clustering feature |
+| `purchase_frequency` | numeric | 2 – 50 | Clustering feature |
+
+**Why `customer_id` is excluded.** It is a unique identifier with no behavioural meaning,
+and it is ordered by registration. Clustering on it would recover *"which accounts were
+opened first"* rather than finding customer types. It is used to label output rows and
+nothing else. `train.R` asserts the identifier is absent from the feature list, and a test
+enforces that at the API and frontend layers too.
+
+#### Feature Scaling
+
+K-Means minimises a **squared Euclidean distance**, and the four features are on very
+different numeric ranges:
+
+| Feature | Standard deviation |
+| :--- | ---: |
+| `age` | 11.21 |
+| `annual_income` | 35.99 |
+| `spending_score` | 27.95 |
+| `purchase_frequency` | 14.79 |
+
+Unscaled, `annual_income` would dominate every distance and the other three features would
+barely influence the result. Every feature is therefore standardised to **mean 0 and
+standard deviation 1** using the cleaned dataset, and `predict.R` applies the **identical**
+saved transformation to an incoming customer. Without that, the two sides of the
+comparison would be on different scales and the nearest-centre answer would be meaningless.
+
+#### Selecting K: Elbow Method + Silhouette Score
+
+K-Means needs to be told how many groups to look for. That number — **K** — is a modelling
+decision, so it is chosen from evidence rather than picked to make the output look tidy.
+Five candidates were fitted and scored:
+
+```bash
+Rscript r_models/kmeans/train.R
+```
+
+```text
+[6/12] Scored 5 candidate K values (kmeans, nstart = 25)
+      K             WSS   Silhouette  Between ratio  Stability WSS
+      2        277.3377       0.4217         0.4174       284.2622
+      3        160.4258       0.4358         0.6630       168.2142
+      4        126.2634       0.4390         0.7347       127.8777
+      5         94.1189       0.3987         0.8023       111.1381
+      6         83.4317       0.3584         0.8247        93.7305
+      Elbow (largest proportional WSS drop) -> K = 5
+      Best average silhouette width          -> K = 4
+```
+
+**The Elbow method.** WSS always falls as K rises — splitting a cluster in two can only
+reduce the sum of squared distances — so the lowest WSS is always the largest K and WSS
+alone cannot choose. The *elbow* is where the curve **flattens**: the K whose proportional
+reduction in WSS is the largest. Here that is **K = 5**.
+
+**The Silhouette score.** For each customer, `s(i) = (b − a) / max(a, b)`, where `a` is the
+mean distance to the other members of its own cluster and `b` is the smallest mean distance
+to any *other* cluster. It approaches 1 when a customer is tightly packed and far from
+everything else, and 0 when it sits on a boundary. Crucially — unlike WSS — **it is not
+monotonic**, so its maximum is a genuine optimum. Here that is **K = 4** at 0.4390.
+
+**How the two were combined.** The silhouette is the primary criterion, because it is the
+only one of the two that can identify an optimum on its own; the elbow breaks a close tie.
+The elbow's silhouette (0.3987) sits well below the peak (0.4390), so preferring it would
+mean trading measurable separation for a curve-shape heuristic. **K = 4 was selected**, and
+the full reasoning is written to `metrics.json` under `k_selection.reason` so the decision
+can be audited rather than taken on trust.
+
+Each K is additionally fitted 10 more times from independent seeds, and the spread of those
+restarts is reported as `stability_wss_sd` — a K whose solution depends on a lucky restart
+is not a trustworthy segmentation.
+
+#### Selected K = 4: The Cluster Profiles
+
+| Cluster | Size | Share | Generated label | Centre (original units) |
+| :--: | --: | --: | :--- | :--- |
+| 1 | 37 | 30.8% | Younger / Lower Income | age 30.9, income 47.3, spend 68.3, freq 23.3 |
+| 2 | 18 | 15.0% | Low Spending / Rare Buyers | age 38.4, income 63.6, spend 23.6, freq 10.6 |
+| 3 | 14 | 11.7% | Older / Lower Income / Low Spending / Rare Buyers | age 59.6, income 35.6, spend 20.6, freq 4.6 |
+| 4 | 51 | 42.5% | High Income / High Spending / Frequent Buyers | age 44.2, income 102.5, spend 77.9, freq 37.2 |
+
+**These labels are derived, not written by hand.** `train.R` compares each cluster's centre
+against the population mean *feature by feature* and marks a feature as separating when the
+centre sits at least **0.5 standard deviations** away. The label is then assembled from
+those actual descriptors. A cluster separated on fewer than two features is genuinely
+ambiguous, so it falls back to the neutral name `Cluster N` rather than inventing a
+persona — a test asserts that relationship in both directions.
+
+The dataset's headline numbers: **WSS = 126.2634**, **between-cluster ratio = 0.7347**
+(73.5% of the total variation lies *between* clusters), **mean silhouette = 0.4390**,
+across **120 clustered / 0 dropped** rows.
+
+#### Phase 6 API Endpoints
+
+| Method | Endpoint | Purpose |
+| :--- | :--- | :--- |
+| `POST` | `/api/kmeans/predict` | Assign one customer to the nearest trained cluster centre |
+| `GET` | `/api/kmeans/metrics` | WSS, silhouette, cluster sizes, centres, K evaluation, selection reasoning |
+| `GET` | `/api/kmeans/clusters` | Every customer's real cluster assignment, plus projected centres |
+| `GET` | `/api/kmeans/profiles` | Per-cluster size, feature means, centres and generated labels |
+| `GET` | `/api/kmeans/config` | Selected K, K grid, feature names, real training ranges, identifier held out |
+| `GET` | `/api/kmeans/schema` | Each feature's label and real training range, for the frontend form |
+
+##### Customer Assignment — `POST /api/kmeans/predict`
+
+K-Means does not *predict* a class, so this endpoint **assigns**: it scales the incoming
+customer with the model's saved scaler, measures the Euclidean distance to all four
+centres, and returns the nearest one. That nearest-centre rule is exactly what
+`stats::kmeans()` used on its own training rows, so the assignment and the model cannot
+disagree.
+
+Request:
+```json
+{
+  "age": 42,
+  "annual_income": 85,
+  "spending_score": 55,
+  "purchase_frequency": 28
+}
+```
+
+```bash
+curl -X POST http://127.0.0.1:5000/api/kmeans/predict \
+  -H "Content-Type: application/json" \
+  -d '{"age":42,"annual_income":85,"spending_score":55,"purchase_frequency":28}'
+```
+
+Real response (abridged — exactly what the R model returned):
+
+```json
+{
+  "success": true,
+  "model": "K-Means",
+  "cluster": 4,
+  "cluster_label": "High Income / High Spending / Frequent Buyers",
+  "cluster_size": 51,
+  "segment": "Core",
+  "distance": 1.1572,
+  "distance_original_units": 30.3991,
+  "runner_up_distance": 1.8501,
+  "separation_ratio": 0.6255,
+  "distance_basis": "Euclidean distance in standardised feature space, the same space kmeans() clustered in",
+  "distances": {
+    "Cluster 1": 1.8501,
+    "Cluster 2": 2.2807,
+    "Cluster 3": 2.6957,
+    "Cluster 4": 1.1572
+  },
+  "scaled_inputs": { "age": 0.22, "annual_income": 0.4674,
+                     "spending_score": -0.2158, "purchase_frequency": 0.1572 },
+  "warnings": []
+}
+```
+
+The `distances` map is the full ranking, so the answer is auditable: cluster 4 is nearest at
+1.1572 and the runner-up is 1.8501 away. The `separation_ratio` (0.6255) is that distance
+over the runner-up's — well below 1, so the nearest centre is clearly the closest rather
+than a near-tie.
+
+**No retraining at inference.** `predict.R` does `readRDS()` and reuses the stored centres
+and scaler. A request costs the same whether the model is a day old or a year old.
+
+#### Visualization Explanation
+
+The clustering is genuinely **four-dimensional** (four features), which no screen can show.
+The dashboard therefore projects the customers onto their **two leading principal
+components** (PC1 and PC2) and draws the scatter plot there.
+
+> ⚠️ **The clustering itself is performed on all four scaled features — never on the
+> components.** The PCA is computed *for visualisation only*, and `metrics.json` records
+> that explicitly in `visualization.purpose`. Replacing K-Means with PCA clustering would
+> silently change the model into a different, lower-variance one; this implementation does
+> not do that. PC1 explains 55.0% of the variance and PC2 a further 30.8%, so the two
+> components together show 85.8% of it.
+
+Consequently, the distances shown in the scatter plot are **PCA** distances, whereas the
+`distance` reported under Customer Segmentation is the **four-feature** distance the model
+actually minimises. The page states this on the plot itself so the two are never confused.
+Each cluster centre is drawn as a labelled, ringed marker with a halo, so it reads as an
+average rather than a data point.
+
+#### How to Retrain the Model
+
+```bash
+Rscript r_models/kmeans/train.R
+```
+
+This rewrites `model.rds`, `metrics.json`, `clusters.json` and `profiles.json` in place, and
+the API picks up the new model on the very next request — no server restart needed. The run
+is deterministic
+(`set.seed(42)` with `nstart = 25`); `train.R` re-fits the model a second time under the same
+seed and **refuses to write anything** if the assignment differs, so the artifacts are
+verified reproducible rather than assumed to be.
+
+Expected output:
+```text
+[7/12] Selected K = 4 - The elbow method suggests K = 5 but its average silhouette width
+       (0.3987) is materially below the peak of 0.4390 at K = 4. WSS always falls as K rises,
+       so the elbow is the weaker criterion here, and the silhouette maximum is taken.
+[8/12] Final kmeans() model: K = 4, WSS = 126.2634, between-cluster ratio = 0.7347, mean silhouette = 0.4390
+      Cluster sizes: 1=37, 2=18, 3=14, 4=51
+      Reproducible under the same seed: TRUE
+PHASE 6 K-MEANS TRAINING COMPLETE
+```
+
+To use different data or a different feature set, edit the `IDENTIFIER_COLUMN`, `FEATURES`,
+`K_GRID`, `N_START` and `RANDOM_SEED` constants at the top of `train.R`; the API's validation
+rules, the saved feature ranges and the frontend schema all follow from those constants.
+
+#### How to Test the Model
+
+```bash
+# Phase 6 suite (artifacts, assignment, K evaluation, profiles, failure handling)
+python -m unittest tests.test_kmeans -v
+
+# Frontend behaviour suite (form, cards, profiles, scatter, elbow chart) — 119 assertions
+# Requires the Flask backend to be running on 127.0.0.1:5000
+node tests/kmeans_frontend_test.js
+```
 
 ---
 
@@ -814,12 +1084,14 @@ AI-Insight-Hub/
 │   ├── regression.html           # Phase 3: Property Price Predictor page
 │   ├── decision-tree.html        # Phase 4: Financial Risk Analyzer page
 │   ├── knn.html                  # Phase 5: Student Performance Predictor page
+│   ├── kmeans.html               # Phase 6: Customer Segmentation page
 │   ├── css/
 │   │   ├── style.css             # Main styling, design tokens & glassmorphism
 │   │   ├── responsive.css        # Adaptive mobile & tablet breakpoints
 │   │   ├── regression.css        # Phase 3: predictor form, result card, chart
 │   │   ├── decision-tree.css     # Phase 4: risk form, result card, tree diagram
-│   │   └── knn.css               # Phase 5: performance form, result card, neighbours, K table
+│   │   ├── knn.css               # Phase 5: performance form, result card, neighbours, K table
+│   │   └── kmeans.css            # Phase 6: stat row, cluster cards, scatter, K chart, profiles
 │   └── js/
 │       ├── app.js                # Dynamic API communication, R engine tests & tabs
 │       ├── regression.js         # Phase 3: prediction flow, validation & SVG chart
@@ -867,7 +1139,13 @@ AI-Insight-Hub/
 │   │   ├── predict.R             # Loads model.rds, scales, classifies & returns neighbours
 │   │   ├── model.rds             # Serialised scaled training matrix, labels, scaler & K
 │   │   └── metrics.json          # Real accuracy / precision / recall / F1 + K comparison
-│   └── kmeans/                   # K-Means clustering scripts (Phase 6 - not implemented)
+│   └── kmeans/                   # K-Means clustering scripts (Phase 6)
+│       ├── train.R               # Trains stats::kmeans, selects K by silhouette + elbow & writes artifacts
+│       ├── predict.R             # Loads model.rds, applies the saved scaler, assigns the nearest centre
+│       ├── model.rds             # Serialised kmeans object, centres, scaler, PCA basis & profiles
+│       ├── metrics.json          # Real WSS, silhouette, K comparison, cluster profiles & PCA projection
+│       ├── clusters.json         # Every customer with its real cluster, distances & projected position
+│       └── profiles.json         # Per-cluster size, means, centres, relative position & label rule
 │
 ├── datasets/                     # Training and testing datasets (4 CSV files)
 │   ├── housing.csv               # Property price regression dataset (120 rows)
@@ -880,9 +1158,12 @@ AI-Insight-Hub/
 │   ├── test_regression.py        # 40 tests: Phase 3 model, API, validation, failures
 │   ├── test_decision_tree.py     # 55 tests: Phase 4 model, API, validation, tree, failures
 │   ├── test_knn.py               # 66 tests: Phase 5 model, API, validation, neighbours, failures
+│   ├── test_kmeans.py            # 77 tests: Phase 6 model, K evaluation, assignment, profiles, failures
 │   ├── frontend_logic_test.js    # 50 tests: Phase 3 page logic, validation & chart
 │   ├── decision_tree_frontend_test.js  # 69 tests: Phase 4 form, result, metrics & tree UI
-│   └── knn_frontend_test.js      # 73 tests: Phase 5 form, neighbours, K table & metrics UI
+│   ├── knn_frontend_test.js      # 73 tests: Phase 5 form, neighbours, K table & metrics UI
+│   ├── frontend_dom_contract_test.js   # 32 tests: every page's script/markup id contract
+│   └── kmeans_frontend_test.js   # 119 tests: Phase 6 form, cards, profiles, scatter & elbow chart UI
 │
 ├── .gitignore                    # Git pattern exclusion rules
 └── README.md                     # Comprehensive platform documentation
@@ -1240,7 +1521,7 @@ Then navigate to: `http://127.0.0.1:8000/frontend/`
 | **Phase 3** | **Linear Regression** | ✅ Complete | Property price model in R (`lm`), training pipeline with real R²/RMSE/MAE, persisted `model.rds`, prediction/metrics/evaluation API, interactive predictor page with scatter chart. |
 | **Phase 4** | **Decision Tree** | ✅ Complete | Financial risk classification model in R (`rpart::rpart`, CART), stratified split + cross-validated depth selection, real accuracy/precision/recall/F1 + confusion matrix, persisted `model.rds`, prediction/metrics/tree API, decision-tree visualisation, Financial Risk Analyzer page. |
 | **Phase 5** | **KNN Classification** | ✅ Complete | Student performance model in R (`class::knn`, Euclidean + majority vote), stratified split, training-only feature scaling, cross-validated K selection (K=5), real accuracy/precision/recall/F1 + confusion matrix + K comparison, persisted `model.rds`, predict/metrics/config/schema API, real nearest-neighbour trace, Student Performance Predictor page. |
-| **Phase 6** | **K-Means Clustering** | ⏳ Planned | Customer segmentation model in R (`kmeans`), elbow method optimization, 2D centroid scatter visualizer. |
+| **Phase 6** | **K-Means Clustering** | ✅ Complete | Customer segmentation model in R (`stats::kmeans`), 4-feature standardisation, K selected from {2,3,4,5,6} by silhouette with the elbow as tie-breaker (**K = 4**, WSS = 126.26, silhouette = 0.4390), clusters 37/18/14/51 with labels derived from each measured centre, persisted `model.rds` + `metrics.json` + `clusters.json` + `profiles.json`, predict/metrics/clusters/profiles/config/schema API, hand-drawn canvas scatter plot with PCA projection, Customer Segmentation page. **All four planned models are now implemented.** |
 
 ---
 

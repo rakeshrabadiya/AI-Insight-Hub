@@ -899,14 +899,17 @@ class TestMetricsAndConfigApi(unittest.TestCase):
         self.assertNotIn("Coming in Phase 5", html,
                          "Stale 'Coming in Phase 5' text remains on the KNN card")
 
-        # The earlier models must still be intact.
+        # The other models must still be intact. K-Means joined these as an
+        # ACTIVE Phase 6 model, so it now carries an OPEN MODEL link too
+        # instead of a "Coming in Phase 6" placeholder.
         self.assertIn('href="regression.html"', html,
                       "Dashboard no longer links to the Phase 3 regression page")
         self.assertIn('href="decision-tree.html"', html,
                       "Dashboard no longer links to the Phase 4 decision tree page")
-        # K-Means stays Phase 6 and untouched.
-        self.assertIn("Coming in Phase 6", html,
-                      "The Phase 6 K-Means card must still be marked as upcoming")
+        self.assertIn('href="kmeans.html"', html,
+                      "Dashboard does not link to the Phase 6 K-Means page")
+        self.assertNotIn("Coming in Phase", html,
+                         "Stale 'Coming in Phase N' text remains on a model card")
 
 
 class TestPhasePreservation(unittest.TestCase):
@@ -967,12 +970,33 @@ class TestPhasePreservation(unittest.TestCase):
         self.assertIn("Phase 4", data["phase"])
         self.assertIn("Phase 5", data["phase"])
 
-    def test_kmeans_is_not_implemented(self):
-        """Phase 6 is out of scope, so no K-Means training script may exist."""
-        self.assertFalse(
-            os.path.isfile(os.path.join(PROJECT_ROOT, "r_models", "kmeans", "train.R")),
-            "K-Means must not be implemented in Phase 5"
-        )
+    def test_kmeans_is_a_separate_model(self):
+        """
+        Phase 6 added K-Means alongside KNN, not in place of it. The two models
+        must keep their own scripts and their own trained artifacts, so
+        retraining or breaking one cannot silently overwrite the other.
+        """
+        for relative in (
+            os.path.join("r_models", "kmeans", "train.R"),
+            os.path.join("r_models", "kmeans", "predict.R"),
+            os.path.join("backend", "routes", "kmeans.py"),
+            os.path.join("backend", "services", "kmeans_service.py"),
+            os.path.join("frontend", "kmeans.html"),
+            os.path.join("tests", "test_kmeans.py"),
+        ):
+            self.assertTrue(
+                os.path.isfile(os.path.join(PROJECT_ROOT, relative)),
+                f"The Phase 6 K-Means file is missing: {relative}"
+            )
+
+        kmeans_model = os.path.join(PROJECT_ROOT, "r_models", "kmeans", "model.rds")
+        knn_model = os.path.join(PROJECT_ROOT, "r_models", "knn", "model.rds")
+        self.assertTrue(os.path.isfile(kmeans_model),
+                        "The K-Means model bundle is missing")
+        self.assertTrue(os.path.isfile(knn_model),
+                        "The KNN model bundle went missing — Phase 6 must not replace it")
+        self.assertNotEqual(os.path.abspath(kmeans_model), os.path.abspath(knn_model),
+                            "The two models must not share a model file")
 
 
 if __name__ == '__main__':

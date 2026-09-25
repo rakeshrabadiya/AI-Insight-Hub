@@ -12,4 +12,5 @@ from . import datasets
 from . import regression
 from . import decision_tree
 from . import knn
+from . import kmeans
 

@@ -1,0 +1,246 @@
+{
+  "success": true,
+  "model": "K-Means",
+  "task": "Customer Segmentation",
+  "learning_type": "unsupervised",
+  "trained_at": "2026-09-25T16:29:43Z",
+  "dataset": "datasets/customers.csv",
+  "identifier_column": "customer_id",
+  "features": [
+    "age",
+    "annual_income",
+    "spending_score",
+    "purchase_frequency"
+  ],
+  "selected_k": 4,
+  "total_records": 120,
+  "feature_ranges": {
+    "age": {
+      "min": 18,
+      "max": 68
+    },
+    "annual_income": {
+      "min": 15.6,
+      "max": 149.3
+    },
+    "spending_score": {
+      "min": 7,
+      "max": 99
+    },
+    "purchase_frequency": {
+      "min": 2,
+      "max": 50
+    }
+  },
+  "scaling": {
+    "method": "standardisation (z-score) fitted on the cleaned dataset",
+    "center": {
+      "age": 39.5333,
+      "annual_income": 68.1783,
+      "spending_score": 61.0333,
+      "purchase_frequency": 25.675
+    },
+    "scale": {
+      "age": 11.2107,
+      "annual_income": 35.9927,
+      "spending_score": 27.9519,
+      "purchase_frequency": 14.7945
+    }
+  },
+  "naming": "Cluster names are generated from each cluster's own measured centre: every feature whose centre sits at least 0.5 population standard deviations above or below the population mean contributes a descriptor. A cluster with fewer than two such descriptors is too ambiguous to characterise and falls back to the neutral name 'Cluster n'.",
+  "comparison": {
+    "population_mean": {
+      "age": 39.5333,
+      "annual_income": 68.1783,
+      "spending_score": 61.0333,
+      "purchase_frequency": 25.675
+    },
+    "ranks_by_size": {
+      "Cluster 1": 4,
+      "Cluster 2": 1,
+      "Cluster 3": 2,
+      "Cluster 4": 3
+    }
+  },
+  "profiles": [
+    {
+      "cluster": 1,
+      "label": "Younger / Lower Income",
+      "label_is_generic": false,
+      "segment": "Standard",
+      "size": 37,
+      "size_share": 0.3083,
+      "mean_features": {
+        "age": -0.9251,
+        "annual_income": -0.8309,
+        "spending_score": 0.4359,
+        "purchase_frequency": 0.1206
+      },
+      "original_mean_features": {
+        "age": 29.1622,
+        "annual_income": 38.2703,
+        "spending_score": 73.2162,
+        "purchase_frequency": 27.4595
+      },
+      "center_scaled": {
+        "age": -0.9251,
+        "annual_income": -0.8309,
+        "spending_score": 0.4359,
+        "purchase_frequency": 0.1206
+      },
+      "center_original": {
+        "age": 29.1622,
+        "annual_income": 38.2703,
+        "spending_score": 73.2162,
+        "purchase_frequency": 27.4595
+      },
+      "center_vs_population_sd": {
+        "age": -0.9251,
+        "annual_income": -0.8309,
+        "spending_score": 0.4359,
+        "purchase_frequency": 0.1206
+      },
+      "descriptors": [
+        "Younger",
+        "Lower Income"
+      ],
+      "wss_share": 1.0823,
+      "mean_distance_to_center": 0.9461
+    },
+    {
+      "cluster": 2,
+      "label": "Low Spending / Rare Buyers",
+      "label_is_generic": false,
+      "segment": "Standard",
+      "size": 18,
+      "size_share": 0.15,
+      "mean_features": {
+        "age": -0.4886,
+        "annual_income": -0.3925,
+        "spending_score": -1.4581,
+        "purchase_frequency": -1.3975
+      },
+      "original_mean_features": {
+        "age": 34.0556,
+        "annual_income": 54.05,
+        "spending_score": 20.2778,
+        "purchase_frequency": 5
+      },
+      "center_scaled": {
+        "age": -0.4886,
+        "annual_income": -0.3925,
+        "spending_score": -1.4581,
+        "purchase_frequency": -1.3975
+      },
+      "center_original": {
+        "age": 34.0556,
+        "annual_income": 54.05,
+        "spending_score": 20.2778,
+        "purchase_frequency": 5
+      },
+      "center_vs_population_sd": {
+        "age": -0.4886,
+        "annual_income": -0.3925,
+        "spending_score": -1.4581,
+        "purchase_frequency": -1.3975
+      },
+      "descriptors": [
+        "Low Spending",
+        "Rare Buyers"
+      ],
+      "wss_share": 0.3528,
+      "mean_distance_to_center": 0.6067
+    },
+    {
+      "cluster": 3,
+      "label": "Older / Lower Income / Low Spending / Rare Buyers",
+      "label_is_generic": false,
+      "segment": "Niche",
+      "size": 14,
+      "size_share": 0.1167,
+      "mean_features": {
+        "age": 1.558,
+        "annual_income": -0.7771,
+        "spending_score": -1.4808,
+        "purchase_frequency": -1.3685
+      },
+      "original_mean_features": {
+        "age": 57,
+        "annual_income": 40.2071,
+        "spending_score": 19.6429,
+        "purchase_frequency": 5.4286
+      },
+      "center_scaled": {
+        "age": 1.558,
+        "annual_income": -0.7771,
+        "spending_score": -1.4808,
+        "purchase_frequency": -1.3685
+      },
+      "center_original": {
+        "age": 57,
+        "annual_income": 40.2071,
+        "spending_score": 19.6429,
+        "purchase_frequency": 5.4286
+      },
+      "center_vs_population_sd": {
+        "age": 1.558,
+        "annual_income": -0.7771,
+        "spending_score": -1.4808,
+        "purchase_frequency": -1.3685
+      },
+      "descriptors": [
+        "Older",
+        "Lower Income",
+        "Low Spending",
+        "Rare Buyers"
+      ],
+      "wss_share": 1.2928,
+      "mean_distance_to_center": 0.7497
+    },
+    {
+      "cluster": 4,
+      "label": "High Income / High Spending / Frequent Buyers",
+      "label_is_generic": false,
+      "segment": "Core",
+      "size": 51,
+      "size_share": 0.425,
+      "mean_features": {
+        "age": 0.4159,
+        "annual_income": 0.9547,
+        "spending_score": 0.6049,
+        "purchase_frequency": 0.7814
+      },
+      "original_mean_features": {
+        "age": 44.1961,
+        "annual_income": 102.5412,
+        "spending_score": 77.9412,
+        "purchase_frequency": 37.2353
+      },
+      "center_scaled": {
+        "age": 0.4159,
+        "annual_income": 0.9547,
+        "spending_score": 0.6049,
+        "purchase_frequency": 0.7814
+      },
+      "center_original": {
+        "age": 44.1961,
+        "annual_income": 102.5412,
+        "spending_score": 77.9412,
+        "purchase_frequency": 37.2353
+      },
+      "center_vs_population_sd": {
+        "age": 0.4159,
+        "annual_income": 0.9547,
+        "spending_score": 0.6049,
+        "purchase_frequency": 0.7814
+      },
+      "descriptors": [
+        "High Income",
+        "High Spending",
+        "Frequent Buyers"
+      ],
+      "wss_share": 0.728,
+      "mean_distance_to_center": 1.1292
+    }
+  ]
+}

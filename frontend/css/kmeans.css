@@ -1,0 +1,983 @@
+/* ==========================================================================
+   AI INSIGHT HUB — PHASE 6 K-MEANS PAGE STYLES
+   Extends css/style.css (shared design tokens) with the segmentation stat row,
+   the cluster cards, the customer assignment form and result panel, the
+   cluster scatter plot, the K-evaluation chart and the cluster profiles.
+
+   Palette note: a K-Means cluster has no inherent "good" or "bad" ordering the
+   way a risk tier or a performance tier does, so the cluster colours are an
+   evenly-spaced categorical set rather than a red->green severity scale.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Page-specific tokens
+   -------------------------------------------------------------------------- */
+:root {
+    --panel-bg: rgba(17, 26, 46, 0.62);
+    --panel-border: rgba(255, 255, 255, 0.08);
+
+    /* Categorical cluster palette — evenly spaced, no severity meaning. */
+    --cluster-1: #00f0ff;
+    --cluster-1-glow: rgba(0, 240, 255, 0.30);
+    --cluster-2: #8b5cf6;
+    --cluster-2-glow: rgba(139, 92, 246, 0.30);
+    --cluster-3: #f59e0b;
+    --cluster-3-glow: rgba(245, 158, 11, 0.30);
+    --cluster-4: #10b981;
+    --cluster-4-glow: rgba(16, 185, 129, 0.30);
+    --cluster-5: #f43f5e;
+    --cluster-5-glow: rgba(244, 63, 94, 0.30);
+    --cluster-6: #ec4899;
+    --cluster-6-glow: rgba(236, 72, 153, 0.30);
+}
+
+/* --------------------------------------------------------------------------
+   2. Header link reset (the logo and back button are anchors here)
+   -------------------------------------------------------------------------- */
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition-fast);
+}
+
+.logo-link:hover {
+    opacity: 0.85;
+}
+
+.tag-pill-active {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.20), rgba(139, 92, 246, 0.16));
+    border-color: rgba(0, 240, 255, 0.40);
+    color: #67e8f9;
+}
+
+/* --------------------------------------------------------------------------
+   3. Shared panel shell
+   -------------------------------------------------------------------------- */
+.panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-base);
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.panel-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+}
+
+.panel-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: rgba(148, 163, 184, 0.08);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    padding: 0.3rem 0.7rem;
+    white-space: nowrap;
+}
+
+.chart-placeholder {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-align: center;
+    padding: 2rem 1rem;
+    font-style: italic;
+}
+
+/* --------------------------------------------------------------------------
+   4. Segmentation stat row
+   -------------------------------------------------------------------------- */
+.stat-row {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.stat-tile {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.35rem;
+    text-align: center;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-base);
+}
+
+.stat-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+}
+
+/* The two headline clustering diagnostics carry the accent treatment. */
+.stat-tile-accent {
+    border-color: rgba(0, 240, 255, 0.22);
+    background: linear-gradient(160deg, rgba(0, 240, 255, 0.08), rgba(17, 26, 46, 0.62));
+}
+
+.stat-tile-label {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+}
+
+.stat-tile-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--text-primary);
+    word-break: break-all;
+}
+
+.stat-tile-accent .stat-tile-value {
+    color: var(--accent-cyan);
+    text-shadow: 0 0 24px rgba(0, 240, 255, 0.28);
+}
+
+.stat-tile-caption {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   5. Cluster overview cards
+   -------------------------------------------------------------------------- */
+.cluster-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.1rem;
+}
+
+.cluster-card {
+    position: relative;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    overflow: hidden;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-base);
+}
+
+/* Each card is tinted by its own cluster colour, set per-card in JS. */
+.cluster-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--cluster-color, var(--accent-cyan));
+    box-shadow: 0 0 22px var(--cluster-glow, var(--glow-cyan));
+}
+
+.cluster-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--cluster-color, var(--accent-cyan));
+    box-shadow: var(--shadow-card-hover);
+}
+
+.cluster-card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin-bottom: 0.9rem;
+}
+
+.cluster-card-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--cluster-color, var(--accent-cyan));
+    text-shadow: 0 0 20px var(--cluster-glow, var(--glow-cyan));
+}
+
+.cluster-card-share {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.cluster-card-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+
+.cluster-card-count-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.cluster-card-descriptors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.9rem;
+}
+
+.descriptor-chip {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--cluster-color, var(--accent-cyan));
+    background: rgba(148, 163, 184, 0.10);
+    border: 1px solid var(--cluster-glow, var(--border-subtle));
+    border-radius: var(--radius-full);
+    padding: 0.22rem 0.6rem;
+}
+
+.descriptor-chip-generic {
+    color: var(--text-muted);
+    border-color: var(--border-subtle);
+}
+
+/* The horizontal share bar under each card. */
+.cluster-card-bar {
+    height: 5px;
+    border-radius: var(--radius-full);
+    background: rgba(148, 163, 184, 0.14);
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.cluster-card-bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: var(--radius-full);
+    background: var(--cluster-color, var(--accent-cyan));
+    transition: width 700ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --------------------------------------------------------------------------
+   6. Assignment layout
+   -------------------------------------------------------------------------- */
+.predict-grid {
+    display: grid;
+    grid-template-columns: minmax(340px, 1fr) minmax(360px, 1.15fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.result-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.predict-form-panel {
+    position: sticky;
+    top: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   7. Input form
+   -------------------------------------------------------------------------- */
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1.1rem;
+    min-width: 0;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.form-input {
+    width: 100%;
+    background: rgba(6, 11, 25, 0.7);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    padding: 0.7rem 0.9rem;
+    transition: var(--transition-fast);
+}
+
+.form-input::placeholder {
+    color: rgba(100, 116, 139, 0.75);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: rgba(0, 240, 255, 0.55);
+    box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.12);
+}
+
+.form-input.has-error {
+    border-color: var(--status-rose);
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.12);
+}
+
+.form-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.form-error {
+    font-size: 0.72rem;
+    color: var(--status-rose);
+    min-height: 0.9rem;
+}
+
+.btn-sample {
+    margin-top: 0.75rem;
+}
+
+.btn-block {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+.icon-flask.spinning {
+    animation: kmeans-spin 1.4s linear infinite;
+}
+
+@keyframes kmeans-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   8. Result panel
+   -------------------------------------------------------------------------- */
+.result-panel {
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: var(--transition-base);
+}
+
+.result-empty,
+.result-error {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.result-empty-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    background: rgba(0, 240, 255, 0.12);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    color: var(--accent-cyan);
+}
+
+.result-empty-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+}
+
+.result-empty-text {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    max-width: 38ch;
+    margin: 0 auto;
+}
+
+.result-heading {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 0.75rem;
+}
+
+/* The headline cluster id, tinted by its own cluster colour. */
+.result-cluster {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.6rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+    color: var(--accent-cyan);
+    text-shadow: 0 0 30px var(--glow-cyan);
+}
+
+.result-cluster[data-cluster="1"] { color: var(--cluster-1); text-shadow: 0 0 30px var(--cluster-1-glow); }
+.result-cluster[data-cluster="2"] { color: var(--cluster-2); text-shadow: 0 0 30px var(--cluster-2-glow); }
+.result-cluster[data-cluster="3"] { color: var(--cluster-3); text-shadow: 0 0 30px var(--cluster-3-glow); }
+.result-cluster[data-cluster="4"] { color: var(--cluster-4); text-shadow: 0 0 30px var(--cluster-4-glow); }
+.result-cluster[data-cluster="5"] { color: var(--cluster-5); text-shadow: 0 0 30px var(--cluster-5-glow); }
+.result-cluster[data-cluster="6"] { color: var(--cluster-6); text-shadow: 0 0 30px var(--cluster-6-glow); }
+
+.result-cluster-label {
+    text-align: center;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+    line-height: 1.4;
+}
+
+/* Distance + separation meter */
+.distance-block {
+    background: rgba(6, 11, 25, 0.5);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.confidence-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.confidence-label {
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.confidence-value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.confidence-track {
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: rgba(148, 163, 184, 0.15);
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    width: 0;
+    border-radius: var(--radius-full);
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-violet));
+    transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.confidence-note {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    line-height: 1.5;
+}
+
+.result-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 1.1rem 0;
+}
+
+.result-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+}
+
+/* Distance bars — the real measured distance to each centroid. */
+.vote-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-bottom: 1.25rem;
+}
+
+.vote-row {
+    display: grid;
+    grid-template-columns: 84px 1fr 66px;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.vote-class {
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+}
+
+.vote-class[data-cluster="1"] { color: var(--cluster-1); }
+.vote-class[data-cluster="2"] { color: var(--cluster-2); }
+.vote-class[data-cluster="3"] { color: var(--cluster-3); }
+.vote-class[data-cluster="4"] { color: var(--cluster-4); }
+.vote-class[data-cluster="5"] { color: var(--cluster-5); }
+.vote-class[data-cluster="6"] { color: var(--cluster-6); }
+
+.vote-row[data-winner="true"] .vote-class {
+    font-weight: 700;
+}
+
+.vote-track {
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: rgba(148, 163, 184, 0.13);
+    overflow: hidden;
+}
+
+.vote-fill {
+    height: 100%;
+    width: 0;
+    border-radius: var(--radius-full);
+    transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vote-fill[data-cluster="1"] { background: var(--cluster-1); }
+.vote-fill[data-cluster="2"] { background: var(--cluster-2); }
+.vote-fill[data-cluster="3"] { background: var(--cluster-3); }
+.vote-fill[data-cluster="4"] { background: var(--cluster-4); }
+.vote-fill[data-cluster="5"] { background: var(--cluster-5); }
+.vote-fill[data-cluster="6"] { background: var(--cluster-6); }
+
+.vote-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+/* Input summary — key/value pairs, two elements per feature. */
+.input-summary {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.45rem 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.input-summary-key {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+}
+
+.input-summary-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    text-align: right;
+}
+
+/* Extrapolation warnings — advisory, never an error. */
+.result-warnings {
+    margin-bottom: 1.1rem;
+}
+
+.warning-block {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.28);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 0.9rem;
+}
+
+.warning-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--status-amber);
+    margin-bottom: 0.4rem;
+}
+
+.warning-item {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.result-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.result-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+}
+
+.result-meta-row .font-mono {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+/* --------------------------------------------------------------------------
+   9. Cluster scatter plot
+   -------------------------------------------------------------------------- */
+.viz-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.viz-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.viz-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+}
+
+.viz-legend-swatch {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--swatch-color, var(--accent-cyan));
+    box-shadow: 0 0 10px var(--swatch-glow, var(--glow-cyan));
+}
+
+.viz-legend-count {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+}
+
+.viz-canvas-wrap {
+    position: relative;
+    width: 100%;
+    min-height: 420px;
+}
+
+.viz-canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+}
+
+.viz-note {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   10. K evaluation (elbow + silhouette)
+   -------------------------------------------------------------------------- */
+.k-analysis-grid {
+    display: grid;
+    grid-template-columns: minmax(360px, 1.2fr) minmax(300px, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.chart-canvas-wrap {
+    position: relative;
+    width: 100%;
+    min-height: 320px;
+}
+
+.chart-canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.k-note {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-top: 1rem;
+}
+
+.k-table-wrap {
+    overflow-x: auto;
+}
+
+.k-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+.k-table th {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: right;
+    padding: 0.55rem 0.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+    white-space: nowrap;
+}
+
+.k-table th:first-child {
+    text-align: left;
+}
+
+.k-table td {
+    padding: 0.55rem 0.5rem;
+    text-align: right;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.k-table td:first-child {
+    text-align: left;
+}
+
+.k-table tbody tr[data-selected="true"] {
+    background: rgba(0, 240, 255, 0.08);
+}
+
+.k-table tbody tr[data-selected="true"] td {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.k-cell {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+}
+
+.k-value {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.k-row-mark {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   11. Cluster profiles
+   -------------------------------------------------------------------------- */
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.1rem;
+}
+
+.profile-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-base);
+}
+
+.profile-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--cluster-color, var(--accent-cyan));
+}
+
+.profile-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.4rem;
+}
+
+.profile-card-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--cluster-color, var(--accent-cyan));
+    box-shadow: 0 0 12px var(--cluster-glow, var(--glow-cyan));
+    flex-shrink: 0;
+}
+
+.profile-card-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--cluster-color, var(--accent-cyan));
+}
+
+.profile-card-segment {
+    margin-left: auto;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: rgba(148, 163, 184, 0.10);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    padding: 0.18rem 0.55rem;
+}
+
+.profile-card-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+    margin-bottom: 0.35rem;
+}
+
+.profile-card-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 1.1rem;
+}
+
+.profile-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.76rem;
+}
+
+.profile-table th {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: right;
+    padding: 0.4rem 0.3rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.profile-table th:first-child {
+    text-align: left;
+}
+
+.profile-table td {
+    padding: 0.42rem 0.3rem;
+    text-align: right;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.035);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.profile-table td:first-child {
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-muted);
+}
+
+.profile-table tr[data-sign="high"] td:last-child { color: var(--status-emerald); }
+.profile-table tr[data-sign="low"] td:last-child { color: var(--accent-violet); }
+.profile-table tr[data-sign="neutral"] td:last-child { color: var(--text-muted); }
+
+.profile-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border-subtle);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.profile-footer-value {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   12. Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 1180px) {
+    .stat-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1024px) {
+    .predict-grid,
+    .k-analysis-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .predict-form-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .stat-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .result-cluster {
+        font-size: 2.1rem;
+    }
+}

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Segmentation — AI Insight Hub</title>
+    <meta name="description" content="K-Means unsupervised customer segmentation powered by a real model trained in R with elbow and silhouette K selection.">
+    <!-- Google Fonts: Inter & JetBrains Mono (shared with the dashboard) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Shared design system + page-specific styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/kmeans.css">
+</head>
+<body>
+    <!-- Background Glow Elements (shared with dashboard) -->
+    <div class="bg-glow bg-glow-top"></div>
+    <div class="bg-glow bg-glow-bottom"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="app-container">
+
+        <!-- Header / Navigation -->
+        <header class="app-header">
+            <div class="header-left">
+                <a class="logo-wrapper logo-link" href="index.html" title="Back to dashboard">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <div class="brand-title">AI Insight Hub</div>
+                        <div class="brand-subtitle">Multi-Model Machine Learning Analytics Platform</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="header-center">
+                <div class="academic-badge">
+                    <span class="badge-dot"></span>
+                    <span class="badge-text">GCF Training &bull; Ethnotech &bull; Parul University</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <a class="btn btn-secondary btn-sm" href="index.html" title="Return to the platform dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+        </header>
+
+        <main class="main-content">
+
+            <!-- Model Hero Banner -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <div class="hero-tag">
+                        <span class="tag-pill tag-pill-active">Phase 6 &bull; Active Model</span>
+                        <span class="tag-text">Unsupervised clustering trained in R</span>
+                    </div>
+                    <h1 class="hero-title">Customer Segmentation</h1>
+                    <p class="hero-description">
+                        K-Means Machine Learning Model. This is an <strong>unsupervised</strong> model: it has no
+                        target column to predict, so instead of scoring answers it
+                        <em>discovers</em> customer groups in <code>customers.csv</code> by finding
+                        <strong>K</strong> centroids that minimise the total squared distance of every customer
+                        to its nearest one. Every number on this page comes from a real
+                        <code>stats::kmeans()</code> fit &mdash; nothing is pre-written or hard-coded.
+                    </p>
+                </div>
+                <div class="hero-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Algorithm</span>
+                        <span class="meta-value">K-Means (Euclidean)</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Learning Type</span>
+                        <span class="meta-value text-cyan">Unsupervised &bull; no target column</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Selected K</span>
+                        <span class="meta-value" id="selectedKDisplay">Loading K...</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Model State</span>
+                        <span class="meta-value" id="modelStateDisplay">Checking model...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error banner (shown when the model is unavailable) -->
+            <div class="api-alert-banner" id="modelAlertBanner" style="display: none;">
+                <div class="alert-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title" id="modelAlertTitle">Model Unavailable</div>
+                    <div class="alert-message" id="modelAlertMessage">
+                        Start the Flask backend by running <code class="code-pill">python backend/app.py</code>.
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-sm" id="btnRetryModel">Retry</button>
+            </div>
+
+            <!-- Segmentation Dashboard: dataset, K, silhouette, WSS -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">CUSTOMER SEGMENTATION</h2>
+                    <span class="section-subtitle">K-MEANS CLUSTERING &bull; the model's real training diagnostics</span>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-tile">
+                        <div class="stat-tile-label">DATASET SIZE</div>
+                        <div class="stat-tile-value" id="metricRecords">&mdash;</div>
+                        <div class="stat-tile-caption">customers clustered</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-tile-label">SELECTED K</div>
+                        <div class="stat-tile-value" id="metricSelectedK">&mdash;</div>
+                        <div class="stat-tile-caption">from the K evaluation</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-tile-label">NUMBER OF CLUSTERS</div>
+                        <div class="stat-tile-value" id="metricClusterCount">&mdash;</div>
+                        <div class="stat-tile-caption">customer segments found</div>
+                    </div>
+                    <div class="stat-tile stat-tile-accent">
+                        <div class="stat-tile-label">SILHOUETTE SCORE</div>
+                        <div class="stat-tile-value" id="metricSilhouette">&mdash;</div>
+                        <div class="stat-tile-caption">separation, higher is better</div>
+                    </div>
+                    <div class="stat-tile stat-tile-accent">
+                        <div class="stat-tile-label">WSS</div>
+                        <div class="stat-tile-value" id="metricWss">&mdash;</div>
+                        <div class="stat-tile-caption">within-cluster sum of squares</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cluster Overview -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Cluster Overview</h2>
+                    <span class="section-subtitle">Every count, size and description below is derived from the real fitted centroids</span>
+                </div>
+
+                <div class="cluster-card-grid" id="clusterCardGrid">
+                    <p class="chart-placeholder">Loading cluster profiles...</p>
+                </div>
+            </section>
+
+            <!-- Assignment form + result -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">CUSTOMER SEGMENTATION</h2>
+                    <span class="section-subtitle">Enter one customer's feature values and assign them to the nearest trained centroid</span>
+                </div>
+
+                <div class="predict-grid">
+
+                    <!-- Input Form -->
+                    <div class="panel predict-form-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Customer Profile</h3>
+                            <span class="panel-badge" id="datasetRangeNote">Ranges loaded from training data</span>
+                        </div>
+
+                        <form id="predictionForm" novalidate>
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label class="form-label" for="inputAge">Age</label>
+                                    <input class="form-input" type="number" id="inputAge" name="age"
+                                           step="1" inputmode="numeric" placeholder="e.g. 42" required>
+                                    <span class="form-hint" id="hintAge">Customer age in years</span>
+                                    <span class="form-error" id="errorAge"></span>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-label" for="inputAnnual_income">Annual Income</label>
+                                    <input class="form-input" type="number" id="inputAnnual_income" name="annual_income"
+                                           step="any" inputmode="decimal" placeholder="e.g. 85" required>
+                                    <span class="form-hint" id="hintAnnual_income">Income index in the dataset's units</span>
+                                    <span class="form-error" id="errorAnnual_income"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label class="form-label" for="inputSpending_score">Spending Score</label>
+                                    <input class="form-input" type="number" id="inputSpending_score" name="spending_score"
+                                           step="any" inputmode="decimal" placeholder="e.g. 55" required>
+                                    <span class="form-hint" id="hintSpending_score">Spending behaviour, 0&ndash;100</span>
+                                    <span class="form-error" id="errorSpending_score"></span>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-label" for="inputPurchase_frequency">Purchase Frequency</label>
+                                    <input class="form-input" type="number" id="inputPurchase_frequency" name="purchase_frequency"
+                                           step="any" inputmode="decimal" placeholder="e.g. 28" required>
+                                    <span class="form-hint" id="hintPurchase_frequency">How often the customer purchases</span>
+                                    <span class="form-error" id="errorPurchase_frequency"></span>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-block" type="submit" id="btnPredict">
+                                <svg class="icon-flask" id="predictIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <circle cx="12" cy="12" r="8"></circle>
+                                    <circle cx="12" cy="12" r="13"></circle>
+                                </svg>
+                                <span id="btnPredictLabel">ASSIGN CUSTOMER TO CLUSTER</span>
+                            </button>
+
+                            <button class="btn btn-outline btn-block btn-sample" type="button" id="btnSample">
+                                Fill with a sample customer
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Result -->
+                    <div class="result-column">
+                        <div class="panel result-panel" id="resultPanel" data-state="empty">
+                            <div class="result-empty" id="resultEmpty">
+                                <div class="result-empty-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <circle cx="5" cy="18" r="2.5"></circle>
+                                        <circle cx="19" cy="18" r="2.5"></circle>
+                                        <line x1="12" y1="9" x2="6.5" y2="16.2"></line>
+                                        <line x1="12" y1="9" x2="17.5" y2="16.2"></line>
+                                    </svg>
+                                </div>
+                                <p class="result-empty-title">No assignment yet</p>
+                                <p class="result-empty-text">Enter the customer profile and run the model to find the nearest cluster centre.</p>
+                            </div>
+
+                            <div class="result-body" id="resultBody" style="display: none;">
+                                <div class="result-heading">ASSIGNED CLUSTER</div>
+                                <div class="result-cluster" id="resultClusterBadge">Cluster &mdash;</div>
+                                <div class="result-cluster-label" id="resultClusterLabel"></div>
+
+                                <div class="distance-block">
+                                    <div class="confidence-row">
+                                        <span class="confidence-label">Distance from centroid</span>
+                                        <span class="confidence-value font-mono" id="resultDistance">&mdash;</span>
+                                    </div>
+                                    <div class="confidence-track">
+                                        <div class="confidence-fill" id="separationFill"></div>
+                                    </div>
+                                    <p class="confidence-note" id="distanceNote"></p>
+                                </div>
+
+                                <div class="result-divider"></div>
+
+                                <div class="result-section-label">Distance to every centre</div>
+                                <div class="vote-list" id="distanceList"></div>
+
+                                <div class="result-section-label">Input Summary</div>
+                                <div class="input-summary" id="inputSummary"></div>
+
+                                <div class="result-warnings" id="resultWarnings"></div>
+
+                                <div class="result-meta">
+                                    <div class="result-meta-row">
+                                        <span>Model</span>
+                                        <span class="font-mono" id="resultModelName">&mdash;</span>
+                                    </div>
+                                    <div class="result-meta-row">
+                                        <span>Segment size</span>
+                                        <span class="font-mono" id="resultClusterSize">&mdash;</span>
+                                    </div>
+                                    <div class="result-meta-row">
+                                        <span>Trained at</span>
+                                        <span class="font-mono" id="resultTrainedAt">&mdash;</span>
+                                    </div>
+                                    <div class="result-meta-row">
+                                        <span>R engine time</span>
+                                        <span class="font-mono" id="resultExecTime">&mdash;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="result-error" id="resultError" style="display: none;">
+                                <div class="result-error-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                    </svg>
+                                </div>
+                                <p class="result-error-title" id="resultErrorTitle">Assignment failed</p>
+                                <ul class="result-error-list" id="resultErrorList"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cluster Visualization -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Cluster Visualization</h2>
+                    <span class="section-subtitle" id="vizSubtitle">
+                        PCA projection of the clustered customers
+                    </span>
+                </div>
+
+                <div class="panel viz-panel">
+                    <div class="viz-legend" id="vizLegend"></div>
+                    <div class="viz-canvas-wrap" id="scatterWrap">
+                        <p class="chart-placeholder">Loading cluster scatter plot...</p>
+                    </div>
+                    <p class="viz-note" id="vizNote"></p>
+                </div>
+            </section>
+
+            <!-- Optimal K Analysis -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">OPTIMAL K ANALYSIS</h2>
+                    <span class="section-subtitle">K versus WSS (the elbow) and K versus silhouette width (the optimum)</span>
+                </div>
+
+                <div class="k-analysis-grid">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Elbow &amp; Silhouette</h3>
+                            <span class="panel-badge" id="kSelectionBasis">&mdash;</span>
+                        </div>
+                        <div class="chart-canvas-wrap" id="elbowWrap">
+                            <p class="chart-placeholder">Loading K evaluation chart...</p>
+                        </div>
+                        <p class="k-note" id="kSelectionNote"></p>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">K Comparison</h3>
+                            <span class="panel-badge">Real training data</span>
+                        </div>
+                        <div class="k-table-wrap" id="kTableWrap">
+                            <table class="k-table">
+                                <thead>
+                                    <tr>
+                                        <th>K</th>
+                                        <th>WSS</th>
+                                        <th>Silhouette</th>
+                                        <th>Between</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="kTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cluster Profiles detail -->
+            <section class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Cluster Profiles</h2>
+                    <span class="section-subtitle">Each cluster's measured centre, its members' averages, and how it compares to the population</span>
+                </div>
+
+                <div class="profile-grid" id="profileGrid">
+                    <p class="chart-placeholder">Loading cluster profiles...</p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-brand">AI Insight Hub</div>
+                    <div class="footer-tagline">Phase 6 &bull; K-Means Customer Segmentation</div>
+                </div>
+                <div class="footer-center">
+                    <div class="footer-academic">
+                        Developed for <strong>GCF Training by Ethnotech</strong> &bull; <strong>Parul University</strong>
+                    </div>
+                </div>
+                <div class="footer-right">
+                    <div class="footer-version">Educational ML Implementation</div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="js/kmeans.js"></script>
+</body>
+</html>

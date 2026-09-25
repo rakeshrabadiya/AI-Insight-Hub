@@ -1,0 +1,603 @@
+{
+  "success": true,
+  "model": "K-Means",
+  "algorithm": "stats::kmeans (Lloyd's algorithm, Euclidean distance)",
+  "task": "Customer Segmentation",
+  "learning_type": "unsupervised",
+  "trained_at": "2026-09-25T16:29:43Z",
+  "r_version": "4.6.1",
+  "random_seed": 42,
+  "selected_k": 4,
+  "metrics": {
+    "wss": 126.2634,
+    "bss": 349.7366,
+    "total_ss": 476,
+    "between_cluster_ratio": 0.7347,
+    "silhouette_score": 0.439,
+    "wss_from_kmeans": 126.2634,
+    "wss_recompute_difference": 0,
+    "cluster_count": 4,
+    "records_clustered": 120,
+    "silhouette_range": "-1 to 1, higher is better",
+    "interpretation": "The silhouette score is the mean silhouette width of the real clustering: how tightly each customer groups with its own cluster versus how far it sits from the nearest other cluster. WSS is the total squared distance of every customer to its own cluster centre - lower means tighter clusters, but it always falls as K rises, which is why K is chosen with the silhouette as well."
+  },
+  "dataset": {
+    "file": "datasets/customers.csv",
+    "rows_loaded": 120,
+    "rows_clean": 120,
+    "rows_dropped": 0,
+    "rows_incomplete": 0,
+    "rows_domain_invalid": 0,
+    "identifier_column": "customer_id",
+    "features": ["age", "annual_income", "spending_score", "purchase_frequency"],
+    "feature_ranges": {
+      "age": {
+        "min": 18,
+        "max": 68
+      },
+      "annual_income": {
+        "min": 15.6,
+        "max": 149.3
+      },
+      "spending_score": {
+        "min": 7,
+        "max": 99
+      },
+      "purchase_frequency": {
+        "min": 2,
+        "max": 50
+      }
+    },
+    "excluded_from_clustering": [
+      "customer_id"
+    ]
+  },
+  "feature_scaling": {
+    "method": "standardisation (z-score) fitted on the cleaned dataset",
+    "reason": "K-Means minimises a squared Euclidean distance. annual_income and purchase_frequency live on very different numeric ranges, so unscaled the larger-range column would dominate the distance and the others would barely contribute. Every feature is standardised to mean 0 and standard deviation 1 using the cleaned dataset, and predict.R applies the identical transformation.",
+    "center": {
+      "age": 39.5333,
+      "annual_income": 68.1783,
+      "spending_score": 61.0333,
+      "purchase_frequency": 25.675
+    },
+    "scale": {
+      "age": 11.2107,
+      "annual_income": 35.9927,
+      "spending_score": 27.9519,
+      "purchase_frequency": 14.7945
+    }
+  },
+  "k_selection": {
+    "method": "average silhouette width with the elbow method as tie-breaker",
+    "k_grid": [2, 3, 4, 5, 6],
+    "elbow_k": 5,
+    "silhouette_k": 4,
+    "selected_k": 4,
+    "selected_on": "the full cleaned dataset (unsupervised - there is no held-out split)",
+    "basis": "silhouette maximum (elbow's silhouette materially lower)",
+    "reason": "The elbow method suggests K = 5 but its average silhouette width (0.3987) is materially below the peak of 0.4390 at K = 4. WSS always falls as K rises, so the elbow is the weaker criterion here, and the silhouette maximum is taken.",
+    "agreement_threshold": 0.417,
+    "explain": {
+      "elbow": "WSS falls monotonically as K rises, so it cannot choose K by itself. The elbow is the K where that fall flattens, located here as the largest proportional drop in WSS.",
+      "silhouette": "The average silhouette width is not monotonic, so its maximum is a genuine optimum. It is therefore the primary criterion, and the elbow only breaks a close tie."
+    }
+  },
+  "k_comparison": [
+    {
+      "k": 2,
+      "wss": 277.3377,
+      "betweenss": 198.6623,
+      "total_ss": 476,
+      "between_ratio": 0.4174,
+      "silhouette_mean": 0.4217,
+      "smallest_cluster": 32,
+      "stability_wss_mean": 284.2622,
+      "stability_wss_sd": 7.299,
+      "wss_drop_from_previous": null,
+      "selected": false,
+      "is_elbow": false
+    },
+    {
+      "k": 3,
+      "wss": 160.4258,
+      "betweenss": 315.5742,
+      "total_ss": 476,
+      "between_ratio": 0.663,
+      "silhouette_mean": 0.4358,
+      "smallest_cluster": 32,
+      "stability_wss_mean": 168.2142,
+      "stability_wss_sd": 24.6291,
+      "wss_drop_from_previous": 0.4216,
+      "selected": false,
+      "is_elbow": false
+    },
+    {
+      "k": 4,
+      "wss": 126.2634,
+      "betweenss": 349.7366,
+      "total_ss": 476,
+      "between_ratio": 0.7347,
+      "silhouette_mean": 0.439,
+      "smallest_cluster": 14,
+      "stability_wss_mean": 127.8777,
+      "stability_wss_sd": 0.8508,
+      "wss_drop_from_previous": 0.2129,
+      "selected": true,
+      "is_elbow": false
+    },
+    {
+      "k": 5,
+      "wss": 94.1189,
+      "betweenss": 381.8811,
+      "total_ss": 476,
+      "between_ratio": 0.8023,
+      "silhouette_mean": 0.3987,
+      "smallest_cluster": 14,
+      "stability_wss_mean": 111.1381,
+      "stability_wss_sd": 11.8196,
+      "wss_drop_from_previous": 0.2546,
+      "selected": false,
+      "is_elbow": true
+    },
+    {
+      "k": 6,
+      "wss": 83.4317,
+      "betweenss": 392.5683,
+      "total_ss": 476,
+      "between_ratio": 0.8247,
+      "silhouette_mean": 0.3584,
+      "smallest_cluster": 14,
+      "stability_wss_mean": 93.7305,
+      "stability_wss_sd": 13.3621,
+      "wss_drop_from_previous": 0.1136,
+      "selected": false,
+      "is_elbow": false
+    }
+  ],
+  "clusters": [
+    {
+      "cluster": 1,
+      "label": "Younger / Lower Income",
+      "label_is_generic": false,
+      "segment": "Standard",
+      "size": 37,
+      "size_share": 0.3083,
+      "mean_features": {
+        "age": -0.9251,
+        "annual_income": -0.8309,
+        "spending_score": 0.4359,
+        "purchase_frequency": 0.1206
+      },
+      "original_mean_features": {
+        "age": 29.1622,
+        "annual_income": 38.2703,
+        "spending_score": 73.2162,
+        "purchase_frequency": 27.4595
+      },
+      "center_original": {
+        "age": 29.1622,
+        "annual_income": 38.2703,
+        "spending_score": 73.2162,
+        "purchase_frequency": 27.4595
+      },
+      "center_scaled": {
+        "age": -0.9251,
+        "annual_income": -0.8309,
+        "spending_score": 0.4359,
+        "purchase_frequency": 0.1206
+      },
+      "silhouette_mean": 0.4495,
+      "wss_share": 1.0823,
+      "mean_distance_to_center": 0.9461
+    },
+    {
+      "cluster": 2,
+      "label": "Low Spending / Rare Buyers",
+      "label_is_generic": false,
+      "segment": "Standard",
+      "size": 18,
+      "size_share": 0.15,
+      "mean_features": {
+        "age": -0.4886,
+        "annual_income": -0.3925,
+        "spending_score": -1.4581,
+        "purchase_frequency": -1.3975
+      },
+      "original_mean_features": {
+        "age": 34.0556,
+        "annual_income": 54.05,
+        "spending_score": 20.2778,
+        "purchase_frequency": 5
+      },
+      "center_original": {
+        "age": 34.0556,
+        "annual_income": 54.05,
+        "spending_score": 20.2778,
+        "purchase_frequency": 5
+      },
+      "center_scaled": {
+        "age": -0.4886,
+        "annual_income": -0.3925,
+        "spending_score": -1.4581,
+        "purchase_frequency": -1.3975
+      },
+      "silhouette_mean": 0.568,
+      "wss_share": 0.3528,
+      "mean_distance_to_center": 0.6067
+    },
+    {
+      "cluster": 3,
+      "label": "Older / Lower Income / Low Spending / Rare Buyers",
+      "label_is_generic": false,
+      "segment": "Niche",
+      "size": 14,
+      "size_share": 0.1167,
+      "mean_features": {
+        "age": 1.558,
+        "annual_income": -0.7771,
+        "spending_score": -1.4808,
+        "purchase_frequency": -1.3685
+      },
+      "original_mean_features": {
+        "age": 57,
+        "annual_income": 40.2071,
+        "spending_score": 19.6429,
+        "purchase_frequency": 5.4286
+      },
+      "center_original": {
+        "age": 57,
+        "annual_income": 40.2071,
+        "spending_score": 19.6429,
+        "purchase_frequency": 5.4286
+      },
+      "center_scaled": {
+        "age": 1.558,
+        "annual_income": -0.7771,
+        "spending_score": -1.4808,
+        "purchase_frequency": -1.3685
+      },
+      "silhouette_mean": 0.4682,
+      "wss_share": 1.2928,
+      "mean_distance_to_center": 0.7497
+    },
+    {
+      "cluster": 4,
+      "label": "High Income / High Spending / Frequent Buyers",
+      "label_is_generic": false,
+      "segment": "Core",
+      "size": 51,
+      "size_share": 0.425,
+      "mean_features": {
+        "age": 0.4159,
+        "annual_income": 0.9547,
+        "spending_score": 0.6049,
+        "purchase_frequency": 0.7814
+      },
+      "original_mean_features": {
+        "age": 44.1961,
+        "annual_income": 102.5412,
+        "spending_score": 77.9412,
+        "purchase_frequency": 37.2353
+      },
+      "center_original": {
+        "age": 44.1961,
+        "annual_income": 102.5412,
+        "spending_score": 77.9412,
+        "purchase_frequency": 37.2353
+      },
+      "center_scaled": {
+        "age": 0.4159,
+        "annual_income": 0.9547,
+        "spending_score": 0.6049,
+        "purchase_frequency": 0.7814
+      },
+      "silhouette_mean": 0.3778,
+      "wss_share": 0.728,
+      "mean_distance_to_center": 1.1292
+    }
+  ],
+  "cluster_centers": [
+    {
+      "cluster": 1,
+      "center_scaled": {
+        "age": -0.9251,
+        "annual_income": -0.8309,
+        "spending_score": 0.4359,
+        "purchase_frequency": 0.1206
+      },
+      "center_original": {
+        "age": 29.1622,
+        "annual_income": 38.2703,
+        "spending_score": 73.2162,
+        "purchase_frequency": 27.4595
+      },
+      "size": 37,
+      "projection": {
+        "PC1": -0.0705,
+        "PC2": -1.2795
+      }
+    },
+    {
+      "cluster": 2,
+      "center_scaled": {
+        "age": -0.4886,
+        "annual_income": -0.3925,
+        "spending_score": -1.4581,
+        "purchase_frequency": -1.3975
+      },
+      "center_original": {
+        "age": 34.0556,
+        "annual_income": 54.05,
+        "spending_score": 20.2778,
+        "purchase_frequency": 5
+      },
+      "size": 18,
+      "projection": {
+        "PC1": -1.9278,
+        "PC2": -0.0954
+      }
+    },
+    {
+      "cluster": 3,
+      "center_scaled": {
+        "age": 1.558,
+        "annual_income": -0.7771,
+        "spending_score": -1.4808,
+        "purchase_frequency": -1.3685
+      },
+      "center_original": {
+        "age": 57,
+        "annual_income": 40.2071,
+        "spending_score": 19.6429,
+        "purchase_frequency": 5.4286
+      },
+      "size": 14,
+      "projection": {
+        "PC1": -2.157,
+        "PC2": 1.4923
+      }
+    },
+    {
+      "cluster": 4,
+      "center_scaled": {
+        "age": 0.4159,
+        "annual_income": 0.9547,
+        "spending_score": 0.6049,
+        "purchase_frequency": 0.7814
+      },
+      "center_original": {
+        "age": 44.1961,
+        "annual_income": 102.5412,
+        "spending_score": 77.9412,
+        "purchase_frequency": 37.2353
+      },
+      "size": 51,
+      "projection": {
+        "PC1": 1.3237,
+        "PC2": 0.5523
+      }
+    }
+  ],
+  "cluster_profiles": [
+    {
+      "cluster": 1,
+      "label": "Younger / Lower Income",
+      "label_is_generic": false,
+      "segment": "Standard",
+      "size": 37,
+      "size_share": 0.3083,
+      "mean_features": {
+        "age": -0.9251,
+        "annual_income": -0.8309,
+        "spending_score": 0.4359,
+        "purchase_frequency": 0.1206
+      },
+      "original_mean_features": {
+        "age": 29.1622,
+        "annual_income": 38.2703,
+        "spending_score": 73.2162,
+        "purchase_frequency": 27.4595
+      },
+      "center_scaled": {
+        "age": -0.9251,
+        "annual_income": -0.8309,
+        "spending_score": 0.4359,
+        "purchase_frequency": 0.1206
+      },
+      "center_original": {
+        "age": 29.1622,
+        "annual_income": 38.2703,
+        "spending_score": 73.2162,
+        "purchase_frequency": 27.4595
+      },
+      "center_vs_population_sd": {
+        "age": -0.9251,
+        "annual_income": -0.8309,
+        "spending_score": 0.4359,
+        "purchase_frequency": 0.1206
+      },
+      "descriptors": [
+        "Younger",
+        "Lower Income"
+      ],
+      "wss_share": 1.0823,
+      "mean_distance_to_center": 0.9461
+    },
+    {
+      "cluster": 2,
+      "label": "Low Spending / Rare Buyers",
+      "label_is_generic": false,
+      "segment": "Standard",
+      "size": 18,
+      "size_share": 0.15,
+      "mean_features": {
+        "age": -0.4886,
+        "annual_income": -0.3925,
+        "spending_score": -1.4581,
+        "purchase_frequency": -1.3975
+      },
+      "original_mean_features": {
+        "age": 34.0556,
+        "annual_income": 54.05,
+        "spending_score": 20.2778,
+        "purchase_frequency": 5
+      },
+      "center_scaled": {
+        "age": -0.4886,
+        "annual_income": -0.3925,
+        "spending_score": -1.4581,
+        "purchase_frequency": -1.3975
+      },
+      "center_original": {
+        "age": 34.0556,
+        "annual_income": 54.05,
+        "spending_score": 20.2778,
+        "purchase_frequency": 5
+      },
+      "center_vs_population_sd": {
+        "age": -0.4886,
+        "annual_income": -0.3925,
+        "spending_score": -1.4581,
+        "purchase_frequency": -1.3975
+      },
+      "descriptors": [
+        "Low Spending",
+        "Rare Buyers"
+      ],
+      "wss_share": 0.3528,
+      "mean_distance_to_center": 0.6067
+    },
+    {
+      "cluster": 3,
+      "label": "Older / Lower Income / Low Spending / Rare Buyers",
+      "label_is_generic": false,
+      "segment": "Niche",
+      "size": 14,
+      "size_share": 0.1167,
+      "mean_features": {
+        "age": 1.558,
+        "annual_income": -0.7771,
+        "spending_score": -1.4808,
+        "purchase_frequency": -1.3685
+      },
+      "original_mean_features": {
+        "age": 57,
+        "annual_income": 40.2071,
+        "spending_score": 19.6429,
+        "purchase_frequency": 5.4286
+      },
+      "center_scaled": {
+        "age": 1.558,
+        "annual_income": -0.7771,
+        "spending_score": -1.4808,
+        "purchase_frequency": -1.3685
+      },
+      "center_original": {
+        "age": 57,
+        "annual_income": 40.2071,
+        "spending_score": 19.6429,
+        "purchase_frequency": 5.4286
+      },
+      "center_vs_population_sd": {
+        "age": 1.558,
+        "annual_income": -0.7771,
+        "spending_score": -1.4808,
+        "purchase_frequency": -1.3685
+      },
+      "descriptors": [
+        "Older",
+        "Lower Income",
+        "Low Spending",
+        "Rare Buyers"
+      ],
+      "wss_share": 1.2928,
+      "mean_distance_to_center": 0.7497
+    },
+    {
+      "cluster": 4,
+      "label": "High Income / High Spending / Frequent Buyers",
+      "label_is_generic": false,
+      "segment": "Core",
+      "size": 51,
+      "size_share": 0.425,
+      "mean_features": {
+        "age": 0.4159,
+        "annual_income": 0.9547,
+        "spending_score": 0.6049,
+        "purchase_frequency": 0.7814
+      },
+      "original_mean_features": {
+        "age": 44.1961,
+        "annual_income": 102.5412,
+        "spending_score": 77.9412,
+        "purchase_frequency": 37.2353
+      },
+      "center_scaled": {
+        "age": 0.4159,
+        "annual_income": 0.9547,
+        "spending_score": 0.6049,
+        "purchase_frequency": 0.7814
+      },
+      "center_original": {
+        "age": 44.1961,
+        "annual_income": 102.5412,
+        "spending_score": 77.9412,
+        "purchase_frequency": 37.2353
+      },
+      "center_vs_population_sd": {
+        "age": 0.4159,
+        "annual_income": 0.9547,
+        "spending_score": 0.6049,
+        "purchase_frequency": 0.7814
+      },
+      "descriptors": [
+        "High Income",
+        "High Spending",
+        "Frequent Buyers"
+      ],
+      "wss_share": 0.728,
+      "mean_distance_to_center": 1.1292
+    }
+  ],
+  "visualization": {
+    "method": "PCA (stats::prcomp) to two components",
+    "purpose": "visualisation only - the clustering itself ran on the four scaled features, never on the components",
+    "axis_x": "PC1",
+    "axis_y": "PC2",
+    "explained_variance_ratio": {
+      "PC1": 0.5498,
+      "PC2": 0.3083,
+      "PC3": 0.0934,
+      "PC4": 0.0484
+    },
+    "total_explained_variance": 0.8582,
+    "points": {
+      "PC1": [2.024, 0.1095, 1.5951, 0.0125, -1.5085, 2.1921, 0.8591, 1.3452, -2.4779, -0.1055, 0.176, 1.2757, 0.1002, 2.0813, 2.5285, 0.0864, 1.9244, 0.0486, -0.1783, -2.0026, 1.7361, 1.9233, -2.2007, 2.0555, 2.7011, 0.1248, 0.4035, -2.1255, -0.342, 0.6697, -2.4476, 0.5418, -1.5626, 2.1951, 1.316, 2.4756, 1.6712, 2.3848, 1.6782, -1.5847, 1.2287, 2.1158, 0.6113, 1.7601, 0.0855, 0.5066, -2.2824, 0.6907, 0.3823, -0.0247, -0.8719, -2.103, -0.6366, 2.3371, -1.7851, 0.2828, -2.6193, 2.107, 1.0413, -2.3644, -0.3458, 1.4589, 1.3162, 0.9033, 0.2105, 1.4815, 1.3087, 0.5098, -1.6533, 0.249, -2.3126, 0.0556, 0.5422, -0.5228, -1.9298, -2.3918, -0.2521, 0.1224, -0.2027, -0.139, -1.627, -1.8482, -0.1145, -2.655, 0.136, -2.3689, 2.7689, 0.3816, -0.3062, -0.7257, -0.1759, -0.4312, 1.8026, 0.5483, -2.2309, -2.0602, 1.228, -1.8805, 0.7934, -1.5579, -0.1099, -0.1536, 0.4115, 0.009, -1.8654, 0.1948, -1.7802, -1.797, -2.1081, 1.7785, -0.3416, 1.4565, 0.1526, 0.5214, 0.1425, -1.8492, -0.1352, -1.8514, -0.8543, -2.0673],
+      "PC2": [1.6003, 0.9306, -0.0029, -0.5861, 0.1722, 1.0171, 0.5599, 0.2134, -0.0951, -1.6917, -2.0827, 1.3223, -0.9398, -0.545, 1.7023, -1.8558, 1.003, 0.6546, -2.3612, -0.3768, 0.7372, 0.5447, 2.3585, 0.3218, 1.4831, -0.8273, -1.0825, -0.1485, -2.0044, 0.2878, 2.2162, 0.377, 0.6691, 0.4755, 0.959, 0.3197, 0.7932, 0.2612, -0.2623, 0.8278, -0.696, 0.5222, -0.0923, -0.6771, -0.5135, -0.8818, -0.4307, 0.233, 1.3455, -2.0357, -1.8012, 0.9696, -2.2076, 0.8396, -0.2928, 1.0613, 1.9727, 1.0663, -0.388, 1.2539, -0.3281, 0.0587, 0.1922, 0.9645, -1.3724, 0.6741, 0.7579, 0.4334, 1.541, 1.1418, 1.657, -0.7859, -0.5593, -0.8639, -0.9404, 1.3653, -1.298, 0.3815, -0.661, -1.5401, 0.9434, 0.2864, 1.1372, 1.2647, -1.7582, -0.1597, 0.0979, -2.1848, -1.7417, -0.992, -1.5115, -1.9399, 0.8219, 0.0359, 0.1774, 1.5746, 1.1615, -0.1293, 0.2017, -1.0177, 0.1515, -0.9601, -0.6277, -1.8482, 0.1397, -1.5805, 0.0698, -0.0406, 1.1476, 0.267, -1.0257, 0.11, -0.8829, -0.4057, 0.4541, 2.4562, 1.3081, -0.0411, -1.7543, -0.2165],
+      "cluster": [4, 4, 4, 1, 2, 4, 4, 4, 2, 1, 1, 4, 1, 4, 4, 1, 4, 4, 1, 2, 4, 4, 3, 4, 4, 1, 1, 2, 1, 4, 3, 4, 2, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 1, 1, 2, 4, 4, 1, 1, 3, 1, 4, 2, 4, 3, 4, 4, 3, 1, 4, 4, 4, 1, 4, 4, 4, 3, 4, 3, 1, 1, 1, 2, 3, 1, 4, 1, 1, 2, 3, 4, 3, 1, 2, 4, 1, 1, 1, 1, 1, 4, 4, 2, 3, 4, 2, 4, 2, 1, 1, 1, 1, 2, 1, 2, 2, 3, 4, 1, 4, 1, 1, 4, 3, 4, 2, 1, 2]
+    }
+  },
+  "reproducibility": {
+    "seed": 42,
+    "n_start": 25,
+    "same_seed_same_clusters": true,
+    "note": "kmeans() itself starts from random centres. A fixed seed plus nstart restarts makes the fit reproducible: re-running this script with the same seed was verified to return the identical assignment for every customer."
+  },
+  "model_info": {
+    "implementation": "stats::kmeans()",
+    "distance": "Euclidean",
+    "algorithm_detail": "Lloyd's iterative refinement with Hartigan-Wong initialisation",
+    "clusters": 4,
+    "cluster_sizes": {
+      "1": 37,
+      "2": 18,
+      "3": 14,
+      "4": 51
+    },
+    "total_iterations": 3,
+    "unsupervised": true
+  },
+  "model_file": "r_models/kmeans/model.rds",
+  "clusters_file": "r_models/kmeans/clusters.json"
+}
