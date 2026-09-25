@@ -43,8 +43,8 @@ def create_app():
             "description": "Multi-Model Machine Learning Analytics Platform",
             "version": "1.0.0",
             "phase": (
-                "Phase 4 - Decision Tree Financial Risk Classification "
-                "(Phase 3 Linear Regression Property Price Prediction also active)"
+                "Phase 5 - KNN Student Performance Prediction "
+                "(Phase 3 Linear Regression and Phase 4 Decision Tree also active)"
             ),
             "status": "online",
             "endpoints": {
@@ -58,7 +58,11 @@ def create_app():
                 "decision_tree_predict": "/api/decision-tree/predict",
                 "decision_tree_metrics": "/api/decision-tree/metrics",
                 "decision_tree_tree": "/api/decision-tree/tree",
-                "decision_tree_schema": "/api/decision-tree/schema"
+                "decision_tree_schema": "/api/decision-tree/schema",
+                "knn_predict": "/api/knn/predict",
+                "knn_metrics": "/api/knn/metrics",
+                "knn_config": "/api/knn/config",
+                "knn_schema": "/api/knn/schema"
             }
         }), 200
 

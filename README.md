@@ -1,7 +1,7 @@
 # AI Insight Hub — Multi-Model Machine Learning Analytics Platform
 
 [![Platform](https://img.shields.io/badge/Platform-AI%20Insight%20Hub-00f0ff.svg)](#)
-[![Phase](https://img.shields.io/badge/Status-Phase%204%20Decision%20Tree%20Active-10b981.svg)](#)
+[![Phase](https://img.shields.io/badge/Status-Phase%205%20KNN%20Active-10b981.svg)](#)
 [![Backend](https://img.shields.io/badge/Backend-Python%20Flask-3b82f6.svg)](#)
 [![Frontend](https://img.shields.io/badge/Frontend-Vanilla%20HTML%20%2F%20CSS%20%2F%20JS-f59e0b.svg)](#)
 [![ML-Engine](https://img.shields.io/badge/ML%20Engine-R%204.6.1%20Connected-6366f1.svg)](#)
@@ -42,6 +42,310 @@ Built as part of the **GCF Training by Ethnotech at Parul University**, the plat
 ---
 
 ## 🚀 Current Project Phase
+
+### **Phase 5: K-Nearest Neighbors — Student Performance Prediction (ACTIVE / COMPLETED)**
+
+Phase 5 adds the platform's **second classification model**, this time a *lazy*,
+instance-based one: rather than learning parameters, a KNN model simply memorises its
+training set and classifies a new record by looking at the students most similar to it.
+The model is trained in R with `class::knn()`, persisted to disk, and served through the
+same Flask → `Rscript` bridge as Phases 3 and 4.
+
+> ⚠️ **Educational Notice:** This is an **educational machine learning implementation**.
+> The model is trained on a synthetic dataset for academic demonstration. It is **not**
+> a real assessment tool and must not be used to judge an actual student.
+
+- ✅ **Real `class::knn()` Model:** genuine Euclidean-distance KNN with majority voting.
+- ✅ **No Retraining at Inference:** `predict.R` does `readRDS()` and reuses the stored
+  scaled training matrix — it never refits anything.
+- ✅ **Data-Driven K:** K is chosen from a grid by repeated cross-validation on the
+  **training data only**, so the reported test metrics stay an honest estimate.
+- ✅ **Feature Scaling:** every feature is standardised using training-set parameters
+  that are saved and re-applied verbatim at prediction time.
+- ✅ **Real Neighbours:** the K nearest training rows behind each prediction are returned
+  with their actual classes and actual distances — and are self-checked against
+  `class::knn()`'s own output before anything is written to disk.
+- ✅ **Full Stack:** four API endpoints plus a Student Performance Predictor page that
+  explains the vote, the neighbours and the model's real performance.
+
+#### What a KNN Classifier Is, and Why One Here
+
+KNN predicts nothing of its own. To classify a new record it measures the distance from
+that record to every training row, takes the **K closest**, and returns their **majority
+class**. There is no fitted coefficient, no decision boundary and no training-time
+abstraction — which is exactly why the neighbours are the explanation: you can read the
+reasoning straight off the model.
+
+The task is multi-class student performance: `LOW`, `MEDIUM` or `HIGH`.
+
+#### Dataset Features & Performance Classes
+
+Source: `datasets/students.csv` — **120 rows, 5 numeric features, 1 class target.**
+
+| Feature | Type | Training range | What it means |
+| :--- | :--- | :--- | :--- |
+| `study_hours` | numeric | 2.2 – 34.8 | Hours studied per week |
+| `attendance` | numeric (0–100) | 56.7 – 99.9 | Class attendance percentage |
+| `previous_score` | numeric (0–100) | 36.1 – 96.3 | Most recent assessment score |
+| `assignments_completed` | numeric | 1 – 10 | Assignments submitted |
+| `practical_score` | numeric (0–100) | 40.4 – 100.0 | Practical / lab assessment score |
+| **`performance`** | **class** | — | **`LOW` / `MEDIUM` / `HIGH`** |
+
+**Observed class distribution: MEDIUM = 78, HIGH = 41, LOW = 1.**
+
+> ⚠️ **This dataset is severely imbalanced, and it materially limits the model.**
+> Two consequences are reported throughout rather than hidden:
+>
+> 1. **The single LOW row must be used for training** (a class needs at least one
+>    training row), so the held-out test set contains **no LOW rows at all**.
+> 2. **At the selected K = 5, a majority vote needs 3 of the 5 nearest rows to be LOW.**
+>    Only one LOW row exists, so **LOW is mathematically unreachable** — the model can
+>    only ever return `MEDIUM` or `HIGH`.
+>
+> Both facts are computed at training time and published in `metrics.json` under
+> `class_distribution_note`, and shown on the prediction page.
+
+#### Why Feature Scaling Is Required
+
+KNN compares records with a straight-line **Euclidean distance**, and that distance is
+computed directly on the feature values. The five features are on completely different
+scales:
+
+| Feature | Standard deviation |
+| :--- | --- |
+| `assignments_completed` | 3.03 |
+| `study_hours` | 9.28 |
+| `previous_score` | 17.03 |
+| `practical_score` | 18.25 |
+
+Left unscaled, the two large-variance columns (`previous_score`, `practical_score`)
+would dominate every distance calculation — roughly **6× the spread** of
+`assignments_completed` — while `assignments_completed` would contribute almost nothing
+to "who is this student most like?". The model would silently be a function of two
+features out of five.
+
+Every feature is therefore **standardised (z-score) using training-set parameters only**:
+
+```
+scaled_value = (value - training_mean) / training_standard_deviation
+```
+
+Fitting the centre and scale on the *training half only* is deliberate — computing them
+over the full dataset would leak test information into training. Those exact parameters
+are saved in `model.rds` and re-applied verbatim by `predict.R`, so the incoming record
+and the stored training matrix are always on the same footing. After scaling, all five
+features have mean 0 and standard deviation 1, and each contributes what it should.
+
+#### Training Process
+
+`r_models/knn/train.R` runs eleven verified steps:
+
+1. **Load** `datasets/students.csv` (120 rows).
+2. **Validate** the six required columns are present.
+3. **Clean** — coerce features to numeric, trim/upper-case the target, drop incomplete,
+   domain-invalid (percentages outside 0–100) and unknown-class rows, and count every
+   drop. Any range check guards against `sample()`'s length-1 gotcha, which would
+   otherwise corrupt the split for the single LOW row.
+4. **Split** stratified by class: **97 training / 23 test rows**, then assert the two
+   halves neither overlap nor drop a row.
+5. **Scale** the features from training-set centre/scale only.
+6. **Choose K** by 10 repeats of 5-fold stratified cross-validation on the **training
+   data only**, with the one-standard-error rule.
+7. **Train** the real classifier with `class::knn(train_x, test_x, train_y, k = K)`.
+8. **Predict** on the held-out test set.
+9. **Extract the K nearest rows** per test record with the same Euclidean metric
+   `class::knn()` uses internally, then **self-check** that the majority class of those
+   extracted rows reproduces `class::knn()`'s prediction *and* its `prob` attribute.
+   The run aborts rather than write misleading neighbour data.
+10. **Compute metrics** from the confusion matrix built out of those real predictions.
+11. **Save** `model.rds` and `metrics.json`.
+
+#### K Selection — How K Was Chosen
+
+K is **not** hand-picked and the test set is **not** consulted. Each candidate was scored
+by repeated stratified cross-validation over the training data:
+
+| K | Mean CV Macro F1 | Std. Error | Folds |
+| :--- | ---: | ---: | ---: |
+| 3 | 0.5428 | ± 0.0086 | 50 |
+| **5** | **0.5611** | **± 0.0079** | **50** ✅ **selected** |
+| 7 | 0.5575 | ± 0.0087 | 50 |
+| 9 | 0.5490 | ± 0.0084 | 50 |
+
+The best mean CV F1 (0.5611) defines a one-standard-error threshold of **0.5532**. Every
+K from 3 to 9 clears that bar, so the 1-SE rule takes the **smallest K statistically
+indistinguishable from the best: K = 5**.
+
+> **Note on honesty:** picking K by its *test* accuracy would have selected K = 3, 7 or 9
+> (0.9565 rather than 0.9130), but that uses the test set for model selection and makes
+> the reported test score an over-estimate. K was chosen on training data only, and the
+> 0.9130 below is an honest held-out number.
+
+#### Evaluation Metrics (Real, From the Trained Model)
+
+| Metric | Value | How it is computed |
+| :--- | ---: | :--- |
+| **Accuracy** | **0.9130** | 21 of 23 held-out test records correct |
+| **Precision** | **0.6028** | Macro average across all 3 declared tiers |
+| **Recall** | **0.6028** | Macro average across all 3 declared tiers |
+| **F1 Score** | **0.6028** | Macro average across all 3 declared tiers |
+| F1 (supported tiers only) | 0.9042 | Macro across MEDIUM + HIGH only |
+| Majority-class baseline | 0.6522 | Always predicting `MEDIUM` |
+
+**Confusion matrix** (rows = actual, columns = predicted):
+
+| actual \ predicted | LOW | MEDIUM | HIGH | Total |
+| :--- | ---: | ---: | ---: | ---: |
+| **LOW** | 0 | 0 | 0 | 0 |
+| **MEDIUM** | 0 | 14 | 1 | 15 |
+| **HIGH** | 0 | 1 | 7 | 8 |
+
+> **Reading these numbers honestly.** Accuracy of 0.9130 is genuine, and it comfortably
+> beats the 0.6522 majority-class baseline. But the **macro F1 of 0.6028 is the number to
+> trust for a "how good is this?" judgement**, and the gap between the two is entirely
+> explained by `LOW` scoring 0 — it has no test rows at all, so it can contribute
+> neither true positives nor recall. The `0.9042` supported-only F1 shows how well the
+> model actually does on the two tiers that can be evaluated. Both numbers are published;
+> neither is hidden, and the class distribution is reported next to them.
+
+#### Phase 5 API Endpoints
+
+##### Prediction — `POST /api/knn/predict`
+
+```json
+{
+  "study_hours": 6.5,
+  "attendance": 88,
+  "previous_score": 74,
+  "assignments_completed": 9,
+  "practical_score": 81
+}
+```
+
+Real response (abridged — values are exactly what the R model returned):
+
+```json
+{
+  "success": true,
+  "model": "K-Nearest Neighbors",
+  "algorithm": "class::knn (Euclidean distance, majority vote)",
+  "prediction": "MEDIUM",
+  "k": 5,
+  "confidence": 0.8,
+  "confidence_basis": "Share of the 5 nearest training neighbours belonging to the predicted class, as reported by class::knn() and re-derived from the neighbour list.",
+  "neighbor_class_distribution": { "LOW": 0, "MEDIUM": 4, "HIGH": 1 },
+  "neighbors": [
+    {
+      "neighbor": 1,
+      "neighbor_class": "MEDIUM",
+      "distance": 1.1951,
+      "scaled_features": { "study_hours": 4.4, "attendance": 98.8, "previous_score": 75.5,
+                           "assignments_completed": 8, "practical_score": 67.9 }
+    }
+  ],
+  "scaling_applied": "standardisation (z-score) fitted on the training set",
+  "warnings": []
+}
+```
+
+**On the confidence value.** `class::knn()` returns a `prob` attribute defined as *the
+share of the K nearest neighbours belonging to the winning class*. That is what
+`confidence` reports, and `predict.R` re-derives the same share from the neighbour list it
+built, **refusing to answer if the two disagree**. It is a real count of real neighbours
+— not an invented model probability.
+
+##### Metrics — `GET /api/knn/metrics`
+
+Returns the real accuracy, macro precision/recall/F1, supported-only macro averages,
+per-class metrics, the confusion matrix, the class-distribution note, the feature-scaling
+parameters, the full K comparison and every held-out test prediction with its neighbours.
+
+##### Config — `GET /api/knn/config`
+
+Returns the selected K, the evaluated K grid, feature names with their real training
+ranges, the class set, the scaling method and the class-balance caveat. Internal
+artifacts (the stored training matrix, its labels and the numeric centre/scale values) are
+deliberately **not** exposed.
+
+##### Schema — `GET /api/knn/schema`
+
+Returns each input field with its label and the valid range recorded at training time.
+
+```bash
+curl -X POST http://127.0.0.1:5000/api/knn/predict \
+  -H "Content-Type: application/json" \
+  -d '{"study_hours":6.5,"attendance":88,"previous_score":74,"assignments_completed":9,"practical_score":81}'
+```
+
+#### Nearest-Neighbour Explanation
+
+Every prediction comes with the K training students that produced it. For the example
+above, the five nearest rows to the submitted record were:
+
+| Neighbor | Class | Distance |
+| :--- | :--- | ---: |
+| 1 | MEDIUM | 1.1951 |
+| 2 | MEDIUM | 1.1961 |
+| 3 | HIGH | 1.3771 |
+| 4 | MEDIUM | 1.3786 |
+| 5 | MEDIUM | 1.4381 |
+
+Four MEDIUM rows beat one HIGH row, so the model answers **MEDIUM** with a neighbour
+agreement of 4/5 = **80%**. Nothing else was consulted.
+
+Those rows are recovered with the same Euclidean metric `class::knn()` uses internally,
+via `||a−b||² = |a|² − 2a·b + |b|²`. That identity is arithmetically identical to summing
+squared differences but avoids an n×p loop. Crucially, the training script **verifies** the
+extraction against `class::knn()` itself: for every test record, the majority class of the
+extracted neighbours must equal the model's prediction, and the derived winning-class
+proportion must equal the model's own `prob` value. If either check fails, the training run
+aborts rather than write metrics that misrepresent the model.
+
+Distances are measured in **standardised feature space**, so they are comparable across
+features but are not percentages.
+
+#### Input Validation Rules
+
+| Field | Rule |
+| :--- | :--- |
+| `study_hours` | `>= 0` |
+| `attendance` | `0 – 100` |
+| `previous_score` | `0 – 100` |
+| `assignments_completed` | `>= 0` |
+| `practical_score` | `0 – 100` |
+
+Rejected with **HTTP 400** and a per-field error list: missing fields, empty values,
+non-numeric values, negative counts/hours, percentages outside 0–100, unrecognised field
+names, and malformed JSON. A non-JSON `Content-Type` returns **415**.
+
+**Warnings, not errors (HTTP 200):** a logically valid value *outside the training range*
+is still classified, and the response flags it in `warnings`. This follows the Phase 4
+behaviour — a KNN model always has a nearest neighbour, so an out-of-range record is
+answered, just as an extrapolation rather than an interpolation.
+
+```json
+"warnings": [
+  "Study Hours (60) is outside the 2.2 - 34.8 range the model was trained on, so this prediction is extrapolated."
+]
+```
+
+#### How to Retrain the Model
+
+```bash
+Rscript r_models/knn/train.R
+```
+
+This regenerates `model.rds` and `metrics.json` in place. The run is deterministic
+(`set.seed(42)`), so an unchanged dataset reproduces the same split, the same selected K
+and the same metrics exactly — retraining is only needed after editing
+`datasets/students.csv` or changing the training logic.
+
+To use different data or a different target, edit the `TARGET`, `FEATURES`, `CLASS_LEVELS`
+and `K_GRID` constants at the top of `train.R`; the API's validation rules, the saved
+feature ranges and the frontend schema all follow from those constants rather than being
+duplicated by hand.
+
+---
 
 ### **Phase 4: Decision Tree — Financial Risk Classification (ACTIVE / COMPLETED)**
 
@@ -509,15 +813,18 @@ AI-Insight-Hub/
 │   ├── index.html                # Main dashboard UI with R test trigger & model registry
 │   ├── regression.html           # Phase 3: Property Price Predictor page
 │   ├── decision-tree.html        # Phase 4: Financial Risk Analyzer page
+│   ├── knn.html                  # Phase 5: Student Performance Predictor page
 │   ├── css/
 │   │   ├── style.css             # Main styling, design tokens & glassmorphism
 │   │   ├── responsive.css        # Adaptive mobile & tablet breakpoints
 │   │   ├── regression.css        # Phase 3: predictor form, result card, chart
-│   │   └── decision-tree.css     # Phase 4: risk form, result card, tree diagram
+│   │   ├── decision-tree.css     # Phase 4: risk form, result card, tree diagram
+│   │   └── knn.css               # Phase 5: performance form, result card, neighbours, K table
 │   └── js/
 │       ├── app.js                # Dynamic API communication, R engine tests & tabs
 │       ├── regression.js         # Phase 3: prediction flow, validation & SVG chart
-│       └── decision-tree.js      # Phase 4: risk form, prediction & tree rendering
+│       ├── decision-tree.js      # Phase 4: risk form, prediction & tree rendering
+│       └── knn.js                # Phase 5: prediction flow, neighbour trace, K table & metrics
 │
 ├── backend/                      # Python Flask REST API
 │   ├── app.py                    # Flask server entrypoint & CORS config
@@ -528,13 +835,15 @@ AI-Insight-Hub/
 │   │   ├── r_engine.py           # R engine execution endpoint (/api/r-engine/test)
 │   │   ├── datasets.py           # Dataset validation endpoint (/api/datasets/validate)
 │   │   ├── regression.py         # Phase 3: predict / metrics / evaluation / schema
-│   │   └── decision_tree.py      # Phase 4: predict / metrics / tree / schema
+│   │   ├── decision_tree.py      # Phase 4: predict / metrics / tree / schema
+│   │   └── knn.py                # Phase 5: predict / metrics / config / schema
 │   ├── services/                 # Business logic and ML orchestration services
 │   │   ├── __init__.py           # Service package initializer
 │   │   ├── r_runner.py           # R execution engine subprocess runner
 │   │   ├── dataset_validator.py  # Dataset schema and data integrity validator
 │   │   ├── regression_service.py # Phase 3: input validation & model orchestration
-│   │   └── decision_tree_service.py # Phase 4: risk input validation & R orchestration
+│   │   ├── decision_tree_service.py # Phase 4: risk input validation & R orchestration
+│   │   └── knn_service.py        # Phase 5: student input validation & R orchestration
 │   └── database/                 # SQLite database storage directory (future)
 │       └── .gitkeep
 │
@@ -553,7 +862,11 @@ AI-Insight-Hub/
 │   │   ├── model.rds             # Serialised fitted rpart model + metadata + tree
 │   │   ├── metrics.json          # Real accuracy / precision / recall / F1 + confusion matrix
 │   │   └── tree.json             # Node-by-node structure of the fitted tree
-│   ├── knn/                      # K-Nearest Neighbors scripts (Phase 5 - not implemented)
+│   ├── knn/                      # K-Nearest Neighbors classification (Phase 5)
+│   │   ├── train.R               # Trains class::knn, selects K by CV & writes artifacts
+│   │   ├── predict.R             # Loads model.rds, scales, classifies & returns neighbours
+│   │   ├── model.rds             # Serialised scaled training matrix, labels, scaler & K
+│   │   └── metrics.json          # Real accuracy / precision / recall / F1 + K comparison
 │   └── kmeans/                   # K-Means clustering scripts (Phase 6 - not implemented)
 │
 ├── datasets/                     # Training and testing datasets (4 CSV files)
@@ -566,8 +879,10 @@ AI-Insight-Hub/
 │   ├── test_backend.py           # 19 tests: health, R engine, dataset validation
 │   ├── test_regression.py        # 40 tests: Phase 3 model, API, validation, failures
 │   ├── test_decision_tree.py     # 55 tests: Phase 4 model, API, validation, tree, failures
+│   ├── test_knn.py               # 66 tests: Phase 5 model, API, validation, neighbours, failures
 │   ├── frontend_logic_test.js    # 50 tests: Phase 3 page logic, validation & chart
-│   └── decision_tree_frontend_test.js  # 69 tests: Phase 4 form, result, metrics & tree UI
+│   ├── decision_tree_frontend_test.js  # 69 tests: Phase 4 form, result, metrics & tree UI
+│   └── knn_frontend_test.js      # 73 tests: Phase 5 form, neighbours, K table & metrics UI
 │
 ├── .gitignore                    # Git pattern exclusion rules
 └── README.md                     # Comprehensive platform documentation
@@ -675,29 +990,62 @@ PHASE 4 DECISION TREE TRAINING COMPLETE
 
 ---
 
+### Step 4c: Train the KNN Model (Phase 5)
+
+Train the classifier and generate its artifacts (`model.rds`, `metrics.json`):
+```bash
+Rscript r_models/knn/train.R
+```
+
+Expected output:
+```text
+[4/11] Stratified split: 97 training rows / 23 test rows (81% / 19%)
+      Training class counts: LOW=1, MEDIUM=63, HIGH=33
+      Test class counts:     LOW=0, MEDIUM=15, HIGH=8
+[6/11] Cross-validated K in {3, 5, 7, 9} over 10 repeats of 5 stratified folds (training data only)
+      K =  5  mean CV macro F1 = 0.5611  (sd 0.0555, se 0.0079, 50 folds)   <- SELECTED
+      Selected K = 5 by the one-standard-error rule
+[9/11] Neighbour self-check passed: extracted neighbours reproduce
+       class::knn()'s predictions AND probabilities on 23/23 test records
+      Class reachability at K = 5 (a majority vote needs ceil(K/2) = 3 neighbours):
+        LOW      training rows =   1  ->  UNREACHABLE
+        MEDIUM   training rows =  63  ->  reachable
+        HIGH     training rows =  33  ->  reachable
+[10/11] Test metrics -> Accuracy = 0.9130 | Precision = 0.6028 | Recall = 0.6028 | F1 = 0.6028
+PHASE 5 KNN TRAINING COMPLETE
+```
+
+> The Phase 5 model artifacts are committed too, and the run is deterministic
+> (`set.seed(42)`), so this only needs repeating after editing `datasets/students.csv`
+> or the training logic.
+
+---
+
 ### Step 5: Run the Automated Test Suite
 
 Verify that all endpoints, services, dataset validators, R execution bridges, the Linear
-Regression model and the Decision Tree model pass:
+Regression model, the Decision Tree model and the KNN model pass:
 ```bash
 python -m pytest tests/ -q
 ```
 
 Expected output:
 ```text
-114 passed
+180 passed
 ```
 
 With the Flask backend running, also run the frontend logic suites:
 ```bash
 node tests/frontend_logic_test.js
 node tests/decision_tree_frontend_test.js
+node tests/knn_frontend_test.js
 ```
 
 Expected output:
 ```text
 === Results: 50 passed, 0 failed ===
 === Results: 69 passed, 0 failed ===
+=== Results: 73 passed, 0 failed ===
 ```
 
 ---
@@ -820,6 +1168,32 @@ curl http://127.0.0.1:5000/api/decision-tree/metrics
 curl http://127.0.0.1:5000/api/decision-tree/tree
 ```
 
+#### 10. Student Performance Prediction (Phase 5):
+```bash
+curl -X POST http://127.0.0.1:5000/api/knn/predict \
+  -H "Content-Type: application/json" \
+  -d '{"study_hours":6.5,"attendance":88,"previous_score":74,"assignments_completed":9,"practical_score":81}'
+```
+
+Expected response (abridged):
+```json
+{
+  "success": true,
+  "model": "K-Nearest Neighbors",
+  "prediction": "MEDIUM",
+  "k": 5,
+  "confidence": 0.8,
+  "neighbor_class_distribution": { "LOW": 0, "MEDIUM": 4, "HIGH": 1 },
+  "neighbors": [ { "neighbor": 1, "neighbor_class": "MEDIUM", "distance": 1.1951 } ]
+}
+```
+
+#### 11. KNN Model Metrics & Config (Phase 5):
+```bash
+curl http://127.0.0.1:5000/api/knn/metrics
+curl http://127.0.0.1:5000/api/knn/config
+```
+
 ---
 
 ### Step 8: Launch the Frontend
@@ -835,6 +1209,7 @@ Then navigate to: `http://127.0.0.1:8000/frontend/`
 - Toggle between console tabs (**GET /api/health**, **POST /api/r-engine/test**, and **GET /api/datasets/validate**) to inspect formatted JSON payloads.
 - Click **"OPEN MODEL"** on the Linear Regression card to open the **Property Price Predictor** page at `frontend/regression.html`.
 - Click **"OPEN MODEL"** on the Decision Tree card to open the **Financial Risk Analyzer** page at `frontend/decision-tree.html`.
+- Click **"OPEN MODEL"** on the KNN card to open the **Student Performance Predictor** page at `frontend/knn.html`.
 
 **Property Price Predictor Actions:**
 - Enter property attributes and click **"PREDICT PROPERTY PRICE"** to run the real R model.
@@ -847,6 +1222,13 @@ Then navigate to: `http://127.0.0.1:8000/frontend/`
 - Inspect the decision diagram — every node, threshold and branch comes from the fitted tree.
 - Read the per-applicant decision path showing the exact rules that record satisfied.
 
+**Student Performance Predictor Actions:**
+- Enter the student profile and click **"PREDICT PERFORMANCE"** to run the real `class::knn` classifier.
+- View the live accuracy, precision, recall and F1 tiles plus the confusion matrix (all loaded from the trained model).
+- Read the **K nearest training students** that voted on the prediction, with their real classes and real distances.
+- Inspect the **K comparison table** showing the cross-validation score for every candidate K and which one shipped.
+- Note the on-page caveat explaining that this dataset's single LOW row makes LOW unreachable at K = 5.
+
 ---
 
 ## 🗺️ Future Development Roadmap
@@ -857,7 +1239,7 @@ Then navigate to: `http://127.0.0.1:8000/frontend/`
 | **Phase 2** | **R Execution Bridge & Datasets** | ✅ Complete | Subprocess RRunner, package verification, test R script, test endpoint (`/api/r-engine/test`), 4 datasets (480 records), dataset validator, test suite. |
 | **Phase 3** | **Linear Regression** | ✅ Complete | Property price model in R (`lm`), training pipeline with real R²/RMSE/MAE, persisted `model.rds`, prediction/metrics/evaluation API, interactive predictor page with scatter chart. |
 | **Phase 4** | **Decision Tree** | ✅ Complete | Financial risk classification model in R (`rpart::rpart`, CART), stratified split + cross-validated depth selection, real accuracy/precision/recall/F1 + confusion matrix, persisted `model.rds`, prediction/metrics/tree API, decision-tree visualisation, Financial Risk Analyzer page. |
-| **Phase 5** | **KNN Classification** | ⏳ Planned | Student performance model in R (`class::knn`), distance-weighted inference, dynamic K-tuning. |
+| **Phase 5** | **KNN Classification** | ✅ Complete | Student performance model in R (`class::knn`, Euclidean + majority vote), stratified split, training-only feature scaling, cross-validated K selection (K=5), real accuracy/precision/recall/F1 + confusion matrix + K comparison, persisted `model.rds`, predict/metrics/config/schema API, real nearest-neighbour trace, Student Performance Predictor page. |
 | **Phase 6** | **K-Means Clustering** | ⏳ Planned | Customer segmentation model in R (`kmeans`), elbow method optimization, 2D centroid scatter visualizer. |
 
 ---
