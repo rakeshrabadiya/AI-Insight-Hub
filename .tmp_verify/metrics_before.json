@@ -1,0 +1,685 @@
+{
+  "success": true,
+  "model": "K-Nearest Neighbors",
+  "algorithm": "class::knn (Euclidean distance, majority vote)",
+  "task": "Student Performance Prediction",
+  "target": "performance",
+  "classes": ["LOW", "MEDIUM", "HIGH"],
+  "selected_k": 5,
+  "trained_at": "2026-09-25T15:31:53Z",
+  "r_version": "4.6.1",
+  "class_package_version": "7.3.23",
+  "random_seed": 42,
+  "metrics": {
+    "accuracy": 0.913,
+    "precision": 0.6028,
+    "recall": 0.6028,
+    "f1_score": 0.6028,
+    "macro_supported_only": {
+      "precision": 0.9042,
+      "recall": 0.9042,
+      "f1_score": 0.9042,
+      "classes": [
+        "MEDIUM",
+        "HIGH"
+      ]
+    },
+    "balanced_accuracy": 0.6028,
+    "error_rate": 0.087,
+    "correct_predictions": 21,
+    "total_predictions": 23,
+    "majority_class_baseline": {
+      "class": "MEDIUM",
+      "accuracy": 0.6522
+    },
+    "averaging": "macro over all declared classes"
+  },
+  "class_distribution_note": {
+    "full_dataset": {
+      "LOW": 1,
+      "MEDIUM": 78,
+      "HIGH": 41
+    },
+    "test_support": {
+      "LOW": 0,
+      "MEDIUM": 15,
+      "HIGH": 8
+    },
+    "classes_without_test_support": [
+      "LOW"
+    ],
+    "classes_unreachable_at_selected_k": [
+      "LOW"
+    ],
+    "class_reachability": {
+      "LOW": {
+        "class": "LOW",
+        "training_rows": 1,
+        "test_support": 0,
+        "votes_needed_to_win": 3,
+        "reachable": 0,
+        "note": "LOW cannot be predicted at K=5: a majority vote needs 3 of the K nearest training rows to be LOW, but the dataset holds only 1."
+      },
+      "MEDIUM": {
+        "class": "MEDIUM",
+        "training_rows": 63,
+        "test_support": 15,
+        "votes_needed_to_win": 3,
+        "reachable": 1,
+        "note": "MEDIUM needs 3 of the K nearest training rows to be MEDIUM and 63 such rows exist."
+      },
+      "HIGH": {
+        "class": "HIGH",
+        "training_rows": 33,
+        "test_support": 8,
+        "votes_needed_to_win": 3,
+        "reachable": 1,
+        "note": "HIGH needs 3 of the K nearest training rows to be HIGH and 33 such rows exist."
+      }
+    },
+    "message": "students.csv is heavily imbalanced and holds only 1 LOW row, which must be used for training, so the test set has no LOW rows. A KNN majority vote at K=5 also needs 3 of the K nearest rows to be LOW, which one LOW row can never satisfy, so LOW is structurally unreachable and predictions are limited to MEDIUM and HIGH. The headline macro averages span all three declared classes (LOW scores 0); macro_supported_only spans just the classes with test support."
+  },
+  "per_class_metrics": {
+    "LOW": {
+      "precision": 0,
+      "recall": 0,
+      "f1_score": 0,
+      "support": 0,
+      "predicted": 0,
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 0
+    },
+    "MEDIUM": {
+      "precision": 0.9333,
+      "recall": 0.9333,
+      "f1_score": 0.9333,
+      "support": 15,
+      "predicted": 15,
+      "true_positives": 14,
+      "false_positives": 1,
+      "false_negatives": 1
+    },
+    "HIGH": {
+      "precision": 0.875,
+      "recall": 0.875,
+      "f1_score": 0.875,
+      "support": 8,
+      "predicted": 8,
+      "true_positives": 7,
+      "false_positives": 1,
+      "false_negatives": 1
+    }
+  },
+  "confusion_matrix": {
+    "labels": ["LOW", "MEDIUM", "HIGH"],
+    "rows": "actual",
+    "columns": "predicted",
+    "matrix": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        14,
+        1
+      ],
+      [
+        0,
+        1,
+        7
+      ]
+    ]
+  },
+  "dataset": {
+    "file": "datasets/students.csv",
+    "rows_loaded": 120,
+    "rows_clean": 120,
+    "rows_dropped": 0,
+    "rows_incomplete": 0,
+    "rows_domain_invalid": 0,
+    "rows_unknown_class": 0,
+    "rows_train": 97,
+    "rows_test": 23,
+    "target": "performance",
+    "features": ["study_hours", "attendance", "previous_score", "assignments_completed", "practical_score"],
+    "feature_ranges": {
+      "study_hours": {
+        "min": 2.2,
+        "max": 34.8
+      },
+      "attendance": {
+        "min": 56.7,
+        "max": 99.9
+      },
+      "previous_score": {
+        "min": 36.1,
+        "max": 96.3
+      },
+      "assignments_completed": {
+        "min": 1,
+        "max": 10
+      },
+      "practical_score": {
+        "min": 40.4,
+        "max": 100
+      }
+    },
+    "class_distribution": {
+      "LOW": 1,
+      "MEDIUM": 78,
+      "HIGH": 41
+    }
+  },
+  "feature_scaling": {
+    "method": "standardisation (z-score) fitted on the training set",
+    "reason": "KNN measures Euclidean distance, so unscaled columns with larger spread would dominate the distance while smaller-spread columns would barely contribute. Every feature is standardised to mean 0 and standard deviation 1 using the training set, and predict.R applies the identical transformation.",
+    "center": {
+      "study_hours": 18.2825,
+      "attendance": 79.4876,
+      "previous_score": 65.9402,
+      "assignments_completed": 5.6598,
+      "practical_score": 69.4639
+    },
+    "scale": {
+      "study_hours": 9.283,
+      "attendance": 12.5104,
+      "previous_score": 17.0307,
+      "assignments_completed": 3.0307,
+      "practical_score": 18.2521
+    }
+  },
+  "model_info": {
+    "implementation": "class::knn()",
+    "distance": "Euclidean",
+    "vote": "majority vote over the K nearest training rows",
+    "k": 5,
+    "k_grid": [3, 5, 7, 9],
+    "k_selection": {
+      "method": "one-standard-error rule on repeated stratified cross-validation",
+      "folds": 5,
+      "repeats": 10,
+      "selected_on": "training data only (macro F1 over all declared classes)",
+      "best_mean_cv_f1": 0.5611,
+      "one_se_threshold": 0.5532
+    },
+    "train_rows": 97,
+    "test_rows": 23
+  },
+  "k_comparison": [
+    {
+      "k": 5,
+      "cv_f1_mean": 0.5611,
+      "cv_f1_sd": 0.0555,
+      "cv_f1_se": 0.0079,
+      "folds_evaluated": 50,
+      "selected": true
+    },
+    {
+      "k": 7,
+      "cv_f1_mean": 0.5575,
+      "cv_f1_sd": 0.0613,
+      "cv_f1_se": 0.0087,
+      "folds_evaluated": 50,
+      "selected": false
+    },
+    {
+      "k": 9,
+      "cv_f1_mean": 0.549,
+      "cv_f1_sd": 0.0595,
+      "cv_f1_se": 0.0084,
+      "folds_evaluated": 50,
+      "selected": false
+    },
+    {
+      "k": 3,
+      "cv_f1_mean": 0.5428,
+      "cv_f1_sd": 0.0611,
+      "cv_f1_se": 0.0086,
+      "folds_evaluated": 50,
+      "selected": false
+    }
+  ],
+  "test_predictions": [
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        1.2879,
+        1.2879,
+        1.2934,
+        1.5025,
+        1.515
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "HIGH"
+      ],
+      "neighbor_distances": [
+        0.6728,
+        0.8634,
+        0.9169,
+        1.1079,
+        1.2172
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        0.8318,
+        1.0093,
+        1.2093,
+        1.2902,
+        1.3718
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "HIGH",
+      "correct": false,
+      "neighbor_classes": [
+        "HIGH",
+        "MEDIUM",
+        "MEDIUM",
+        "HIGH",
+        "HIGH"
+      ],
+      "neighbor_distances": [
+        1.3471,
+        1.423,
+        1.6357,
+        1.7113,
+        1.7158
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        0.6849,
+        1.4245,
+        1.4698,
+        1.567,
+        1.5981
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        0.9537,
+        1.2182,
+        1.3274,
+        1.6322,
+        1.668
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        1.1401,
+        1.2225,
+        1.2429,
+        1.3302,
+        1.6701
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        0.8764,
+        0.9208,
+        1.0329,
+        1.1213,
+        1.2919
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "HIGH"
+      ],
+      "neighbor_distances": [
+        1.0744,
+        1.1588,
+        1.449,
+        1.5736,
+        1.7286
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        1.0595,
+        1.079,
+        1.2664,
+        1.3174,
+        1.5221
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        1.1536,
+        1.2074,
+        1.3923,
+        1.5393,
+        1.5544
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "HIGH",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        0.5132,
+        1.0178,
+        1.1791,
+        1.1796,
+        1.5814
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        1.4772,
+        1.5,
+        1.729,
+        1.9066,
+        1.9183
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        0.4238,
+        1.2336,
+        1.5437,
+        1.6112,
+        1.6487
+      ]
+    },
+    {
+      "actual_class": "MEDIUM",
+      "predicted_class": "MEDIUM",
+      "correct": true,
+      "neighbor_classes": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        0.4503,
+        0.8862,
+        1.28,
+        1.4144,
+        1.4707
+      ]
+    },
+    {
+      "actual_class": "HIGH",
+      "predicted_class": "MEDIUM",
+      "correct": false,
+      "neighbor_classes": [
+        "MEDIUM",
+        "HIGH",
+        "MEDIUM",
+        "HIGH",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        0.9065,
+        1.4962,
+        1.6883,
+        1.724,
+        1.8735
+      ]
+    },
+    {
+      "actual_class": "HIGH",
+      "predicted_class": "HIGH",
+      "correct": true,
+      "neighbor_classes": [
+        "HIGH",
+        "HIGH",
+        "HIGH",
+        "HIGH",
+        "HIGH"
+      ],
+      "neighbor_distances": [
+        1.223,
+        1.751,
+        1.9206,
+        2.0163,
+        2.0239
+      ]
+    },
+    {
+      "actual_class": "HIGH",
+      "predicted_class": "HIGH",
+      "correct": true,
+      "neighbor_classes": [
+        "HIGH",
+        "HIGH",
+        "HIGH",
+        "HIGH",
+        "HIGH"
+      ],
+      "neighbor_distances": [
+        0.9376,
+        1.2581,
+        1.2953,
+        1.3116,
+        1.3292
+      ]
+    },
+    {
+      "actual_class": "HIGH",
+      "predicted_class": "HIGH",
+      "correct": true,
+      "neighbor_classes": [
+        "HIGH",
+        "HIGH",
+        "HIGH",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        1.1894,
+        1.2029,
+        1.4104,
+        1.4964,
+        1.6078
+      ]
+    },
+    {
+      "actual_class": "HIGH",
+      "predicted_class": "HIGH",
+      "correct": true,
+      "neighbor_classes": [
+        "HIGH",
+        "HIGH",
+        "HIGH",
+        "HIGH",
+        "HIGH"
+      ],
+      "neighbor_distances": [
+        1.0104,
+        1.1618,
+        1.2537,
+        1.2984,
+        1.593
+      ]
+    },
+    {
+      "actual_class": "HIGH",
+      "predicted_class": "HIGH",
+      "correct": true,
+      "neighbor_classes": [
+        "HIGH",
+        "HIGH",
+        "HIGH",
+        "HIGH",
+        "MEDIUM"
+      ],
+      "neighbor_distances": [
+        1.3036,
+        1.419,
+        1.5018,
+        1.7013,
+        1.7299
+      ]
+    },
+    {
+      "actual_class": "HIGH",
+      "predicted_class": "HIGH",
+      "correct": true,
+      "neighbor_classes": [
+        "HIGH",
+        "HIGH",
+        "MEDIUM",
+        "MEDIUM",
+        "HIGH"
+      ],
+      "neighbor_distances": [
+        0.4203,
+        1.0993,
+        1.174,
+        1.2478,
+        1.2803
+      ]
+    },
+    {
+      "actual_class": "HIGH",
+      "predicted_class": "HIGH",
+      "correct": true,
+      "neighbor_classes": [
+        "HIGH",
+        "HIGH",
+        "HIGH",
+        "HIGH",
+        "HIGH"
+      ],
+      "neighbor_distances": [
+        1.1396,
+        1.208,
+        1.4148,
+        1.4904,
+        1.5042
+      ]
+    }
+  ],
+  "model_file": "r_models/knn/model.rds"
+}
