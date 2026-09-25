@@ -1,0 +1,160 @@
+/* ==========================================================================
+   AI INSIGHT HUB — RESPONSIVE STYLESHEET
+   Media queries and adaptive layout adjustments
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Large Tablets & Small Desktops (max-width: 1024px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+    .app-container {
+        padding: 0 1.5rem;
+    }
+
+    .hero-section {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 2rem 1.5rem;
+        gap: 1.5rem;
+    }
+
+    .hero-meta {
+        width: 100%;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .system-status-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .models-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .roadmap-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   2. Tablets & Mobile Landscape (max-width: 768px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .app-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        padding: 1rem 0;
+    }
+
+    .header-left, .header-center, .header-right {
+        justify-content: center;
+    }
+
+    .header-right {
+        flex-wrap: wrap;
+    }
+
+    .hero-title {
+        font-size: 1.75rem;
+    }
+
+    .hero-description {
+        font-size: 0.9rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .roadmap-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .console-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .console-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .console-meta-bar {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .api-alert-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .api-alert-banner .btn {
+        width: 100%;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3. Mobile Portrait (max-width: 480px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+    .app-container {
+        padding: 0 1rem;
+    }
+
+    .hero-section {
+        padding: 1.5rem 1rem;
+        margin: 1.25rem 0;
+    }
+
+    .hero-title {
+        font-size: 1.45rem;
+    }
+
+    .brand-title {
+        font-size: 1.15rem;
+    }
+
+    .model-card {
+        padding: 1.25rem;
+    }
+
+    .model-name {
+        font-size: 1.15rem;
+    }
+
+    .model-card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .model-card-footer .btn {
+        width: 100%;
+    }
+
+    .stat-card {
+        padding: 1.15rem;
+    }
+
+    .academic-badge {
+        font-size: 0.68rem;
+        text-align: center;
+    }
+}
