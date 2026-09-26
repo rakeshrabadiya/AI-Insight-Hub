@@ -13,22 +13,21 @@
    1. Page-specific tokens
    -------------------------------------------------------------------------- */
 :root {
-    --panel-bg: rgba(17, 26, 46, 0.62);
-    --panel-border: rgba(255, 255, 255, 0.08);
+    --panel-bg: rgba(255, 255, 255, 0.95);
+    --panel-border: rgba(15, 23, 42, 0.09);
+    --border-subtle: rgba(15, 23, 42, 0.08);
 
-    /* Categorical cluster palette — evenly spaced, no severity meaning. */
-    --cluster-1: #00f0ff;
-    --cluster-1-glow: rgba(0, 240, 255, 0.30);
+    --cluster-1: #0284c7;
+    --cluster-1-glow: rgba(2, 132, 199, 0.25);
     --cluster-2: #8b5cf6;
-    --cluster-2-glow: rgba(139, 92, 246, 0.30);
-    --cluster-3: #f59e0b;
-    --cluster-3-glow: rgba(245, 158, 11, 0.30);
+    --cluster-2-glow: rgba(139, 92, 246, 0.25);
+    --cluster-3: #ea580c;
+    --cluster-3-glow: rgba(234, 88, 12, 0.25);
     --cluster-4: #10b981;
-    --cluster-4-glow: rgba(16, 185, 129, 0.30);
-    --cluster-5: #f43f5e;
-    --cluster-5-glow: rgba(244, 63, 94, 0.30);
-    --cluster-6: #ec4899;
-    --cluster-6-glow: rgba(236, 72, 153, 0.30);
+    --cluster-4-glow: rgba(16, 185, 129, 0.25);
+    --cluster-5: #e11d48;
+    --cluster-5-glow: rgba(225, 29, 72, 0.25);
+    --cluster-6: #d946ef;
 }
 
 /* --------------------------------------------------------------------------
@@ -133,7 +132,7 @@
 /* The two headline clustering diagnostics carry the accent treatment. */
 .stat-tile-accent {
     border-color: rgba(0, 240, 255, 0.22);
-    background: linear-gradient(160deg, rgba(0, 240, 255, 0.08), rgba(17, 26, 46, 0.62));
+    background: linear-gradient(160deg, rgba(0, 240, 255, 0.08), rgba(255, 255, 255, 0.95));
 }
 
 .stat-tile-label {
@@ -330,7 +329,7 @@
 
 .form-input {
     width: 100%;
-    background: rgba(6, 11, 25, 0.7);
+    background: #ffffff;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     color: var(--text-primary);
@@ -476,7 +475,7 @@
 
 /* Distance + separation meter */
 .distance-block {
-    background: rgba(6, 11, 25, 0.5);
+    background: #f8fafc;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     padding: 0.9rem 1rem;
@@ -980,4 +979,88 @@
     .result-cluster {
         font-size: 2.1rem;
     }
+}
+
+/* Light Mode & Orange Refinements for K-Means */
+.form-label {
+    color: #1e293b !important;
+    font-weight: 700 !important;
+}
+.form-input {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(15, 23, 42, 0.16) !important;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+.form-input:focus {
+    border-color: var(--accent-orange) !important;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18), inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+.form-input::placeholder {
+    color: #94a3b8 !important;
+}
+.result-panel {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.09) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+.result-empty-title {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+.result-empty-text {
+    color: #64748b !important;
+}
+.cluster-card {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04) !important;
+}
+.cluster-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08) !important;
+}
+.cluster-card-name {
+    color: #0f172a !important;
+}
+.cluster-card-count {
+    color: #0f172a !important;
+}
+.cluster-card-bar {
+    background: rgba(15, 23, 42, 0.08) !important;
+}
+.k-table, .profile-table {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+.k-table th, .profile-table th {
+    background: #f8fafc !important;
+    color: #475569 !important;
+}
+.k-table td, .profile-table td {
+    color: #0f172a !important;
+}
+.k-table tbody tr[data-selected="true"] {
+    background: rgba(249, 115, 22, 0.1) !important;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+    border: 1px solid #ea580c !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3), 3px 3px 0px rgba(15, 23, 42, 0.85) !important;
+    font-weight: 700 !important;
+}
+.btn-primary:hover {
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4), 4px 4px 0px rgba(15, 23, 42, 0.9) !important;
+}
+.btn-sample {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.16) !important;
+    color: #334155 !important;
+}
+.btn-sample:hover {
+    border-color: var(--accent-orange) !important;
+    color: var(--accent-orange-dark) !important;
+    background: rgba(249, 115, 22, 0.05) !important;
 }

@@ -1,57 +1,92 @@
 /* ==========================================================================
    AI INSIGHT HUB — RESPONSIVE STYLESHEET
-   Media queries and adaptive layout adjustments
+   Fluid media queries for Desktop, Laptop, Tablet, and Mobile
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   1. Large Tablets & Small Desktops (max-width: 1024px)
+   1. Laptop & Medium Screens (max-width: 1140px)
    -------------------------------------------------------------------------- */
-@media (max-width: 1024px) {
+@media (max-width: 1140px) {
     .app-container {
-        padding: 0 1.5rem;
+        padding: 0 1.75rem;
     }
 
-    .hero-section {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 2rem 1.5rem;
-        gap: 1.5rem;
+    .hero-main-title {
+        font-size: 3rem;
     }
 
-    .hero-meta {
-        width: 100%;
+    .hero-lab-section {
+        padding: 3rem 2.25rem;
     }
 
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-    }
-
-    .system-status-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+    .memphis-cube {
+        width: 90px;
+        height: 90px;
+        top: 2rem;
+        right: 2rem;
     }
 
     .models-grid {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
+        gap: 1.5rem;
     }
 
-    .roadmap-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+    .model-card {
+        padding: 1.85rem 1.65rem 1.65rem;
     }
 }
 
 /* --------------------------------------------------------------------------
-   2. Tablets & Mobile Landscape (max-width: 768px)
+   2. Large Tablets & Small Laptops (max-width: 960px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 960px) {
+    .app-header {
+        padding: 1rem 0;
+    }
+
+    .hero-lab-section {
+        padding: 2.5rem 1.75rem;
+    }
+
+    .hero-main-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-sub-description {
+        font-size: 1.05rem;
+    }
+
+    .memphis-cube {
+        display: none;
+    }
+
+    .memphis-radar-ring {
+        display: none;
+    }
+
+    .models-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    /* Model pages */
+    .predict-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3. Tablets & Mobile Landscape (max-width: 768px)
    -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
+    .app-container {
+        padding: 0 1.25rem;
+    }
+
     .app-header {
         flex-direction: column;
         align-items: stretch;
-        gap: 1rem;
-        padding: 1rem 0;
+        gap: 0.85rem;
     }
 
     .header-left, .header-center, .header-right {
@@ -62,42 +97,41 @@
         flex-wrap: wrap;
     }
 
-    .hero-title {
-        font-size: 1.75rem;
+    .hero-lab-section {
+        padding: 2.25rem 1.35rem;
+        margin-bottom: 2rem;
     }
 
-    .hero-description {
-        font-size: 0.9rem;
+    .hero-main-title {
+        font-size: 2.2rem;
+        line-height: 1.15;
     }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
+    .hero-sub-description {
+        font-size: 0.98rem;
+        line-height: 1.6;
     }
 
-    .roadmap-grid {
-        grid-template-columns: 1fr;
+    .hero-telemetry-ribbon {
+        gap: 0.85rem;
     }
 
-    .console-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
+    .telemetry-divider {
+        display: none;
     }
 
-    .console-controls {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .console-meta-bar {
-        flex-direction: column;
-        gap: 0.5rem;
+    .telemetry-item {
+        width: calc(50% - 0.5rem);
     }
 
     .footer-content {
         flex-direction: column;
         text-align: center;
         gap: 1rem;
+    }
+
+    .footer-left {
+        align-items: center;
     }
 
     .api-alert-banner {
@@ -111,50 +145,119 @@
 }
 
 /* --------------------------------------------------------------------------
-   3. Mobile Portrait (max-width: 480px)
+   4. Mobile Portrait (max-width: 480px)
    -------------------------------------------------------------------------- */
 @media (max-width: 480px) {
     .app-container {
         padding: 0 1rem;
     }
 
-    .hero-section {
-        padding: 1.5rem 1rem;
-        margin: 1.25rem 0;
-    }
-
-    .hero-title {
-        font-size: 1.45rem;
-    }
-
     .brand-title {
         font-size: 1.15rem;
     }
 
-    .model-card {
-        padding: 1.25rem;
+    .academic-badge {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.65rem;
+        text-align: center;
     }
 
-    .model-name {
-        font-size: 1.15rem;
+    .hero-lab-section {
+        padding: 1.75rem 1rem;
+        border-radius: var(--radius-lg);
+    }
+
+    .hero-main-title {
+        font-size: 1.75rem;
+    }
+
+    .hero-sub-description {
+        font-size: 0.9rem;
+    }
+
+    .retro-badge-strip {
+        gap: 0.5rem;
+    }
+
+    .telemetry-item {
+        width: 100%;
+    }
+
+    .model-card {
+        padding: 1.5rem 1.2rem;
+        border-radius: var(--radius-lg);
+    }
+
+    .model-main-name {
+        font-size: 1.35rem;
+    }
+
+    .model-desc-text {
+        font-size: 0.86rem;
+    }
+
+    .model-vector-icon-wrap {
+        width: 48px;
+        height: 48px;
+    }
+
+    .model-vector-icon-wrap svg {
+        width: 26px;
+        height: 26px;
     }
 
     .model-card-footer {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
+        align-items: stretch;
+        gap: 0.85rem;
     }
 
-    .model-card-footer .btn {
+    .btn-model-open {
         width: 100%;
     }
 
-    .stat-card {
-        padding: 1.15rem;
+    .memphis-corner-cross {
+        display: none;
     }
+}
 
-    .academic-badge {
-        font-size: 0.68rem;
-        text-align: center;
+/* Responsive Header & Navigation */
+@media (max-width: 1100px) {
+    .header-inner {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+    }
+    .app-nav {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+        -webkit-overflow-scrolling: touch;
+    }
+    .nav-list {
+        width: max-content;
+    }
+}
+@media (max-width: 768px) {
+    .header-meta {
+        display: none;
+    }
+    .nav-link {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.76rem;
+    }
+}
+
+/* Full-Viewport Navigation Responsiveness */
+@media (max-width: 1024px) {
+    .hero-section {
+        flex-direction: column;
+        padding: 1.75rem 1.5rem;
+        gap: 1.5rem;
+    }
+    .hero-meta {
+        width: 100%;
+        min-width: unset;
     }
 }

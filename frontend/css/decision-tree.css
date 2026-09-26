@@ -9,21 +9,22 @@
    1. Page-specific tokens
    -------------------------------------------------------------------------- */
 :root {
-    --panel-bg: rgba(17, 26, 46, 0.62);
-    --panel-border: rgba(255, 255, 255, 0.08);
-    --panel-border-hover: rgba(139, 92, 246, 0.28);
+    --panel-bg: rgba(255, 255, 255, 0.95);
+    --panel-border: rgba(15, 23, 42, 0.09);
+    --panel-border-hover: rgba(249, 115, 22, 0.45);
+    --border-subtle: rgba(15, 23, 42, 0.08);
 
-    /* Risk-tier semantic palette — LOW is best, HIGH is worst. */
+    /* Risk-tier semantic palette */
     --risk-low: #10b981;
-    --risk-low-glow: rgba(16, 185, 129, 0.35);
+    --risk-low-glow: rgba(16, 185, 129, 0.25);
     --risk-medium: #f59e0b;
-    --risk-medium-glow: rgba(245, 158, 11, 0.35);
-    --risk-high: #f43f5e;
-    --risk-high-glow: rgba(244, 63, 94, 0.35);
+    --risk-medium-glow: rgba(245, 158, 11, 0.25);
+    --risk-high: #ef4444;
+    --risk-high-glow: rgba(239, 68, 68, 0.25);
 
-    --tree-link: rgba(148, 163, 184, 0.28);
-    --tree-node-bg: rgba(30, 41, 59, 0.92);
-    --tree-node-border: rgba(139, 92, 246, 0.35);
+    --tree-link: rgba(15, 23, 42, 0.25);
+    --tree-node-bg: #ffffff;
+    --tree-node-border: rgba(15, 23, 42, 0.15);
 }
 
 /* --------------------------------------------------------------------------
@@ -147,7 +148,7 @@
 
 .form-input {
     width: 100%;
-    background: rgba(6, 11, 25, 0.7);
+    background: #ffffff;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     color: var(--text-primary);
@@ -291,7 +292,7 @@
 
 /* Confidence */
 .confidence-block {
-    background: rgba(6, 11, 25, 0.5);
+    background: #f8fafc;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     padding: 0.9rem 1rem;
@@ -493,7 +494,7 @@
 }
 
 .metric-card {
-    background: rgba(6, 11, 25, 0.5);
+    background: #f8fafc;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     padding: 0.9rem 0.7rem;
@@ -875,7 +876,7 @@
     justify-content: center;
     gap: 0.1rem;
     border-radius: var(--radius-sm);
-    background: rgba(6, 11, 25, 0.55);
+    background: #ffffff;
     border: 1px solid var(--border-subtle);
     font-family: 'JetBrains Mono', monospace;
     font-size: 1.05rem;
@@ -1015,4 +1016,99 @@
 
 .warning-item + .warning-item {
     margin-top: 0.35rem;
+}
+
+/* Light Mode & Orange Refinements for Decision Tree */
+.form-label {
+    color: #1e293b !important;
+    font-weight: 700 !important;
+}
+.form-input {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(15, 23, 42, 0.16) !important;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+.form-input:focus {
+    border-color: var(--accent-orange) !important;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18), inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+.form-input::placeholder {
+    color: #94a3b8 !important;
+}
+.result-panel {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.09) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+.result-empty-title {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+.result-empty-text {
+    color: #64748b !important;
+}
+.metric-card {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03) !important;
+}
+.metric-card:hover {
+    border-color: var(--accent-orange) !important;
+    box-shadow: 0 8px 20px rgba(249, 115, 22, 0.12) !important;
+}
+.metric-label {
+    color: #64748b !important;
+}
+.metric-value {
+    color: #0f172a !important;
+    font-weight: 800 !important;
+}
+.tree-node {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.15) !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+    color: #0f172a !important;
+}
+.tree-node:hover {
+    border-color: var(--accent-orange) !important;
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.25) !important;
+}
+.tree-node-rule {
+    color: #475569 !important;
+}
+.matrix-cell {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+.matrix-cell[data-diagonal="true"] {
+    background: rgba(16, 185, 129, 0.14) !important;
+    color: #065f46 !important;
+    font-weight: 700 !important;
+}
+.matrix-head {
+    color: #1e293b !important;
+    font-weight: 700 !important;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+    border: 1px solid #ea580c !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3), 3px 3px 0px rgba(15, 23, 42, 0.85) !important;
+    font-weight: 700 !important;
+}
+.btn-primary:hover {
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4), 4px 4px 0px rgba(15, 23, 42, 0.9) !important;
+}
+.btn-sample {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.16) !important;
+    color: #334155 !important;
+}
+.btn-sample:hover {
+    border-color: var(--accent-orange) !important;
+    color: var(--accent-orange-dark) !important;
+    background: rgba(249, 115, 22, 0.05) !important;
 }

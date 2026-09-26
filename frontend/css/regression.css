@@ -9,10 +9,12 @@
    1. Page-specific tokens
    -------------------------------------------------------------------------- */
 :root {
-    --panel-bg: rgba(17, 26, 46, 0.62);
-    --panel-border: rgba(255, 255, 255, 0.08);
-    --panel-border-hover: rgba(0, 240, 255, 0.28);
-    --chart-grid: rgba(148, 163, 184, 0.12);
+    --panel-bg: rgba(255, 255, 255, 0.95);
+    --panel-border: rgba(15, 23, 42, 0.09);
+    --panel-border-hover: rgba(249, 115, 22, 0.45);
+    --chart-grid: rgba(148, 163, 184, 0.2);
+    --border-subtle: rgba(15, 23, 42, 0.08);
+    --border-glass-hover: rgba(249, 115, 22, 0.35);
 }
 
 /* --------------------------------------------------------------------------
@@ -131,7 +133,7 @@
     font-size: 0.98rem;
     font-weight: 500;
     color: var(--text-primary);
-    background: rgba(6, 9, 19, 0.65);
+    background: #ffffff;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     padding: 0.72rem 0.9rem;
@@ -147,7 +149,7 @@
     outline: none;
     border-color: var(--accent-cyan);
     box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.12);
-    background: rgba(6, 9, 19, 0.85);
+    background: #ffffff;
 }
 
 /* Hide the native number spinners; the values are validated in JS anyway */
@@ -320,7 +322,7 @@
     flex-direction: column;
     gap: 0.2rem;
     padding: 0.75rem 1rem;
-    background: rgba(6, 9, 19, 0.5);
+    background: #f8fafc;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     margin-bottom: 1rem;
@@ -429,7 +431,7 @@
 }
 
 .metric-card {
-    background: rgba(6, 9, 19, 0.55);
+    background: #ffffff;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     padding: 1.05rem 0.85rem;
@@ -627,7 +629,7 @@
     position: absolute;
     pointer-events: none;
     z-index: 20;
-    background: rgba(6, 9, 19, 0.95);
+    background: #ffffff; color: #0f172a; border: 1px solid rgba(15, 23, 42, 0.1); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
     border: 1px solid var(--border-glass-hover);
     border-radius: var(--radius-md);
     padding: 0.6rem 0.8rem;
@@ -659,7 +661,7 @@
 }
 
 .coefficient-card {
-    background: rgba(6, 9, 19, 0.55);
+    background: #ffffff;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     padding: 1rem 1.1rem;
@@ -764,4 +766,97 @@
         align-items: flex-start;
         gap: 0.6rem;
     }
+}
+
+/* Light Mode & Orange Refinements for Regression */
+.form-label {
+    color: #1e293b !important;
+    font-weight: 700 !important;
+}
+.form-input {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(15, 23, 42, 0.16) !important;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+.form-input:focus {
+    border-color: var(--accent-orange) !important;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18), inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+.form-input::placeholder {
+    color: #94a3b8 !important;
+}
+.result-panel {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.09) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+.result-empty-icon {
+    color: var(--accent-orange) !important;
+    opacity: 0.85 !important;
+}
+.result-empty-title {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+.result-empty-text {
+    color: #64748b !important;
+}
+.result-price {
+    background: linear-gradient(135deg, #0f172a 35%, var(--accent-orange-dark) 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+.result-raw {
+    background: #f8fafc !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    color: #0f172a !important;
+}
+.result-raw-value {
+    color: #0f172a !important;
+}
+.result-meta-row {
+    color: #475569 !important;
+}
+.result-meta-row span:last-child {
+    color: #0f172a !important;
+    font-weight: 600 !important;
+}
+.metric-card {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03) !important;
+}
+.metric-card:hover {
+    border-color: var(--accent-orange) !important;
+    box-shadow: 0 8px 20px rgba(249, 115, 22, 0.12) !important;
+}
+.metric-label {
+    color: #64748b !important;
+}
+.metric-value {
+    color: #0f172a !important;
+    font-weight: 800 !important;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+    border: 1px solid #ea580c !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3), 3px 3px 0px rgba(15, 23, 42, 0.85) !important;
+    font-weight: 700 !important;
+}
+.btn-primary:hover {
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4), 4px 4px 0px rgba(15, 23, 42, 0.9) !important;
+}
+.btn-sample {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.16) !important;
+    color: #334155 !important;
+}
+.btn-sample:hover {
+    border-color: var(--accent-orange) !important;
+    color: var(--accent-orange-dark) !important;
+    background: rgba(249, 115, 22, 0.05) !important;
 }

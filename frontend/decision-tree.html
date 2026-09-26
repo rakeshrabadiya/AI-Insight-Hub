@@ -6,56 +6,88 @@
     <title>Financial Risk Classifier — AI Insight Hub</title>
     <meta name="description" content="Decision Tree financial risk classification powered by a real model trained in R. Educational ML implementation.">
     <!-- Google Fonts: Inter & JetBrains Mono (shared with the dashboard) -->
+        <!-- Google Fonts: Space Grotesk, Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
     <!-- Shared design system + page-specific styles -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/decision-tree.css">
 </head>
 <body>
-    <!-- Background Glow Elements (shared with dashboard) -->
-    <div class="bg-glow bg-glow-top"></div>
-    <div class="bg-glow bg-glow-bottom"></div>
-    <div class="grid-overlay"></div>
+        <!-- Animated Light Mode Gradient Mesh Background & Retro Grid -->
+    <div class="mesh-canvas" aria-hidden="true">
+        <div class="mesh-orb mesh-orb-cyan"></div>
+        <div class="mesh-orb mesh-orb-indigo"></div>
+        <div class="mesh-orb mesh-orb-violet"></div>
+        <div class="mesh-orb mesh-orb-coral"></div>
+        <div class="retro-grid-pattern"></div>
+        <div class="retro-scanlines"></div>
+    </div>
 
-    <div class="app-container">
+    <header class="app-header">
+            <div class="header-inner">
+                <div class="header-brand-wrap">
+                    <a class="logo-wrapper logo-link" href="index.html" title="AI Insight Hub">
+                        <div class="logo-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                <polyline points="2 17 12 22 22 17"></polyline>
+                                <polyline points="2 12 12 17 22 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="logo-text">
+                            <span class="brand-title">AI INSIGHT HUB</span>
+                            <span class="brand-tagline">RETRO-FUTURISTIC AI LAB</span>
+                        </div>
+                    </a>
+                </div>
 
-        <!-- Header / Navigation -->
-        <header class="app-header">
-            <div class="header-left">
-                <a class="logo-wrapper logo-link" href="index.html" title="Back to dashboard">
-                    <div class="logo-icon">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                <nav class="app-nav" aria-label="Main Platform Navigation">
+                    <ul class="nav-list">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="regression.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                        <span>Linear Regression</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-active" href="decision-tree.html" aria-current="page">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"></circle><line x1="12" y1="8" x2="7" y2="15"></line><line x1="12" y1="8" x2="17" y2="15"></line><circle cx="7" cy="18" r="3"></circle><circle cx="17" cy="18" r="3"></circle></svg>
+                        <span>Decision Tree</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="knn.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><path d="M9 9l6 6"></path><circle cx="18" cy="6" r="3"></circle></svg>
+                        <span>KNN</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="kmeans.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="10"></circle></svg>
+                        <span>K-Means</span>
+                    </a>
+                </li>
+                    </ul>
+                </nav>
+
+                <div class="header-meta">
+                    <div class="academic-badge">
+                        <span class="badge-dot"></span>
+                        <span class="badge-text">Parul University &bull; Ethnotech &bull; GCF</span>
                     </div>
-                    <div class="logo-text">
-                        <div class="brand-title">AI Insight Hub</div>
-                        <div class="brand-subtitle">Multi-Model Machine Learning Analytics Platform</div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="header-center">
-                <div class="academic-badge">
-                    <span class="badge-dot"></span>
-                    <span class="badge-text">GCF Training &bull; Ethnotech &bull; Parul University</span>
                 </div>
             </div>
-
-            <div class="header-right">
-                <a class="btn btn-secondary btn-sm" href="index.html" title="Return to the platform dashboard">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="19" y1="12" x2="5" y2="12"></line>
-                        <polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
-                    <span>Dashboard</span>
-                </a>
-            </div>
         </header>
+
+    <div class="app-container">
 
         <main class="main-content">
 
@@ -383,9 +415,12 @@
 
         </main>
 
-        <!-- Footer -->
-        <footer class="app-footer">
-            <div class="footer-content">
+            </div><!-- /.app-container -->
+
+    <!-- Global Full-Spanning Footer (100% Viewport Width) -->
+    <footer class="app-footer">
+        <div class="footer-inner">
+<div class="footer-content">
                 <div class="footer-left">
                     <div class="footer-brand">AI Insight Hub</div>
                     <div class="footer-tagline">Phase 4 &bull; Decision Tree</div>
@@ -399,9 +434,8 @@
                     <div class="footer-version">Educational ML Implementation</div>
                 </div>
             </div>
-        </footer>
-
-    </div>
+        </div>
+    </footer>
 
     <script src="js/decision-tree.js"></script>
 </body>

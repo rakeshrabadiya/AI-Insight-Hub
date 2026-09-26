@@ -3,643 +3,424 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Insight Hub — Multi-Model Machine Learning Analytics Platform</title>
-    <meta name="description" content="AI Insight Hub is a unified multi-model machine learning analytics platform for regression, classification, and clustering intelligence.">
-    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <title>AI Insight Hub — Retro-Futuristic Machine Learning Laboratory</title>
+    <meta name="description" content="AI Insight Hub is a precision multi-model machine learning analytics laboratory uniting regression, classification, and unsupervised clustering intelligence.">
+    <!-- Google Fonts: Space Grotesk, Inter & JetBrains Mono -->
+        <!-- Google Fonts: Space Grotesk, Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-    <!-- Background Glow Elements -->
-    <div class="bg-glow bg-glow-top"></div>
-    <div class="bg-glow bg-glow-bottom"></div>
-    <div class="grid-overlay"></div>
+    <!-- Animated Light Mode Gradient Mesh Background & Retro Grid -->
+    <div class="mesh-canvas" aria-hidden="true">
+        <div class="mesh-orb mesh-orb-cyan"></div>
+        <div class="mesh-orb mesh-orb-indigo"></div>
+        <div class="mesh-orb mesh-orb-violet"></div>
+        <div class="mesh-orb mesh-orb-coral"></div>
+        <div class="retro-grid-pattern"></div>
+        <div class="retro-scanlines"></div>
+    </div>
 
     <!-- Main Application Container -->
-    <div class="app-container">
+    <header class="app-header">
+            <div class="header-inner">
+                <div class="header-brand-wrap">
+                    <a class="logo-wrapper logo-link" href="index.html" title="AI Insight Hub">
+                        <div class="logo-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                <polyline points="2 17 12 22 22 17"></polyline>
+                                <polyline points="2 12 12 17 22 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="logo-text">
+                            <span class="brand-title">AI INSIGHT HUB</span>
+                            <span class="brand-tagline">RETRO-FUTURISTIC AI LAB</span>
+                        </div>
+                    </a>
+                </div>
 
-        <!-- Header / Navigation -->
-        <header class="app-header">
-            <div class="header-left">
-                <div class="logo-wrapper">
-                    <div class="logo-icon">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                <nav class="app-nav" aria-label="Main Platform Navigation">
+                    <ul class="nav-list">
+                <li class="nav-item">
+                    <a class="nav-link nav-link-active" href="index.html" aria-current="page">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="regression.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                        <span>Linear Regression</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="decision-tree.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"></circle><line x1="12" y1="8" x2="7" y2="15"></line><line x1="12" y1="8" x2="17" y2="15"></line><circle cx="7" cy="18" r="3"></circle><circle cx="17" cy="18" r="3"></circle></svg>
+                        <span>Decision Tree</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="knn.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><path d="M9 9l6 6"></path><circle cx="18" cy="6" r="3"></circle></svg>
+                        <span>KNN</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="kmeans.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="10"></circle></svg>
+                        <span>K-Means</span>
+                    </a>
+                </li>
+                    </ul>
+                </nav>
+
+                <div class="header-meta">
+                    <div class="academic-badge">
+                        <span class="badge-dot"></span>
+                        <span class="badge-text">Parul University &bull; Ethnotech &bull; GCF</span>
                     </div>
-                    <div class="logo-text">
-                        <div class="brand-title">AI Insight Hub</div>
-                        <div class="brand-subtitle">Multi-Model Machine Learning Analytics Platform</div>
-                    </div>
                 </div>
-            </div>
-
-            <div class="header-center">
-                <div class="academic-badge">
-                    <span class="badge-dot"></span>
-                    <span class="badge-text">GCF Training &bull; Ethnotech &bull; Parul University</span>
-                </div>
-            </div>
-
-            <div class="header-right">
-                <div class="header-status-pill" id="headerApiStatusPill">
-                    <span class="status-pulse-dot" id="headerStatusDot"></span>
-                    <span class="status-pill-label">Flask API:</span>
-                    <span class="status-pill-value" id="headerApiStatusText">CONNECTING...</span>
-                </div>
-                <button class="btn btn-secondary btn-sm" id="btnRefreshHealth" title="Ping API Health">
-                    <svg class="icon-refresh" id="refreshIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M23 4v6h-6"></path>
-                        <path d="M1 20v-6h6"></path>
-                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                    </svg>
-                    <span>Ping API</span>
-                </button>
             </div>
         </header>
+
+    <div class="app-container">
 
         <!-- Main Content Area -->
         <main class="main-content">
 
-            <!-- Hero Banner -->
-            <section class="hero-section">
-                <div class="hero-content">
-                    <div class="hero-tag">
-                        <span class="tag-pill">All 4 Models Live</span>
-                        <span class="tag-text">Regression &bull; Classification &bull; KNN &bull; Clustering</span>
+            <!-- 1. TYPOGRAPHY / HERO SECTION -->
+            <section class="hero-lab-section">
+                <!-- Neo-Memphis Corner Marks -->
+                <div class="memphis-corner-cross cross-tl">+</div>
+                <div class="memphis-corner-cross cross-tr">+</div>
+                <div class="memphis-corner-cross cross-bl">+</div>
+                <div class="memphis-corner-cross cross-br">+</div>
+
+                <!-- Decorative Neo-Memphis Isometric Prism (SVG) -->
+                <div class="memphis-shape memphis-cube" aria-hidden="true">
+                    <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <polygon points="60 10 110 38 60 66 10 38" fill="rgba(249, 115, 22, 0.08)" stroke="currentColor"/>
+                        <polygon points="10 38 60 66 60 114 10 86" fill="rgba(234, 88, 12, 0.08)" stroke="currentColor"/>
+                        <polygon points="110 38 60 66 60 114 110 86" fill="rgba(251, 146, 60, 0.12)" stroke="currentColor"/>
+                        <line x1="60" y1="10" x2="60" y2="66" stroke-dasharray="2 2" stroke="rgba(249, 115, 22, 0.5)"/>
+                    </svg>
+                </div>
+
+                <!-- Decorative Neo-Memphis Concentric Ring (SVG) -->
+                <div class="memphis-shape memphis-radar-ring" aria-hidden="true">
+                    <svg viewBox="0 0 160 160" fill="none" stroke="currentColor" stroke-width="1.2">
+                        <circle cx="80" cy="80" r="72" stroke-dasharray="4 4"/>
+                        <circle cx="80" cy="80" r="48"/>
+                        <circle cx="80" cy="80" r="24" stroke-dasharray="2 2"/>
+                        <line x1="80" y1="0" x2="80" y2="160"/>
+                        <line x1="0" y1="80" x2="160" y2="80"/>
+                    </svg>
+                </div>
+
+                <!-- Decorative Dot Matrix -->
+                <div class="memphis-shape memphis-dots" aria-hidden="true">
+                    <span class="memphis-dot-item"></span><span class="memphis-dot-item"></span><span class="memphis-dot-item"></span><span class="memphis-dot-item"></span>
+                    <span class="memphis-dot-item"></span><span class="memphis-dot-item"></span><span class="memphis-dot-item"></span><span class="memphis-dot-item"></span>
+                    <span class="memphis-dot-item"></span><span class="memphis-dot-item"></span><span class="memphis-dot-item"></span><span class="memphis-dot-item"></span>
+                </div>
+
+                <div class="hero-content-wrap">
+                    <!-- Retro Label / Badge -->
+                    <div class="retro-badge-strip">
+                        <div class="retro-pill">
+                            <span class="retro-pill-led"></span>
+                            <span>SYS.CORE // V2.6</span>
+                        </div>
+                        <span class="retro-tag-text">[ PRECISION AI LABORATORY ]</span>
                     </div>
-                    <h1 class="hero-title">Unified Machine Learning Intelligence Hub</h1>
-                    <p class="hero-description">
-                        An enterprise-grade analytics platform integrating four foundational machine learning algorithms
-                        spanning regression, classification, and unsupervised clustering. Designed for robust model execution,
-                        interactive parameter tuning, and high-performance inference.
+
+                    <!-- Large Expressive Typography -->
+                    <h1 class="hero-main-title">
+                        AUTONOMOUS<br>
+                        <span class="hero-gradient-highlight">MACHINE INTELLIGENCE</span><br>
+                        LABORATORY
+                    </h1>
+
+                    <!-- Short AI/ML Platform Description -->
+                    <p class="hero-sub-description">
+                        A retro-futuristic AI laboratory unifying continuous multivariate regression, hierarchical risk classification, localized proximity voting, and unsupervised centroid clustering with real-time R-engine analytics.
                     </p>
-                </div>
-                <div class="hero-meta">
-                    <div class="meta-item">
-                        <span class="meta-label">Architecture</span>
-                        <span class="meta-value">Vanilla JS &harr; Flask REST &harr; R Engine</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Current State</span>
-                        <span class="meta-value text-cyan">Phase 6: K-Means Active</span>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Dashboard Statistics Section -->
-            <section class="section-container">
-                <div class="section-header">
-                    <h2 class="section-title">Platform Overview & Statistics</h2>
-                    <span class="section-subtitle">Real-time architecture telemetry and model registry summary</span>
-                </div>
-
-                <div class="stats-grid">
-                    <!-- Stat Card 1: Total Models -->
-                    <div class="stat-card">
-                        <div class="stat-icon-box stat-icon-cyan">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                <line x1="8" y1="21" x2="16" y2="21"></line>
-                                <line x1="12" y1="17" x2="12" y2="21"></line>
-                            </svg>
+                    <!-- Technical Telemetry Strip -->
+                    <div class="hero-telemetry-ribbon">
+                        <div class="telemetry-item">
+                            <span class="telemetry-key">MODELS:</span>
+                            <span class="telemetry-val">04 ONLINE</span>
                         </div>
-                        <div class="stat-info">
-                            <div class="stat-value">4</div>
-                            <div class="stat-label">Total ML Models</div>
+                        <span class="telemetry-divider">&bull;</span>
+                        <div class="telemetry-item">
+                            <span class="telemetry-key">PARADIGMS:</span>
+                            <span class="telemetry-val">SUPERVISED + UNSUPERVISED</span>
                         </div>
-                        <div class="stat-footer">
-                            <span class="badge-subtle">Reg &bull; Tree &bull; KNN &bull; K-Means</span>
+                        <span class="telemetry-divider">&bull;</span>
+                        <div class="telemetry-item">
+                            <span class="telemetry-key">BACKEND:</span>
+                            <span class="telemetry-val">FLASK REST &harr; R KERNEL</span>
                         </div>
-                    </div>
-
-                    <!-- Stat Card 2: Learning Paradigms -->
-                    <div class="stat-card">
-                        <div class="stat-icon-box stat-icon-indigo">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="18" cy="18" r="3"></circle>
-                                <circle cx="6" cy="6" r="3"></circle>
-                                <path d="M13 6h3a2 2 0 0 1 2 2v7"></path>
-                                <line x1="6" y1="9" x2="6" y2="21"></line>
-                            </svg>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-value">3</div>
-                            <div class="stat-label">Learning Types</div>
-                        </div>
-                        <div class="stat-footer">
-                            <span class="badge-subtle">Regression &bull; Classif. &bull; Clustering</span>
-                        </div>
-                    </div>
-
-                    <!-- Stat Card 3: Backend API Status -->
-                    <div class="stat-card" id="statCardApi">
-                        <div class="stat-icon-box stat-icon-emerald" id="statApiIconBox">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                            </svg>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-value" id="statApiStatusValue">CHECKING...</div>
-                            <div class="stat-label">Current Flask API</div>
-                        </div>
-                        <div class="stat-footer">
-                            <span class="badge-subtle" id="statApiLatency">Endpoint: /api/health</span>
-                        </div>
-                    </div>
-
-                    <!-- Stat Card 4: R Engine Connection -->
-                    <div class="stat-card">
-                        <div class="stat-icon-box stat-icon-amber">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="8" x2="12" y2="12"></line>
-                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                            </svg>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-value text-amber" id="statREngineValue">NOT CONNECTED</div>
-                            <div class="stat-label">R ML Engine</div>
-                        </div>
-                        <div class="stat-footer">
-                            <span class="badge-subtle">Phase 2 Bridge &bull; Operational</span>
+                        <span class="telemetry-divider">&bull;</span>
+                        <div class="telemetry-item">
+                            <span class="telemetry-key">INTERFACE:</span>
+                            <span class="telemetry-val">LIGHT GLASS &bull; ORANGE ACCENT</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- System Diagnostics & Health Status -->
-            <section class="section-container">
-                <div class="section-header">
-                    <h2 class="section-title">System Status & Environment Diagnostics</h2>
-                    <span class="section-subtitle">Real-time status of frontend client, Flask REST backend, and R execution subsystem</span>
-                </div>
-
-                <div class="system-status-grid">
-                    <!-- Layer 1: Frontend Client -->
-                    <div class="status-panel">
-                        <div class="status-panel-header">
-                            <div class="status-panel-title">
-                                <div class="layer-indicator layer-frontend">1</div>
-                                <div>
-                                    <div class="layer-name">Frontend Interface</div>
-                                    <div class="layer-tech">HTML5 &bull; CSS3 &bull; Vanilla JavaScript</div>
-                                </div>
-                            </div>
-                            <span class="status-badge badge-online">
-                                <span class="status-dot"></span>
-                                ONLINE
-                            </span>
-                        </div>
-                        <div class="status-panel-body">
-                            <div class="status-metric-row">
-                                <span class="metric-label">Runtime Engine:</span>
-                                <span class="metric-value">Browser Client (Pure Web Standards)</span>
-                            </div>
-                            <div class="status-metric-row">
-                                <span class="metric-label">Framework Status:</span>
-                                <span class="metric-value text-cyan">Zero-Dependency Vanilla JS</span>
-                            </div>
-                            <div class="status-metric-row">
-                                <span class="metric-label">Client Health:</span>
-                                <span class="metric-value text-emerald">Active & Rendering</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Layer 2: Flask REST API -->
-                    <div class="status-panel" id="flaskStatusPanel">
-                        <div class="status-panel-header">
-                            <div class="status-panel-title">
-                                <div class="layer-indicator layer-backend">2</div>
-                                <div>
-                                    <div class="layer-name">Flask REST Backend</div>
-                                    <div class="layer-tech">Python 3.13 &bull; Flask &bull; Flask-CORS</div>
-                                </div>
-                            </div>
-                            <span class="status-badge badge-checking" id="flaskBadge">
-                                <span class="status-dot" id="flaskStatusDot"></span>
-                                <span id="flaskBadgeText">CONNECTING...</span>
-                            </span>
-                        </div>
-                        <div class="status-panel-body">
-                            <div class="status-metric-row">
-                                <span class="metric-label">Target Endpoint:</span>
-                                <span class="metric-value font-mono" id="apiEndpointDisplay">http://127.0.0.1:5000/api/health</span>
-                            </div>
-                            <div class="status-metric-row">
-                                <span class="metric-label">Response Time:</span>
-                                <span class="metric-value" id="apiLatencyDisplay">-- ms</span>
-                            </div>
-                            <div class="status-metric-row">
-                                <span class="metric-label">Last Ping Timestamp:</span>
-                                <span class="metric-value" id="apiTimestampDisplay">Checking connection...</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Layer 3: R Machine Learning Engine -->
-                    <div class="status-panel" id="rEngineStatusPanel">
-                        <div class="status-panel-header">
-                            <div class="status-panel-title">
-                                <div class="layer-indicator layer-r">3</div>
-                                <div>
-                                    <div class="layer-name">R Machine Learning Engine</div>
-                                    <div class="layer-tech">R Language &bull; Subprocess / Rscript Bridge</div>
-                                </div>
-                            </div>
-                            <span class="status-badge badge-neutral" id="rEngineBadge">
-                                <span class="status-dot dot-amber" id="rEngineStatusDot"></span>
-                                <span id="rEngineBadgeText">NOT TESTED</span>
-                            </span>
-                        </div>
-                        <div class="status-panel-body">
-                            <div class="status-metric-row">
-                                <span class="metric-label">Integration State:</span>
-                                <span class="metric-value text-cyan" id="rEngineStateDisplay">Phase 2: Bridge Operational</span>
-                            </div>
-                            <div class="status-metric-row">
-                                <span class="metric-label">R Version / Executable:</span>
-                                <span class="metric-value font-mono" id="rEngineVersionDisplay">Click 'Test R Engine'</span>
-                            </div>
-                            <div class="status-metric-row">
-                                <span class="metric-label">Target Datasets:</span>
-                                <span class="metric-value">4 Datasets Ready (480 Records)</span>
-                            </div>
-                        </div>
-                        <div class="status-panel-footer">
-                            <button class="btn btn-primary btn-sm" id="btnTestREngine" title="Run R Test Script via Flask">
-                                <svg class="icon-refresh" id="rTestIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                                <span>TEST R ENGINE</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- API Offline Alert Banner (Shown dynamically when backend is unreachable) -->
-                <div class="api-alert-banner" id="apiAlertBanner" style="display: none;">
-                    <div class="alert-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
-                    </div>
-                    <div class="alert-content">
-                        <div class="alert-title">Flask Backend is Currently Offline</div>
-                        <div class="alert-message">
-                            Unable to reach the REST API server at <code>http://127.0.0.1:5000/api/health</code>.
-                            Start the Flask backend by running:
-                            <code class="code-pill">python backend/app.py</code>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary btn-sm" id="btnRetryConnection">
-                        Retry Connection
-                    </button>
-                </div>
-            </section>
-
-            <!-- Machine Learning Model Registry Section -->
-            <section class="section-container">
-                <div class="section-header">
-                    <h2 class="section-title">Machine Learning Model Architecture</h2>
-                    <span class="section-subtitle">Multi-model algorithmic suite planned across upcoming project phases</span>
-                </div>
-
+            <!-- 2. FOUR ML MODEL CARDS -->
+            <section class="models-showcase-section">
                 <div class="models-grid">
 
-                    <!-- Model Card 1: Linear Regression -->
-                    <div class="model-card model-card-regression model-card-active">
+                    <!-- Model 1: Linear Regression (Property Price Prediction) -->
+                    <article class="model-card model-card-regression model-card-active">
                         <div class="model-card-header">
-                            <div class="model-category-pill pill-regression">SUPERVISED REGRESSION</div>
-                            <div class="model-phase-badge badge-active">ACTIVE</div>
+                            <div class="model-header-left">
+                                <span class="algo-pill algo-pill-cyan">SUPERVISED REGRESSION</span>
+                                <span class="retro-serial">[REG-01 // LM]</span>
+                            </div>
+                            <div class="model-vector-icon-wrap" title="Linear Regression Vector Visual">
+                                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor">
+                                    <!-- Coordinate axes -->
+                                    <line x1="4" y1="28" x2="28" y2="28" stroke="rgba(15,23,42,0.35)" stroke-width="1.5" stroke-linecap="round"/>
+                                    <line x1="4" y1="28" x2="4" y2="4" stroke="rgba(15,23,42,0.35)" stroke-width="1.5" stroke-linecap="round"/>
+                                    <!-- Scatter dots -->
+                                    <circle cx="8" cy="22" r="1.5" fill="#ea580c"/>
+                                    <circle cx="12" cy="18" r="1.5" fill="#ea580c"/>
+                                    <circle cx="16" cy="19" r="1.5" fill="#ea580c"/>
+                                    <circle cx="20" cy="11" r="1.5" fill="#ea580c"/>
+                                    <circle cx="24" cy="9" r="1.5" fill="#ea580c"/>
+                                    <!-- Best fit line -->
+                                    <line x1="6" y1="25" x2="26" y2="7" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
                         </div>
+
                         <div class="model-card-body">
-                            <div class="model-algorithm">LINEAR REGRESSION</div>
-                            <h3 class="model-name">Property Price Prediction</h3>
-                            <p class="model-description">
-                                Predict property market valuations using continuous multiple regression on multidimensional
-                                property attributes including area, rooms, location score, and amenities.
+                            <div class="model-algo-name algo-title-cyan">LINEAR REGRESSION</div>
+                            <h2 class="model-main-name">Property Price Prediction</h2>
+                            <p class="model-desc-text">
+                                Predict property market valuations using continuous multiple regression on multidimensional property attributes including area, rooms, age, and amenities.
                             </p>
 
-                            <div class="model-features-list">
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>Continuous Value Estimation</span>
-                                </div>
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>R² & RMSE Model Diagnostics</span>
-                                </div>
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>R Engine Model: <code>lm()</code></span>
-                                </div>
+                            <div class="model-tech-specs">
+                                <span class="spec-chip"><span class="spec-dot"></span>Continuous Values</span>
+                                <span class="spec-chip"><span class="spec-dot"></span>R² &bull; RMSE Metrics</span>
+                                <span class="spec-chip"><span class="spec-dot"></span>R Engine: <code>lm()</code></span>
                             </div>
                         </div>
-                        <div class="model-card-footer">
-                            <div class="model-status-indicator">
-                                <span class="status-dot dot-emerald"></span>
-                                <span class="status-label">Status: <strong>Active</strong></span>
-                            </div>
-                            <a class="btn btn-primary btn-sm" href="regression.html">OPEN MODEL</a>
-                        </div>
-                    </div>
 
-                    <!-- Model Card 2: Decision Tree -->
-                    <div class="model-card model-card-decision-tree model-card-active">
-                        <div class="model-card-header">
-                            <div class="model-category-pill pill-classification">SUPERVISED CLASSIFICATION</div>
-                            <div class="model-phase-badge badge-active">ACTIVE</div>
+                        <div class="model-card-footer">
+                            <div class="model-status-chip">
+                                <span class="status-dot-mini"></span>
+                                <span>Status: <strong>Active</strong></span>
+                            </div>
+                            <a class="btn-model-open btn-cyan" href="regression.html">
+                                <span>OPEN MODEL</span>
+                                <span class="btn-arrow">&rarr;</span>
+                            </a>
                         </div>
+                    </article>
+
+                    <!-- Model 2: Decision Tree (Financial Risk Classification) -->
+                    <article class="model-card model-card-decision-tree model-card-active">
+                        <div class="model-card-header">
+                            <div class="model-header-left">
+                                <span class="algo-pill algo-pill-emerald">SUPERVISED CLASSIFICATION</span>
+                                <span class="retro-serial">[TREE-02 // RPART]</span>
+                            </div>
+                            <div class="model-vector-icon-wrap" title="Decision Tree Vector Visual">
+                                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor">
+                                    <!-- Root node -->
+                                    <circle cx="16" cy="6" r="3" fill="#f97316" stroke="#ea580c" stroke-width="1.5"/>
+                                    <!-- Branches -->
+                                    <line x1="14" y1="9" x2="9" y2="17" stroke="rgba(15,23,42,0.35)" stroke-width="1.5"/>
+                                    <line x1="18" y1="9" x2="23" y2="17" stroke="rgba(15,23,42,0.35)" stroke-width="1.5"/>
+                                    <!-- Child nodes -->
+                                    <circle cx="9" cy="18" r="2.5" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"/>
+                                    <circle cx="23" cy="18" r="2.5" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"/>
+                                    <!-- Sub branches -->
+                                    <line x1="7.5" y1="20.5" x2="5" y2="26" stroke="rgba(15,23,42,0.3)" stroke-width="1.5"/>
+                                    <line x1="10.5" y1="20.5" x2="13" y2="26" stroke="rgba(15,23,42,0.3)" stroke-width="1.5"/>
+                                    <!-- Leaf outcomes -->
+                                    <rect x="3.5" y="25.5" width="3" height="3" fill="#ea580c" rx="0.5"/>
+                                    <rect x="11.5" y="25.5" width="3" height="3" fill="#ea580c" rx="0.5"/>
+                                    <rect x="21.5" y="20.5" width="3" height="3" fill="#ea580c" rx="0.5"/>
+                                </svg>
+                            </div>
+                        </div>
+
                         <div class="model-card-body">
-                            <div class="model-algorithm">DECISION TREE</div>
-                            <h3 class="model-name">Financial Risk Analysis</h3>
-                            <p class="model-description">
-                                Classify multi-tier financial risk profiles based on applicant debt ratios, credit histories,
-                                income streams, and collateral metrics using hierarchical decision nodes.
+                            <div class="model-algo-name algo-title-emerald">DECISION TREE</div>
+                            <h2 class="model-main-name">Financial Risk Classification</h2>
+                            <p class="model-desc-text">
+                                Classify multi-tier financial risk profiles based on applicant debt ratios, credit scores, income streams, and collateral metrics using hierarchical decision nodes.
                             </p>
 
-                            <div class="model-features-list">
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>Transparent Rule Induction</span>
-                                </div>
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>Gini / Information Gain Splitting</span>
-                                </div>
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>R Engine Model: <code>rpart</code></span>
-                                </div>
+                            <div class="model-tech-specs">
+                                <span class="spec-chip"><span class="spec-dot"></span>Entropy / Gini Split</span>
+                                <span class="spec-chip"><span class="spec-dot"></span>Transparent Rules</span>
+                                <span class="spec-chip"><span class="spec-dot"></span>R Engine: <code>rpart</code></span>
                             </div>
                         </div>
-                        <div class="model-card-footer">
-                            <div class="model-status-indicator">
-                                <span class="status-dot dot-emerald"></span>
-                                <span class="status-label">Status: <strong>Active</strong></span>
-                            </div>
-                            <a class="btn btn-primary btn-sm" href="decision-tree.html">OPEN MODEL</a>
-                        </div>
-                    </div>
 
-                    <!-- Model Card 3: KNN -->
-                    <div class="model-card model-card-knn model-card-active">
-                        <div class="model-card-header">
-                            <div class="model-category-pill pill-classification">SUPERVISED CLASSIFICATION</div>
-                            <div class="model-phase-badge badge-active">ACTIVE</div>
+                        <div class="model-card-footer">
+                            <div class="model-status-chip">
+                                <span class="status-dot-mini"></span>
+                                <span>Status: <strong>Active</strong></span>
+                            </div>
+                            <a class="btn-model-open btn-emerald" href="decision-tree.html">
+                                <span>OPEN MODEL</span>
+                                <span class="btn-arrow">&rarr;</span>
+                            </a>
                         </div>
+                    </article>
+
+                    <!-- Model 3: KNN (Student Performance Prediction) -->
+                    <article class="model-card model-card-knn model-card-active">
+                        <div class="model-card-header">
+                            <div class="model-header-left">
+                                <span class="algo-pill algo-pill-violet">SUPERVISED CLASSIFICATION</span>
+                                <span class="retro-serial">[KNN-03 // CLASS]</span>
+                            </div>
+                            <div class="model-vector-icon-wrap" title="KNN Vector Visual">
+                                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor">
+                                    <!-- Target Query Center -->
+                                    <circle cx="16" cy="16" r="3" fill="#ea580c" stroke="#f97316" stroke-width="1.5"/>
+                                    <!-- Radar Distance Rings -->
+                                    <circle cx="16" cy="16" r="7" stroke="rgba(249, 115, 22, 0.45)" stroke-width="1" stroke-dasharray="2 2"/>
+                                    <circle cx="16" cy="16" r="12" stroke="rgba(249, 115, 22, 0.25)" stroke-width="1"/>
+                                    <!-- Neighbor Points -->
+                                    <circle cx="12" cy="13" r="1.8" fill="#f97316"/>
+                                    <circle cx="19" cy="13" r="1.8" fill="#f97316"/>
+                                    <circle cx="18" cy="20" r="1.8" fill="#f97316"/>
+                                    <circle cx="23" cy="22" r="1.5" fill="#334155"/>
+                                    <circle cx="8" cy="8" r="1.5" fill="#334155"/>
+                                    <!-- Connection Rays -->
+                                    <line x1="16" y1="16" x2="12" y2="13" stroke="rgba(249, 115, 22, 0.6)" stroke-width="1"/>
+                                    <line x1="16" y1="16" x2="19" y2="13" stroke="rgba(249, 115, 22, 0.6)" stroke-width="1"/>
+                                    <line x1="16" y1="16" x2="18" y2="20" stroke="rgba(249, 115, 22, 0.6)" stroke-width="1"/>
+                                </svg>
+                            </div>
+                        </div>
+
                         <div class="model-card-body">
-                            <div class="model-algorithm">K-NEAREST NEIGHBORS (KNN)</div>
-                            <h3 class="model-name">Student Performance Prediction</h3>
-                            <p class="model-description">
-                                Predict student academic achievement tiers and potential drop-out risk based on study hours,
-                                attendance records, midterm assessments, and participation frequency.
+                            <div class="model-algo-name algo-title-violet">K-NEAREST NEIGHBORS (KNN)</div>
+                            <h2 class="model-main-name">Student Performance Prediction</h2>
+                            <p class="model-desc-text">
+                                Predict student academic achievement tiers and potential drop-out risk based on study hours, attendance records, midterm assessments, and practical scores.
                             </p>
 
-                            <div class="model-features-list">
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>Distance-Weighted Inference</span>
-                                </div>
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>Cross-Validated K Optimization</span>
-                                </div>
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>R Engine Model: <code>class::knn</code></span>
-                                </div>
+                            <div class="model-tech-specs">
+                                <span class="spec-chip"><span class="spec-dot"></span>Euclidean Proximity</span>
+                                <span class="spec-chip"><span class="spec-dot"></span>Cross-Validated K</span>
+                                <span class="spec-chip"><span class="spec-dot"></span>R Engine: <code>class::knn</code></span>
                             </div>
                         </div>
-                        <div class="model-card-footer">
-                            <div class="model-status-indicator">
-                                <span class="status-dot dot-emerald"></span>
-                                <span class="status-label">Status: <strong>Active</strong></span>
-                            </div>
-                            <a class="btn btn-primary btn-sm" href="knn.html">OPEN MODEL</a>
-                        </div>
-                    </div>
 
-                    <!-- Model Card 4: K-Means -->
-                    <div class="model-card model-card-kmeans model-card-active">
-                        <div class="model-card-header">
-                            <div class="model-category-pill pill-clustering">UNSUPERVISED CLUSTERING</div>
-                            <div class="model-phase-badge badge-active">ACTIVE</div>
+                        <div class="model-card-footer">
+                            <div class="model-status-chip">
+                                <span class="status-dot-mini"></span>
+                                <span>Status: <strong>Active</strong></span>
+                            </div>
+                            <a class="btn-model-open btn-violet" href="knn.html">
+                                <span>OPEN MODEL</span>
+                                <span class="btn-arrow">&rarr;</span>
+                            </a>
                         </div>
+                    </article>
+
+                    <!-- Model 4: K-Means (Customer Segmentation) -->
+                    <article class="model-card model-card-kmeans model-card-active">
+                        <div class="model-card-header">
+                            <div class="model-header-left">
+                                <span class="algo-pill algo-pill-amber">UNSUPERVISED CLUSTERING</span>
+                                <span class="retro-serial">[KMN-04 // KMEANS]</span>
+                            </div>
+                            <div class="model-vector-icon-wrap" title="K-Means Vector Visual">
+                                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor">
+                                    <!-- Cluster Hull 1 -->
+                                    <ellipse cx="10" cy="11" rx="6" ry="5" stroke="rgba(249, 115, 22, 0.45)" stroke-width="1" stroke-dasharray="2 2" fill="rgba(249, 115, 22, 0.08)"/>
+                                    <!-- Centroid 1 -->
+                                    <polygon points="10,8 11.5,10.5 14,11 12,12.5 12.5,15 10,13.5 7.5,15 8,12.5 6,11 8.5,10.5" fill="#f97316"/>
+                                    <circle cx="8" cy="10" r="1" fill="#ea580c"/>
+                                    <circle cx="12" cy="13" r="1" fill="#ea580c"/>
+
+                                    <!-- Cluster Hull 2 -->
+                                    <ellipse cx="22" cy="21" rx="6" ry="5" stroke="rgba(234, 88, 12, 0.45)" stroke-width="1" stroke-dasharray="2 2" fill="rgba(234, 88, 12, 0.08)"/>
+                                    <!-- Centroid 2 -->
+                                    <polygon points="22,18 23.5,20.5 26,21 24,22.5 24.5,25 22,23.5 19.5,25 20,22.5 18,21 20.5,20.5" fill="#ea580c"/>
+                                    <circle cx="20" cy="20" r="1" fill="#c2410c"/>
+                                    <circle cx="24" cy="23" r="1" fill="#c2410c"/>
+                                </svg>
+                            </div>
+                        </div>
+
                         <div class="model-card-body">
-                            <div class="model-algorithm">K-MEANS CLUSTERING</div>
-                            <h3 class="model-name">Customer Segmentation</h3>
-                            <p class="model-description">
-                                Discover organic customer cohorts and spending archetypes using unsupervised clustering
-                                on age, annual income, spending score, and purchase frequency.
+                            <div class="model-algo-name algo-title-amber">K-MEANS CLUSTERING</div>
+                            <h2 class="model-main-name">Customer Segmentation</h2>
+                            <p class="model-desc-text">
+                                Discover organic customer cohorts and spending archetypes using unsupervised clustering on age, annual income, spending score, and purchase frequency.
                             </p>
 
-                            <div class="model-features-list">
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>Unsupervised Pattern Discovery</span>
-                                </div>
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>Elbow & Silhouette Diagnostics</span>
-                                </div>
-                                <div class="feature-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>R Engine Model: <code>kmeans()</code></span>
-                                </div>
+                            <div class="model-tech-specs">
+                                <span class="spec-chip"><span class="spec-dot"></span>Iterative Centroids</span>
+                                <span class="spec-chip"><span class="spec-dot"></span>Elbow &bull; Silhouette</span>
+                                <span class="spec-chip"><span class="spec-dot"></span>R Engine: <code>kmeans()</code></span>
                             </div>
                         </div>
+
                         <div class="model-card-footer">
-                            <div class="model-status-indicator">
-                                <span class="status-dot dot-emerald"></span>
-                                <span class="status-label">Status: <strong>Active</strong></span>
+                            <div class="model-status-chip">
+                                <span class="status-dot-mini"></span>
+                                <span>Status: <strong>Active</strong></span>
                             </div>
-                            <a class="btn btn-primary btn-sm" href="kmeans.html">OPEN MODEL</a>
+                            <a class="btn-model-open btn-amber" href="kmeans.html">
+                                <span>OPEN MODEL</span>
+                                <span class="btn-arrow">&rarr;</span>
+                            </a>
                         </div>
-                    </div>
+                    </article>
 
                 </div>
             </section>
 
-            <!-- Live API Diagnostics Console -->
-            <section class="section-container">
-                <div class="section-header">
-                    <h2 class="section-title">Live API Diagnostics Console</h2>
-                    <span class="section-subtitle">Real-time inspection of Flask REST payloads, HTTP headers, and network latency</span>
+            <!-- Offline alert placeholder for app.js (hidden by default) -->
+            <div class="api-alert-banner" id="apiAlertBanner" style="display: none;">
+                <div class="alert-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
                 </div>
-
-                <div class="console-panel">
-                    <div class="console-header">
-                        <div class="console-tabs-group">
-                            <button class="console-tab-btn active" id="tabHealth" data-target="health">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="4 17 10 11 4 5"></polyline>
-                                    <line x1="12" y1="19" x2="20" y2="19"></line>
-                                </svg>
-                                <span>GET /api/health</span>
-                            </button>
-                            <button class="console-tab-btn" id="tabREngine" data-target="r-engine">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                                <span>POST /api/r-engine/test</span>
-                            </button>
-                            <button class="console-tab-btn" id="tabDatasets" data-target="datasets">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                    <polyline points="14 2 14 8 20 8"></polyline>
-                                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                                </svg>
-                                <span>GET /api/datasets/validate</span>
-                            </button>
-                        </div>
-                        <div class="console-controls">
-                            <div class="auto-poll-wrapper">
-                                <label class="switch-label">
-                                    <input type="checkbox" id="chkAutoPoll" checked>
-                                    <span class="switch-slider"></span>
-                                    <span class="switch-text">Auto-Poll Health (10s)</span>
-                                </label>
-                            </div>
-                            <button class="btn btn-secondary btn-xs" id="btnCopyJson" title="Copy JSON Output">
-                                Copy Payload
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="console-body">
-                        <div class="console-meta-bar">
-                            <div class="console-meta-tag">
-                                <span class="meta-tag-label">HTTP Method:</span>
-                                <span class="meta-tag-value text-cyan">GET</span>
-                            </div>
-                            <div class="console-meta-tag">
-                                <span class="meta-tag-label">Target URL:</span>
-                                <span class="meta-tag-value font-mono" id="consoleTargetUrl">http://127.0.0.1:5000/api/health</span>
-                            </div>
-                            <div class="console-meta-tag">
-                                <span class="meta-tag-label">HTTP Status:</span>
-                                <span class="meta-tag-value font-mono" id="consoleHttpStatus">--</span>
-                            </div>
-                            <div class="console-meta-tag">
-                                <span class="meta-tag-label">Latency:</span>
-                                <span class="meta-tag-value font-mono" id="consoleLatency">-- ms</span>
-                            </div>
-                        </div>
-
-                        <div class="code-viewer-container">
-                            <pre class="json-code-block"><code id="rawJsonResponse">Connecting to Flask REST API...</code></pre>
-                        </div>
+                <div class="alert-content">
+                    <div class="alert-title">Flask Backend is Currently Offline</div>
+                    <div class="alert-message">
+                        Unable to reach the REST API server at <code>http://127.0.0.1:5000/api/health</code>. Start the backend with: <code class="code-pill">python backend/app.py</code>
                     </div>
                 </div>
-            </section>
-
-            <!-- Project Roadmap / Phases -->
-            <section class="section-container">
-                <div class="section-header">
-                    <h2 class="section-title">Development Roadmap</h2>
-                    <span class="section-subtitle">Staged architecture milestones for the AI Insight Hub platform</span>
-                </div>
-
-                <div class="roadmap-grid">
-                    <div class="roadmap-step step-active">
-                        <div class="step-num">01</div>
-                        <div class="step-content">
-                            <div class="step-badge badge-active">Active / Completed</div>
-                            <h4 class="step-title">Foundation & Flask Integration</h4>
-                            <p class="step-desc">Establish directory structure, Flask REST server, JSON health diagnostics, and dynamic frontend telemetry.</p>
-                        </div>
-                    </div>
-
-                    <div class="roadmap-step step-active">
-                        <div class="step-num">02</div>
-                        <div class="step-content">
-                            <div class="step-badge badge-active">Active / Completed</div>
-                            <h4 class="step-title">R Engine Bridge & Execution Subsystem</h4>
-                            <p class="step-desc">Connect the Python Flask backend to the R execution engine, handling dataset loading and runtime orchestration.</p>
-                        </div>
-                    </div>
-
-                    <div class="roadmap-step step-active">
-                        <div class="step-num">03</div>
-                        <div class="step-content">
-                            <div class="step-badge badge-active">Active / Completed</div>
-                            <h4 class="step-title">Linear Regression: Property Prices</h4>
-                            <p class="step-desc">Integrate real estate datasets, multi-variable linear regression model in R, and interactive prediction UI.</p>
-                        </div>
-                    </div>
-
-                    <div class="roadmap-step step-active">
-                        <div class="step-num">04</div>
-                        <div class="step-content">
-                            <div class="step-badge badge-active">Active / Completed</div>
-                            <h4 class="step-title">Decision Tree: Financial Risk</h4>
-                            <p class="step-desc">Implement financial risk assessment classification with tree visualization and interactive feature scoring.</p>
-                        </div>
-                    </div>
-
-                    <div class="roadmap-step step-active">
-                        <div class="step-num">05</div>
-                        <div class="step-content">
-                            <div class="step-badge badge-active">Active / Completed</div>
-                            <h4 class="step-title">KNN: Student Performance</h4>
-                            <p class="step-desc">Construct K-Nearest Neighbors classifier for academic performance prediction with dynamic K-tuning.</p>
-                        </div>
-                    </div>
-
-                    <div class="roadmap-step step-active">
-                        <div class="step-num">06</div>
-                        <div class="step-content">
-                            <div class="step-badge badge-active">Active / Completed</div>
-                            <h4 class="step-title">K-Means: Customer Segmentation</h4>
-                            <p class="step-desc">Deploy unsupervised K-Means clustering with automated elbow method and centroid scatter visualizer.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                <button class="btn btn-primary btn-sm" id="btnRetryConnection">Retry Connection</button>
+            </div>
 
         </main>
 
-        <!-- Footer -->
-        <footer class="app-footer">
-            <div class="footer-content">
+            </div><!-- /.app-container -->
+
+    <!-- Global Full-Spanning Footer (100% Viewport Width) -->
+    <footer class="app-footer">
+        <div class="footer-inner">
+<div class="footer-content">
                 <div class="footer-left">
-                    <div class="footer-brand">AI Insight Hub</div>
+                    <div class="footer-brand">AI INSIGHT HUB</div>
                     <div class="footer-tagline">Multi-Model Machine Learning Analytics Platform</div>
                 </div>
                 <div class="footer-center">
@@ -648,12 +429,11 @@
                     </div>
                 </div>
                 <div class="footer-right">
-                    <div class="footer-version">Phase 6 &bull; Git Version Controlled</div>
+                    <div class="footer-version">LAB.SYS // PHASE 6 &bull; GIT CONTROLLED</div>
                 </div>
             </div>
-        </footer>
-
-    </div>
+        </div>
+    </footer>
 
     <!-- Application Logic -->
     <script src="js/app.js"></script>
