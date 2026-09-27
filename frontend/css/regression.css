@@ -860,3 +860,138 @@
     color: var(--accent-orange-dark) !important;
     background: rgba(249, 115, 22, 0.05) !important;
 }
+
+
+/* Light Orange Background & Subtle Blue / Skyblue Typography & White Shadow Enforcement */
+body {
+    background-color: #fff5eb !important;
+    color: #0c4a6e !important;
+}
+
+.panel, .result-panel, .hero-section, .chart-panel, .tree-panel, .matrix-panel, .cluster-card {
+    background: rgba(255, 255, 255, 0.94) !important;
+    border: 1px solid rgba(249, 115, 22, 0.18) !important;
+    box-shadow: 5px 5px 0px 0px #ffffff !important;
+}
+
+.hero-title, .section-title, .panel-title {
+    color: #0c4a6e !important;
+}
+
+.hero-description, .section-subtitle, .section-description, .form-hint {
+    color: #0369a1 !important;
+}
+
+.form-label {
+    color: #0c4a6e !important;
+    font-weight: 700 !important;
+}
+
+.form-input {
+    background: #ffffff !important;
+    color: #0c4a6e !important;
+    border: 1px solid rgba(2, 132, 199, 0.28) !important;
+    box-shadow: 3px 3px 0px 0px #ffffff !important;
+}
+
+.form-input:focus {
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2), 3px 3px 0px 0px #ffffff !important;
+}
+
+.metric-card {
+    background: #ffffff !important;
+    border: 1px solid rgba(249, 115, 22, 0.16) !important;
+    box-shadow: 4px 4px 0px 0px #ffffff !important;
+}
+.metric-value {
+    color: #0c4a6e !important;
+}
+.metric-label {
+    color: #0369a1 !important;
+}
+.metric-caption {
+    color: #0284c7 !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+    border: 1px solid #0284c7 !important;
+    color: #ffffff !important;
+    box-shadow: 4px 4px 0px 0px #ffffff !important;
+}
+.btn-primary:hover {
+    box-shadow: 5px 5px 0px 0px #ffffff !important;
+    transform: translate(-1px, -1px) !important;
+}
+
+.btn-sample {
+    background: #ffffff !important;
+    border: 1px solid rgba(2, 132, 199, 0.25) !important;
+    color: #0369a1 !important;
+    box-shadow: 3px 3px 0px 0px #ffffff !important;
+}
+.btn-sample:hover {
+    border-color: #0284c7 !important;
+    color: #0284c7 !important;
+    box-shadow: 4px 4px 0px 0px #ffffff !important;
+}
+
+.result-empty-title {
+    color: #0c4a6e !important;
+}
+.result-empty-text {
+    color: #0369a1 !important;
+}
+.result-empty-icon {
+    color: #0284c7 !important;
+}
+.result-raw {
+    background: #ffffff !important;
+    border: 1px solid rgba(249, 115, 22, 0.16) !important;
+    box-shadow: 3px 3px 0px 0px #ffffff !important;
+    color: #0c4a6e !important;
+}
+.result-raw-label {
+    color: #0369a1 !important;
+}
+.result-raw-value {
+    color: #0c4a6e !important;
+}
+.result-meta-row {
+    color: #0369a1 !important;
+}
+.result-meta-row span:last-child {
+    color: #0c4a6e !important;
+}
+
+.k-table, .profile-table {
+    box-shadow: 4px 4px 0px 0px #ffffff !important;
+    border: 1px solid rgba(249, 115, 22, 0.16) !important;
+}
+.k-table th, .profile-table th {
+    background: #ffedd5 !important;
+    color: #0c4a6e !important;
+}
+.k-table td, .profile-table td {
+    color: #0369a1 !important;
+}
+
+.matrix-cell {
+    box-shadow: 2px 2px 0px 0px #ffffff !important;
+    border: 1px solid rgba(2, 132, 199, 0.18) !important;
+    color: #0c4a6e !important;
+}
+.matrix-head {
+    color: #0c4a6e !important;
+}
+
+.tree-node {
+    background: #ffffff !important;
+    border: 1px solid rgba(2, 132, 199, 0.25) !important;
+    box-shadow: 4px 4px 0px 0px #ffffff !important;
+    color: #0c4a6e !important;
+}
+.tree-node-rule {
+    color: #0369a1 !important;
+}
